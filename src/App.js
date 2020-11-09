@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
 import styled from '@emotion/styled';
-import { Container } from 'semantic-ui-react';
+import { Container, Button } from 'semantic-ui-react';
 import { init, auth } from '@wavv/core';
-import { openMessenger } from '@wavv/messenger';
+import { openMessengerThread, openMessenger } from '@wavv/messenger';
 import { Route, Switch } from 'react-router-dom';
 import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
 import ListView from './ListView';
@@ -37,10 +37,17 @@ const App = () => {
 		});
 		setNumbers(newNumbers);
 	};
-	const textNumber = (index) => {
-		// add Wavv messaging functionality
+	const textNumber = (params) => {
+		console.log(params);
+		openMessengerThread(params);
+	};
+	const callNumber = (index) => {
+		// add Wavv calling functionality
+		console.log(index);
+	};
+	const openWavvMessenger = () => {
 		const params = {
-			contactView: true,
+			contactView: false,
 			contact: {
 				contactId: '123',
 				numbers: ['8444545111', '5555554321'],
@@ -53,16 +60,16 @@ const App = () => {
 		};
 
 		openMessenger(params);
-		console.log(index);
-	};
-	const callNumber = (index) => {
-		// add Wavv calling functionality
-		console.log(index);
 	};
 
 	return (
 		<div>
-			<Nav>WAVV Demo</Nav>
+			<Nav>
+				<div>WAVV Demo</div>
+				<NavItem>
+					<Button size="big" content="Open Messenger" onClick={() => openWavvMessenger()} />
+				</NavItem>
+			</Nav>
 			<Container>
 				<Switch>
 					<Route
@@ -94,6 +101,14 @@ const Nav = styled.div({
 	fontSize: 30,
 	padding: 20,
 	marginBottom: 20,
+});
+
+const NavItem = styled.div({
+	display: 'flex',
+	alignItems: 'center',
+	height: 50,
+	fontSize: 20,
+	paddingLeft: 22,
 });
 
 export default App;
