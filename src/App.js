@@ -1,54 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import Table from './Table';
-import { Navbar, Logo } from 'react-easy-navbar';
+import jwt from 'jsonwebtoken';
+import styled from '@emotion/styled';
+import { Container } from 'semantic-ui-react';
 import { init, auth } from '@wavv/core';
 import { openMessenger } from '@wavv/messenger';
-import jwt from 'jsonwebtoken';
+import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
+import ListView from './ListView';
 
 const App = () => {
-	const [numbers, setNumbers] = useState([
-		{
-			number: '(570) 387-0000',
-			title: '10All circuits are busy now',
-		},
-		{
-			number: '(409) 724-3137',
-			title: '15SIT requires deposit',
-		},
-		{
-			number: '(541) 967-0010',
-			title: '1Number Disconnected',
-		},
-		{
-			number: '(207) 775-4321',
-			title: '23Time and Temp recording',
-		},
-		{
-			number: '(619) 330-9640',
-			title: 'Welcome to inum.',
-		},
-		{
-			number: '(718) 816-9901',
-			title: 'North Staten Island	',
-		},
-		{
-			number: '(610) 797-0014',
-			title: 'Excuse me, please deposit five cents',
-		},
-		{
-			number: '(330) 572-0999',
-			title: 'Continious ring',
-		},
-	]);
+	const [numbers, setNumbers] = useState(contacts);
 
 	const authWavv = async () => {
-		const issuer = '90d267ae9889abf5cb9e3539d213e99b';
-		const signature = 'c1577a7e48dd721e5783851898c51e2bc62f84da7a40ccade2d872e7d8ce7fd2';
-		const userId = '644961';
-		const payload = {
-			userId,
-		};
+		const issuer = VENDOR_ID;
+		const signature = APP_ID;
+		const userId = VENDER_USER_ID;
+		const payload = { userId };
 		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
+
 		try {
 			init({ server: 'stage1' });
 			auth({ token });
@@ -92,12 +60,23 @@ const App = () => {
 
 	return (
 		<div>
-			<Navbar backgroundColor="black" textColor="white">
-				<Logo text="WAVV Demo" />
-			</Navbar>
-			<Table numberData={numbers} removeNumber={removeNumber} textNumber={textNumber} callNumber={callNumber} />
+			<Nav>WAVV Demo</Nav>
+			<Container>
+				<ListView numberData={numbers} removeNumber={removeNumber} textNumber={textNumber} callNumber={callNumber} />
+			</Container>
 		</div>
 	);
 };
+
+const Nav = styled.div({
+	display: 'flex',
+	alignItems: 'center',
+	width: '100%',
+	height: 50,
+	backgroundColor: '#EAEAEA',
+	fontSize: 30,
+	padding: 20,
+	marginBottom: 20,
+});
 
 export default App;
