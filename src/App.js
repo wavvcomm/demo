@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { Container } from 'semantic-ui-react';
 import { init, auth } from '@wavv/core';
 import { openMessenger } from '@wavv/messenger';
-import { callPhone } from '@wavv/dialer';
+import { callPhone, addPhone, removePhone } from '@wavv/dialer';
 import { Route, Switch } from 'react-router-dom';
 import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
 import ListView from './ListView';
@@ -41,6 +41,7 @@ const App = () => {
 			return contact;
 		});
 		setContacts(updatedContacts);
+		removePhone({ contactId, number });
 	};
 
 	const addNumber = ({ contactId, number }) => {
@@ -52,6 +53,7 @@ const App = () => {
 			return contact;
 		});
 		setContacts(updatedContacts);
+		addPhone({ contactId, number });
 	};
 
 	const textNumber = (index) => {
