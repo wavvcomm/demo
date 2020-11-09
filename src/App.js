@@ -1,8 +1,10 @@
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
 import styled from '@emotion/styled';
-import { Container } from 'semantic-ui-react';
+import { Container, Grid, Button, Header } from 'semantic-ui-react';
 import { init, auth } from '@wavv/core';
+import { startCampaign } from '@wavv/dialer';
 import { openMessenger } from '@wavv/messenger';
 import { callPhone } from '@wavv/dialer';
 import { Route, Switch } from 'react-router-dom';
@@ -12,6 +14,7 @@ import DetailView from './DetailView';
 
 const App = () => {
 	const [numbers, setNumbers] = useState(contacts);
+	const [selected, setSelected] = useState([]);
 
 	const authWavv = async () => {
 		const issuer = VENDOR_ID;
@@ -62,9 +65,32 @@ const App = () => {
 		console.log(ops);
 	};
 
+	const handleStart = () => {
+		startCampaign({ contacts: selected })
+			.then((res) => console.log({ res }))
+			.catch((err) => console.log({ err }));
+	};
+
+	const handleSelected = (checked, id) => {
+		let newSelected = [...selected];
+		if (id === 'all') {
+			newSelected = checked ? numbers : [];
+		} else {
+			const contact = numbers.find((item) => item.contactId === id);
+			if (checked) newSelected.push(contact);
+			else newSelected = newSelected.filter((item) => item.contactId !== id);
+		}
+		setSelected(newSelected);
+	};
+
 	return (
 		<div>
-			<Nav>WAVV Demo</Nav>
+			<Nav>
+				WAVV Demo
+				<Button disabled={!selected.length} onClick={handleStart}>
+					Start Campaign
+				</Button>
+			</Nav>
 			<div id="storm-dialer-bar" />
 			<div id="storm-dialer-mini" />
 			<Container style={{ marginTop: 20 }}>
@@ -79,6 +105,7 @@ const App = () => {
 								removeNumber={removeNumber}
 								textNumber={textNumber}
 								callNumber={callNumber}
+								handleSelected={handleSelected}
 							/>
 						)}
 					/>
@@ -92,6 +119,7 @@ const App = () => {
 const Nav = styled.div({
 	display: 'flex',
 	alignItems: 'center',
+	justifyContent: 'space-between',
 	width: '100%',
 	height: 50,
 	backgroundColor: '#EAEAEA',
