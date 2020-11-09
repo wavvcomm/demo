@@ -3,10 +3,10 @@ import { contacts } from './constants';
 
 const DetailView = ({ match }) => {
 	const { id } = match.params;
-	const contact = contacts.find((item) => item.id.toString() === id);
+	const contact = contacts.find((item) => item.contactId === id);
 	return (
 		<div>
-			<p>{contact?.title || 'Test'}</p>
+			<p>{contact?.name}</p>
 		</div>
 	);
 };
