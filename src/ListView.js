@@ -3,27 +3,27 @@ import { Link } from 'react-router-dom';
 import { Table, Icon, Checkbox } from 'semantic-ui-react';
 
 const TableBody = ({ numberData, removeNumber, textNumber, callNumber }) => {
-	const rows = numberData.map((contact) => {
+	const rows = numberData.map(({ contactId, name, address, city, numbers }) => {
 		return (
-			<Table.Row key={contact.contactId}>
+			<Table.Row key={contactId}>
 				<Table.Cell collapsing>
 					<Checkbox />
 				</Table.Cell>
 				<Table.Cell>
-					<Link to={`/detail/${contact.contactId}`}>{contact.name}</Link>
+					<Link to={`/detail/${contactId}`}>{name}</Link>
 				</Table.Cell>
-				<Table.Cell>{contact.address}</Table.Cell>
-				<Table.Cell>{contact.city}</Table.Cell>
-				{contact.numbers.map((number) => (
+				<Table.Cell>{address}</Table.Cell>
+				<Table.Cell>{city}</Table.Cell>
+				{numbers.map((number) => (
 					<Table.Cell key={number} style={{ display: 'flex', justifyContent: 'space-around' }}>
 						<span>{number}</span>
-						<Icon onClick={() => removeNumber({ contact, number })} name="trash" style={{ cursor: 'pointer' }} />
+						<Icon onClick={() => removeNumber({ contactId, number })} name="trash" style={{ cursor: 'pointer' }} />
 						<Icon
-							onClick={() => textNumber({ contact, number })}
+							onClick={() => textNumber({ contactId, number })}
 							name="comment alternate"
 							style={{ cursor: 'pointer' }}
 						/>
-						<Icon onClick={() => callNumber({ contact, number })} name="phone" style={{ cursor: 'pointer' }} />
+						<Icon onClick={() => callNumber({ contactId, number })} name="phone" style={{ cursor: 'pointer' }} />
 					</Table.Cell>
 				))}
 			</Table.Row>

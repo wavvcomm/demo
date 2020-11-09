@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import { Container } from 'semantic-ui-react';
 import { init, auth } from '@wavv/core';
 import { openMessenger } from '@wavv/messenger';
+import { callPhone } from '@wavv/dialer';
 import { Route, Switch } from 'react-router-dom';
 import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
 import ListView from './ListView';
@@ -55,15 +56,18 @@ const App = () => {
 		openMessenger(params);
 		console.log(index);
 	};
-	const callNumber = (index) => {
+	const callNumber = (ops) => {
 		// add Wavv calling functionality
-		console.log(index);
+		callPhone(ops);
+		console.log(ops);
 	};
 
 	return (
 		<div>
 			<Nav>WAVV Demo</Nav>
-			<Container>
+			<div id="storm-dialer-bar" />
+			<div id="storm-dialer-mini" />
+			<Container style={{ marginTop: 20 }}>
 				<Switch>
 					<Route
 						exact
@@ -93,7 +97,6 @@ const Nav = styled.div({
 	backgroundColor: '#EAEAEA',
 	fontSize: 30,
 	padding: 20,
-	marginBottom: 20,
 });
 
 export default App;
