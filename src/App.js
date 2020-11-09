@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import { Container } from 'semantic-ui-react';
 import { init, auth } from '@wavv/core';
 import { openMessenger } from '@wavv/messenger';
-import { callPhone, addPhone, removePhone } from '@wavv/dialer';
+import { callPhone, addPhone, removePhone, removeContact } from '@wavv/dialer';
 import { Route, Switch } from 'react-router-dom';
 import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
 import ListView from './ListView';
@@ -56,6 +56,12 @@ const App = () => {
 		addPhone({ contactId, number });
 	};
 
+	const deleteContact = ({ contactId }) => {
+		const updatedContacts = contactList.filter((contact) => contact.contactId !== contactId);
+		setContacts(updatedContacts);
+		removeContact({ contactId, hangup: true, resume: true });
+	};
+
 	const textNumber = (index) => {
 		// add Wavv messaging functionality
 		const params = {
@@ -94,6 +100,7 @@ const App = () => {
 							<ListView
 								{...props}
 								contacts={contactList}
+								removeContact={deleteContact}
 								removeNumber={removeNumber}
 								addNumber={addNumber}
 								textNumber={textNumber}

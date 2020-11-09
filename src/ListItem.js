@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 import { Table, Icon, Checkbox, Modal, Input, Button } from 'semantic-ui-react';
 
-const ListItem = ({ contact, removeNumber, addNumber, textNumber, callNumber }) => {
+const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber, callNumber }) => {
 	const [newNumber, setNewNumber] = useState('');
 	const [open, setOpen] = useState(false);
 	const reset = () => {
@@ -16,6 +16,10 @@ const ListItem = ({ contact, removeNumber, addNumber, textNumber, callNumber }) 
 			<Table.Cell collapsing>
 				<Checkbox />
 			</Table.Cell>
+			<Table.Cell collapsing>
+				<Icon onClick={() => removeContact({ contactId })} name="trash" style={{ cursor: 'pointer' }} />
+				<Icon name="close" style={{ cursor: 'pointer' }} />
+			</Table.Cell>
 			<Table.Cell>
 				<Link to={`/detail/${contactId}`}>{name}</Link>
 			</Table.Cell>
@@ -25,7 +29,7 @@ const ListItem = ({ contact, removeNumber, addNumber, textNumber, callNumber }) 
 				{numbers.map((number) => (
 					<Number key={number}>
 						<span>{number}</span>
-						<Icon onClick={() => removeNumber({ contactId, number })} name="trash" style={{ cursor: 'pointer' }} />
+						<Icon onClick={() => removeNumber({ contactId, number })} name="close" style={{ cursor: 'pointer' }} />
 						<Icon
 							onClick={() => textNumber({ contactId, number })}
 							name="comment alternate"
