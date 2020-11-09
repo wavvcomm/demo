@@ -64,7 +64,7 @@ class App extends Component {
   const { numbers } = this.state
 
   return (
-    <div className="container">
+    <div>
         <Navbar
           backgroundColor="black"
           textColor="white"
