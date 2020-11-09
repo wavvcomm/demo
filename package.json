@@ -29,7 +29,8 @@
 		"start": "react-scripts start",
 		"build": "react-scripts build",
 		"test": "react-scripts test",
-		"eject": "react-scripts eject"
+		"eject": "react-scripts eject",
+		"lint": "pretty-quick --staged && lint-staged"
 	},
 	"browserslist": {
 		"production": [
@@ -48,6 +49,7 @@
 		"eslint-config-airbnb": "^18.2.1",
 		"eslint-config-prettier": "^6.15.0",
 		"eslint-config-storm": "^1.0.3",
+		"eslint-plugin-cypress": "^2.11.2",
 		"eslint-plugin-import": "^2.22.1",
 		"husky": "^4.3.0",
 		"lint-staged": "^10.5.1",

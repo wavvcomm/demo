@@ -4,9 +4,10 @@
 		"browser": true
 	},
 	"parser": "babel-eslint",
-	"plugins": ["react-hooks", "jest"],
+	"plugins": ["react-hooks", "jest", "cypress"],
 	"extends": [
 		"plugin:import/errors",
+		"plugin:cypress/recommended",
 		"plugin:import/warnings",
 		"react-app",
 		"react-app/jest",
@@ -33,6 +34,7 @@
 		"react/prop-types": ["off"],
 		"react/jsx-one-expression-per-line": ["off"],
 		"react/jsx-filename-extension": ["off"],
-		"react-hooks/rules-of-hooks": "error"
+		"react-hooks/rules-of-hooks": "error",
+		"class-methods-use-this": "off"
 	}
 }
