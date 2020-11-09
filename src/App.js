@@ -11,7 +11,7 @@ import ListView from './ListView';
 import DetailView from './DetailView';
 
 const App = () => {
-	const [numbers, setNumbers] = useState(contacts);
+	const [contactList, setContacts] = useState(contacts);
 
 	const authWavv = async () => {
 		const issuer = VENDOR_ID;
@@ -32,12 +32,28 @@ const App = () => {
 		authWavv();
 	}, []);
 
-	const removeNumber = (index) => {
-		const newNumbers = numbers.filter((number, i) => {
-			return i !== index;
+	const removeNumber = ({ contactId, number }) => {
+		const updatedContacts = contactList.map((contact) => {
+			if (contact.contactId === contactId) {
+				const filteredNumbers = contact.numbers.filter((num) => num !== number);
+				return { ...contact, numbers: filteredNumbers };
+			}
+			return contact;
 		});
-		setNumbers(newNumbers);
+		setContacts(updatedContacts);
 	};
+
+	const addNumber = ({ contactId, number }) => {
+		const updatedContacts = contactList.map((contact) => {
+			if (contact.contactId === contactId) {
+				const newNumbers = [...contact.numbers, number];
+				return { ...contact, numbers: newNumbers };
+			}
+			return contact;
+		});
+		setContacts(updatedContacts);
+	};
+
 	const textNumber = (index) => {
 		// add Wavv messaging functionality
 		const params = {
@@ -75,8 +91,9 @@ const App = () => {
 						render={(props) => (
 							<ListView
 								{...props}
-								numberData={numbers}
+								contacts={contactList}
 								removeNumber={removeNumber}
+								addNumber={addNumber}
 								textNumber={textNumber}
 								callNumber={callNumber}
 							/>
