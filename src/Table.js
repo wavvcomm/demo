@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import { BiTrash, BiMessageAltDetail, BiPhone } from "react-icons/bi";
 
 const TableBody = (props) => {
   const rows = props.numberData.map((row, index) => {
@@ -7,13 +8,13 @@ const TableBody = (props) => {
         <td>{row.number}</td>
         <td>{row.title}</td>
         <td>
-            <button onClick={() => props.removeNumber(index)}>Delete</button>
+            <button onClick={() => props.removeNumber(index)}><BiTrash/></button>
         </td>
         <td>
-            <button onClick={() => props.textNumber(index)}>Text</button>
+            <button onClick={() => props.textNumber(index)}><BiMessageAltDetail/></button>
         </td>
         <td>
-            <button onClick={() => props.callNumber(index)}>Call</button>
+            <button onClick={() => props.callNumber(index)}><BiPhone/></button>
         </td>
       </tr>
     )

@@ -1,9 +1,6 @@
 import React, {Component} from 'react'
 import Table from './Table'
-import {
-  Navbar, NavlinkDropdown,
-  NavlinkDropdownElement,Navlink, NavlinksList, Logo
-} from 'react-easy-navbar'
+import { Navbar, Logo } from 'react-easy-navbar'
 
 class App extends Component {
     state = {
@@ -24,6 +21,23 @@ class App extends Component {
                 number: '(207) 775-4321',
                 title: '23Time and Temp recording',
             },
+            {
+                number: '(619) 330-9640',
+                title: 'Welcome to inum.',
+            },
+            {
+                number: '(718) 816-9901',
+                title: 'North Staten Island	',
+            },
+            {
+                number: '(610) 797-0014',
+                title: 'Excuse me, please deposit five cents',
+            },
+            {
+                number: '(330) 572-0999',
+                title: 'Continious ring',
+            },
+            
         ],
 
     }
@@ -52,7 +66,7 @@ class App extends Component {
   return (
     <div className="container">
         <Navbar
-          backgroundColor="#3949ab"
+          backgroundColor="black"
           textColor="white"
         >
           <Logo text="WAVV Demo"/>
