@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Table, Icon, Checkbox } from 'semantic-ui-react';
 
 const TableBody = ({ numberData, removeNumber, textNumber, callNumber }) => {
@@ -9,7 +10,9 @@ const TableBody = ({ numberData, removeNumber, textNumber, callNumber }) => {
 					<Checkbox />
 				</Table.Cell>
 				<Table.Cell>{row.number}</Table.Cell>
-				<Table.Cell>{row.title}</Table.Cell>
+				<Table.Cell>
+					<Link to={`/detail/${row.id}`}>{row.title}</Link>
+				</Table.Cell>
 				<Table.Cell style={{ display: 'flex', justifyContent: 'space-around' }}>
 					<Icon onClick={() => removeNumber(index)} name="trash" style={{ cursor: 'pointer' }} />
 					<Icon onClick={() => textNumber(index)} name="comment alternate" style={{ cursor: 'pointer' }} />

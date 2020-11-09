@@ -4,8 +4,10 @@ import styled from '@emotion/styled';
 import { Container } from 'semantic-ui-react';
 import { init, auth } from '@wavv/core';
 import { openMessenger } from '@wavv/messenger';
+import { Route, Switch } from 'react-router-dom';
 import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
 import ListView from './ListView';
+import DetailView from './DetailView';
 
 const App = () => {
 	const [numbers, setNumbers] = useState(contacts);
@@ -62,7 +64,22 @@ const App = () => {
 		<div>
 			<Nav>WAVV Demo</Nav>
 			<Container>
-				<ListView numberData={numbers} removeNumber={removeNumber} textNumber={textNumber} callNumber={callNumber} />
+				<Switch>
+					<Route
+						exact
+						path="/"
+						render={(props) => (
+							<ListView
+								{...props}
+								numberData={numbers}
+								removeNumber={removeNumber}
+								textNumber={textNumber}
+								callNumber={callNumber}
+							/>
+						)}
+					/>
+					<Route exact path="/detail/:id" component={DetailView} />
+				</Switch>
 			</Container>
 		</div>
 	);
