@@ -65,20 +65,23 @@ const App = () => {
 		console.log(ops);
 	};
 
-	const handleStart = () => {
-		startCampaign({ contacts: selected })
-			.then((res) => console.log({ res }))
-			.catch((err) => console.log({ err }));
+	const handleStart = async () => {
+		const filteredContacts = numbers.filter((number) => selected.includes(number.contactId));
+		try {
+			startCampaign({ contacts: filteredContacts });
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
-	const handleSelected = (checked, id) => {
+	const handleSelected = (param) => {
 		let newSelected = [...selected];
-		if (id === 'all') {
-			newSelected = checked ? numbers : [];
+		if (param === 'all') {
+			if (newSelected.length === numbers.length) newSelected = [];
+			else newSelected = numbers.map((number) => number.contactId);
 		} else {
-			const contact = numbers.find((item) => item.contactId === id);
-			if (checked) newSelected.push(contact);
-			else newSelected = newSelected.filter((item) => item.contactId !== id);
+			if (newSelected.includes(param)) newSelected = newSelected.filter((selected) => selected !== param);
+			else newSelected.push(param);
 		}
 		setSelected(newSelected);
 	};
@@ -106,6 +109,7 @@ const App = () => {
 								textNumber={textNumber}
 								callNumber={callNumber}
 								handleSelected={handleSelected}
+								selected={selected}
 							/>
 						)}
 					/>

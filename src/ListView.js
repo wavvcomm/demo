@@ -2,12 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Table, Icon, Checkbox } from 'semantic-ui-react';
 
-const TableBody = ({ numberData, removeNumber, textNumber, callNumber, handleSelected }) => {
+const TableBody = ({ numberData, removeNumber, textNumber, callNumber, handleSelected, selected }) => {
 	const rows = numberData.map(({ contactId, name, address, city, numbers }) => {
 		return (
 			<Table.Row key={contactId}>
 				<Table.Cell collapsing>
-					<Checkbox onClick={(event, data) => handleSelected(data.checked, contactId)} />
+					<Checkbox checked={selected.includes(contactId)} onClick={() => handleSelected(contactId)} />
 				</Table.Cell>
 				<Table.Cell>
 					<Link to={`/detail/${contactId}`}>{name}</Link>
@@ -33,13 +33,13 @@ const TableBody = ({ numberData, removeNumber, textNumber, callNumber, handleSel
 	return <Table.Body>{rows}</Table.Body>;
 };
 
-const ListView = ({ numberData, removeNumber, textNumber, callNumber, handleSelected }) => {
+const ListView = ({ numberData, removeNumber, textNumber, callNumber, handleSelected, selected }) => {
 	return (
 		<Table celled>
 			<Table.Header>
 				<Table.Row>
 					<Table.HeaderCell>
-						<Checkbox onClick={(event, data) => handleSelected(data.checked, 'all')} />
+						<Checkbox onClick={() => handleSelected('all')} />
 					</Table.HeaderCell>
 					<Table.HeaderCell>Name</Table.HeaderCell>
 					<Table.HeaderCell>Address</Table.HeaderCell>
@@ -53,6 +53,7 @@ const ListView = ({ numberData, removeNumber, textNumber, callNumber, handleSele
 				textNumber={textNumber}
 				callNumber={callNumber}
 				handleSelected={handleSelected}
+				selected={selected}
 			/>
 		</Table>
 	);
