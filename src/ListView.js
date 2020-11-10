@@ -2,19 +2,20 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Dropdown, Table, Icon, Checkbox } from 'semantic-ui-react';
 
-const TableBody = ({ numberData, removeNumber, textNumber, callNumber }) => {
+const TableBody = ({ numberData, removeNumber, textNumber, callNumber, handleSelected, selected }) => {
 	const rows = numberData.map((contact) => {
+		const { contactId, name, address, city, numbers } = contact;
 		return (
-			<Table.Row key={contact.contactId}>
+			<Table.Row key={contactId}>
 				<Table.Cell collapsing>
-					<Checkbox />
+					<Checkbox checked={selected.includes(contactId)} onClick={() => handleSelected(contactId)} />
 				</Table.Cell>
 				<Table.Cell>
-					<Link to={`/detail/${contact.contactId}`}>{contact.name}</Link>
+					<Link to={`/detail/${contactId}`}>{name}</Link>
 				</Table.Cell>
-				<Table.Cell>{contact.address}</Table.Cell>
-				<Table.Cell>{contact.city}</Table.Cell>
-				{contact.numbers.map((number) => (
+				<Table.Cell>{address}</Table.Cell>
+				<Table.Cell>{city}</Table.Cell>
+				{numbers.map((number) => (
 					<Table.Cell key={number} style={{ display: 'flex', justifyContent: 'space-around' }}>
 						<span>{number}</span>
 						<Icon onClick={() => removeNumber({ contact, number })} name="trash" style={{ cursor: 'pointer' }} />
@@ -34,13 +35,13 @@ const TableBody = ({ numberData, removeNumber, textNumber, callNumber }) => {
 	return <Table.Body>{rows}</Table.Body>;
 };
 
-const ListView = ({ numberData, removeNumber, textNumber, callNumber }) => {
+const ListView = ({ numberData, removeNumber, textNumber, callNumber, handleSelected, selected }) => {
 	return (
 		<Table celled>
 			<Table.Header>
 				<Table.Row>
 					<Table.HeaderCell>
-						<Checkbox />
+						<Checkbox onClick={() => handleSelected('all')} />
 					</Table.HeaderCell>
 					<Table.HeaderCell>Name</Table.HeaderCell>
 					<Table.HeaderCell>Address</Table.HeaderCell>
@@ -48,7 +49,14 @@ const ListView = ({ numberData, removeNumber, textNumber, callNumber }) => {
 					<Table.HeaderCell>Numbers</Table.HeaderCell>
 				</Table.Row>
 			</Table.Header>
-			<TableBody numberData={numberData} removeNumber={removeNumber} textNumber={textNumber} callNumber={callNumber} />
+			<TableBody
+				numberData={numberData}
+				removeNumber={removeNumber}
+				textNumber={textNumber}
+				callNumber={callNumber}
+				handleSelected={handleSelected}
+				selected={selected}
+			/>
 		</Table>
 	);
 };
