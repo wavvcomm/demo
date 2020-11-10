@@ -48,15 +48,7 @@ const App = () => {
 	const openWavvMessenger = () => {
 		const params = {
 			contactView: false,
-			contact: {
-				contactId: '123',
-				numbers: ['8444545111', '5555554321'],
-				name: 'George Costanza',
-				address: '2880 Broadway',
-				city: 'New York',
-				avatarUrl: 'https://www.example.com/image.jpg',
-				subheading: 'Vandelay Industries',
-			},
+			contact: numbers[0],
 		};
 
 		openMessenger(params);
@@ -67,7 +59,7 @@ const App = () => {
 			<Nav>
 				<div>WAVV Demo</div>
 				<NavItem>
-					<Button size="big" content="Open Messenger" onClick={() => openWavvMessenger()} />
+					<Button primary size="mini" content="Open Messenger" onClick={openWavvMessenger} />
 				</NavItem>
 			</Nav>
 			<Container>
