@@ -57,8 +57,10 @@ const App = () => {
 	};
 
 	const deleteContact = ({ contactId, skip = false }) => {
-		const updatedContacts = contactList.filter((contact) => contact.contactId !== contactId);
-		setContacts(updatedContacts);
+		if (!skip) {
+			const updatedContacts = contactList.filter((contact) => contact.contactId !== contactId);
+			setContacts(updatedContacts);
+		}
 		removeContact({ contactId, hangup: skip, resume: skip });
 	};
 
