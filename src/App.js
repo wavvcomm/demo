@@ -20,8 +20,8 @@ const App = () => {
 		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
 
 		try {
-			init({ server: 'stage1' });
-			auth({ token });
+			await init({ server: 'stage1' });
+			await auth({ token });
 		} catch (error) {
 			console.error(error);
 		}
@@ -46,12 +46,7 @@ const App = () => {
 		console.log(index);
 	};
 	const openWavvMessenger = () => {
-		const params = {
-			contactView: false,
-			contact: numbers[0],
-		};
-
-		openMessenger(params);
+		openMessenger();
 	};
 
 	return (
