@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
 import styled from '@emotion/styled';
 import { init, auth } from '@wavv/core';
-import { startCampaign, callPhone } from '@wavv/dialer';
+import { startCampaign, callPhone, addPhone, removePhone, removeContact } from '@wavv/dialer';
 import { openMessengerThread, openMessenger } from '@wavv/messenger';
 import { Container, Button } from 'semantic-ui-react';
 import { Route, Switch } from 'react-router-dom';
@@ -12,7 +12,7 @@ import ListView from './ListView';
 import DetailView from './DetailView';
 
 const App = () => {
-	const [numbers, setNumbers] = useState(contacts);
+	const [contactList, setContacts] = useState(contacts);
 	const [selected, setSelected] = useState([]);
 
 	const authWavv = async () => {
@@ -34,16 +34,43 @@ const App = () => {
 		authWavv();
 	}, []);
 
-	const removeNumber = (index) => {
-		const newNumbers = numbers.filter((number, i) => {
-			return i !== index;
+	const removeNumber = ({ contactId, number }) => {
+		const updatedContacts = contactList.map((contact) => {
+			if (contact.contactId === contactId) {
+				const filteredNumbers = contact.numbers.filter((num) => num !== number);
+				return { ...contact, numbers: filteredNumbers };
+			}
+			return contact;
 		});
-		setNumbers(newNumbers);
+		setContacts(updatedContacts);
+		removePhone({ contactId, number });
 	};
+
+	const addNumber = ({ contactId, number }) => {
+		const updatedContacts = contactList.map((contact) => {
+			if (contact.contactId === contactId) {
+				const newNumbers = [...contact.numbers, number];
+				return { ...contact, numbers: newNumbers };
+			}
+			return contact;
+		});
+		setContacts(updatedContacts);
+		addPhone({ contactId, number });
+	};
+
+	const deleteContact = ({ contactId, skip = false }) => {
+		if (!skip) {
+			const updatedContacts = contactList.filter((contact) => contact.contactId !== contactId);
+			setContacts(updatedContacts);
+		}
+		removeContact({ contactId, hangup: skip, resume: skip });
+	};
+
 	const textNumber = (params) => {
 		console.log(params);
 		openMessengerThread(params);
 	};
+
 	const callNumber = (ops) => {
 		// add Wavv calling functionality
 		callPhone(ops);
@@ -51,7 +78,7 @@ const App = () => {
 	};
 
 	const handleStart = async () => {
-		const filteredContacts = numbers.filter((number) => selected.includes(number.contactId));
+		const filteredContacts = contactList.filter((contact) => selected.includes(contact.contactId));
 		try {
 			startCampaign({ contacts: filteredContacts });
 		} catch (error) {
@@ -62,14 +89,15 @@ const App = () => {
 	const handleSelected = (param) => {
 		let newSelected = [...selected];
 		if (param === 'all') {
-			if (newSelected.length === numbers.length) newSelected = [];
-			else newSelected = numbers.map((number) => number.contactId);
+			if (newSelected.length === contactList.length) newSelected = [];
+			else newSelected = contactList.map((contact) => contact.contactId);
 		} else {
 			if (newSelected.includes(param)) newSelected = newSelected.filter((selected) => selected !== param);
 			else newSelected.push(param);
 		}
 		setSelected(newSelected);
 	};
+
 	const openWavvMessenger = () => {
 		openMessenger();
 	};
@@ -93,8 +121,10 @@ const App = () => {
 						render={(props) => (
 							<ListView
 								{...props}
-								numberData={numbers}
+								contacts={contactList}
+								removeContact={deleteContact}
 								removeNumber={removeNumber}
+								addNumber={addNumber}
 								textNumber={textNumber}
 								callNumber={callNumber}
 								handleSelected={handleSelected}
