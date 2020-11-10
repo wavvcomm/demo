@@ -3,9 +3,17 @@ import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
 import styled from '@emotion/styled';
 import { init, auth } from '@wavv/core';
-import { startCampaign, callPhone, addPhone, removePhone, removeContact } from '@wavv/dialer';
+import {
+	startCampaign,
+	callPhone,
+	addPhone,
+	removePhone,
+	removeContact,
+	addDncNumber,
+	removeDncNumber,
+} from '@wavv/dialer';
 import { openMessengerThread, openMessenger } from '@wavv/messenger';
-import { Container, Button } from 'semantic-ui-react';
+import { Container, Button, Dropdown, Modal, Input } from 'semantic-ui-react';
 import { Route, Switch } from 'react-router-dom';
 import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
 import ListView from './ListView';
@@ -15,6 +23,8 @@ import { registerCallbacks } from './utils';
 const App = () => {
 	const [contactList, setContacts] = useState(contacts);
 	const [selected, setSelected] = useState([]);
+	const [dncAction, setDncAction] = useState('');
+	const [dncNumber, setDncNumber] = useState('');
 
 	const authWavv = async () => {
 		const issuer = VENDOR_ID;
@@ -104,11 +114,35 @@ const App = () => {
 		openMessenger();
 	};
 
+	const reset = () => {
+		setDncAction('');
+		setDncNumber('');
+	};
+
 	return (
 		<div>
 			<Nav>
 				WAVV Demo
 				<NavItems>
+					<Dropdown text="DNC Actions" button>
+						<Dropdown.Menu>
+							<Dropdown.Item
+								onClick={() => {
+									setDncAction('Remove');
+								}}
+							>
+								Remove
+							</Dropdown.Item>
+							<Dropdown.Item
+								onClick={() => {
+									setDncAction('Add');
+								}}
+							>
+								Add
+							</Dropdown.Item>
+						</Dropdown.Menu>
+					</Dropdown>
+
 					<Button content="Open Messenger" onClick={openWavvMessenger} />
 					<Button primary disabled={!selected.length} onClick={handleStart} content="Start Campaign" />
 				</NavItems>
@@ -136,6 +170,32 @@ const App = () => {
 					/>
 					<Route exact path="/detail/:id" component={DetailView} />
 				</Switch>
+				<Modal onClose={() => setDncAction('')} open={!!dncAction} size="mini">
+					<Modal.Header>{`DNC List: ${dncAction} Number`}</Modal.Header>
+					<Modal.Content>
+						<Input value={dncNumber} onChange={({ target }) => setDncNumber(target.value)} placeholder="Number" />
+					</Modal.Content>
+					<Modal.Actions>
+						<Button
+							onClick={() => {
+								setDncAction('');
+							}}
+						>
+							Cancel
+						</Button>
+						<Button
+							onClick={() => {
+								if (dncAction === 'Remove') {
+									removeDncNumber({ number: dncNumber });
+								} else addDncNumber({ number: dncNumber });
+								reset();
+							}}
+							positive
+						>
+							{dncAction}
+						</Button>
+					</Modal.Actions>
+				</Modal>
 			</Container>
 		</div>
 	);
@@ -155,6 +215,7 @@ const Nav = styled.div({
 const NavItems = styled.div({
 	display: 'flex',
 	alignItems: 'center',
+	zIndex: 1000,
 });
 
 export default App;
