@@ -10,7 +10,9 @@ const TableBody = ({ numberData, removeNumber, textNumber, callNumber }) => {
 					<Checkbox />
 				</Table.Cell>
 				<Table.Cell>
-					<Link to={`/detail/${contact.contactId}`}>{contact.name}</Link>
+					<Link className="detailsLink" to={`/detail/${contact.contactId}`}>
+						{contact.name}
+					</Link>
 				</Table.Cell>
 				<Table.Cell>{contact.address}</Table.Cell>
 				<Table.Cell>{contact.city}</Table.Cell>
