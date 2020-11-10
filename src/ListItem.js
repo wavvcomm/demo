@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
-import { Table, Icon, Checkbox, Modal, Input, Button } from 'semantic-ui-react';
+import { Table, Icon, Checkbox, Modal, Input, Button, Dropdown } from 'semantic-ui-react';
 
-const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber, callNumber }) => {
+const ListItem = ({
+	contact,
+	removeContact,
+	removeNumber,
+	addNumber,
+	textNumber,
+	callNumber,
+	handleSelected,
+	selected,
+}) => {
 	const [newNumber, setNewNumber] = useState('');
 	const [open, setOpen] = useState(false);
 	const reset = () => {
@@ -14,7 +23,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 	return (
 		<Table.Row key={contactId}>
 			<Table.Cell collapsing>
-				<Checkbox />
+				<Checkbox checked={selected.includes(contactId)} onClick={() => handleSelected(contactId)} />
 			</Table.Cell>
 			<Table.Cell collapsing>
 				<Icon onClick={() => removeContact({ contactId })} name="trash" style={{ cursor: 'pointer' }} />
@@ -30,11 +39,12 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 					<Number key={number}>
 						<span>{number}</span>
 						<Icon onClick={() => removeNumber({ contactId, number })} name="close" style={{ cursor: 'pointer' }} />
-						<Icon
-							onClick={() => textNumber({ contactId, number })}
-							name="comment alternate"
-							style={{ cursor: 'pointer' }}
-						/>
+						<Dropdown icon="comment alternate" className="icon">
+							<Dropdown.Menu>
+								<Dropdown.Item onClick={() => textNumber({ contact, number, dock: false })}>Modal</Dropdown.Item>
+								<Dropdown.Item onClick={() => textNumber({ contact, number, dock: true })}>Dock</Dropdown.Item>
+							</Dropdown.Menu>
+						</Dropdown>
 						<Icon onClick={() => callNumber({ contactId, number })} name="phone" style={{ cursor: 'pointer' }} />
 					</Number>
 				))}

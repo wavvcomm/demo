@@ -2,13 +2,22 @@ import React from 'react';
 import { Table, Checkbox } from 'semantic-ui-react';
 import ListItem from './ListItem';
 
-const ListView = ({ contacts, removeContact, removeNumber, addNumber, textNumber, callNumber }) => {
+const ListView = ({
+	contacts,
+	removeContact,
+	removeNumber,
+	addNumber,
+	textNumber,
+	callNumber,
+	handleSelected,
+	selected,
+}) => {
 	return (
 		<Table celled>
 			<Table.Header>
 				<Table.Row>
 					<Table.HeaderCell>
-						<Checkbox />
+						<Checkbox onClick={() => handleSelected('all')} />
 					</Table.HeaderCell>
 					<Table.HeaderCell>Remove/Skip</Table.HeaderCell>
 					<Table.HeaderCell>Name</Table.HeaderCell>
@@ -28,6 +37,8 @@ const ListView = ({ contacts, removeContact, removeNumber, addNumber, textNumber
 						addNumber={addNumber}
 						textNumber={textNumber}
 						callNumber={callNumber}
+						handleSelected={handleSelected}
+						selected={selected}
 					/>
 				))}
 			</Table.Body>
