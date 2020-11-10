@@ -56,10 +56,10 @@ const App = () => {
 		addPhone({ contactId, number });
 	};
 
-	const deleteContact = ({ contactId }) => {
+	const deleteContact = ({ contactId, skip = false }) => {
 		const updatedContacts = contactList.filter((contact) => contact.contactId !== contactId);
 		setContacts(updatedContacts);
-		removeContact({ contactId, hangup: true, resume: true });
+		removeContact({ contactId, hangup: skip, resume: skip });
 	};
 
 	const textNumber = (index) => {

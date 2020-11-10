@@ -18,7 +18,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 			</Table.Cell>
 			<Table.Cell collapsing>
 				<Icon onClick={() => removeContact({ contactId })} name="trash" style={{ cursor: 'pointer' }} />
-				<Icon name="close" style={{ cursor: 'pointer' }} />
+				<Icon onClick={() => removeContact({ contactId, skip: true })} name="close" style={{ cursor: 'pointer' }} />
 			</Table.Cell>
 			<Table.Cell>
 				<Link to={`/detail/${contactId}`}>{name}</Link>
