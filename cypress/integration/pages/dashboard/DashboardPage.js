@@ -1,6 +1,8 @@
 /// <reference types="cypress" />
 
-const tableRows = 'table tr';
+const tableRows = 'table tbody tr';
+const rowMessagingIcon = '.comment';
+const messagingClientModal = '#storm-frame-app';
 
 class DashboardPage {
 	visit() {
@@ -12,7 +14,19 @@ class DashboardPage {
 	}
 
 	clickMessagingIcon(row) {
-		cy.get(row).find('.comment').click();
+		cy.get(row).find(rowMessagingIcon).click();
+	}
+
+	getTableRow(rowNum) {
+		return cy.get(tableRows).eq(rowNum);
+	}
+
+	clickMessagingOnTableRow(rowNum) {
+		cy.get(tableRows).eq(rowNum).find(rowMessagingIcon).click();
+	}
+
+	getMessagingModal() {
+		return cy.get(messagingClientModal);
 	}
 }
 
