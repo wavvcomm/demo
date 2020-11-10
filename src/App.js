@@ -10,6 +10,7 @@ import { Route, Switch } from 'react-router-dom';
 import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
 import ListView from './ListView';
 import DetailView from './DetailView';
+import { registerCallbacks } from './utils';
 
 const App = () => {
 	const [contactList, setContacts] = useState(contacts);
@@ -25,6 +26,7 @@ const App = () => {
 		try {
 			await init({ server: 'stage1' });
 			await auth({ token });
+			registerCallbacks();
 		} catch (error) {
 			console.error(error);
 		}
