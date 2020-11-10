@@ -2,11 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
 import styled from '@emotion/styled';
-import { Container, Grid, Button, Header } from 'semantic-ui-react';
 import { init, auth } from '@wavv/core';
-import { startCampaign } from '@wavv/dialer';
-import { openMessenger } from '@wavv/messenger';
-import { callPhone } from '@wavv/dialer';
+import { startCampaign, callPhone } from '@wavv/dialer';
+import { openMessengerThread, openMessenger } from '@wavv/messenger';
+import { Container, Button } from 'semantic-ui-react';
 import { Route, Switch } from 'react-router-dom';
 import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
 import ListView from './ListView';
@@ -24,8 +23,8 @@ const App = () => {
 		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
 
 		try {
-			init({ server: 'stage1' });
-			auth({ token });
+			await init({ server: 'stage1' });
+			await auth({ token });
 		} catch (error) {
 			console.error(error);
 		}
@@ -41,23 +40,9 @@ const App = () => {
 		});
 		setNumbers(newNumbers);
 	};
-	const textNumber = (index) => {
-		// add Wavv messaging functionality
-		const params = {
-			contactView: true,
-			contact: {
-				contactId: '123',
-				numbers: ['8444545111', '5555554321'],
-				name: 'George Costanza',
-				address: '2880 Broadway',
-				city: 'New York',
-				avatarUrl: 'https://www.example.com/image.jpg',
-				subheading: 'Vandelay Industries',
-			},
-		};
-
-		openMessenger(params);
-		console.log(index);
+	const textNumber = (params) => {
+		console.log(params);
+		openMessengerThread(params);
 	};
 	const callNumber = (ops) => {
 		// add Wavv calling functionality
@@ -85,14 +70,18 @@ const App = () => {
 		}
 		setSelected(newSelected);
 	};
+	const openWavvMessenger = () => {
+		openMessenger();
+	};
 
 	return (
 		<div>
 			<Nav>
 				WAVV Demo
-				<Button disabled={!selected.length} onClick={handleStart}>
-					Start Campaign
-				</Button>
+				<NavItems>
+					<Button content="Open Messenger" onClick={openWavvMessenger} />
+					<Button primary disabled={!selected.length} onClick={handleStart} content="Start Campaign" />
+				</NavItems>
 			</Nav>
 			<div id="storm-dialer-bar" />
 			<div id="storm-dialer-mini" />
@@ -129,6 +118,11 @@ const Nav = styled.div({
 	backgroundColor: '#EAEAEA',
 	fontSize: 30,
 	padding: 20,
+});
+
+const NavItems = styled.div({
+	display: 'flex',
+	alignItems: 'center',
 });
 
 export default App;

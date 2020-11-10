@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Table, Icon, Checkbox } from 'semantic-ui-react';
+import { Dropdown, Table, Icon, Checkbox } from 'semantic-ui-react';
 
 const TableBody = ({ numberData, removeNumber, textNumber, callNumber, handleSelected, selected }) => {
-	const rows = numberData.map(({ contactId, name, address, city, numbers }) => {
+	const rows = numberData.map((contact) => {
+		const { contactId, name, address, city, numbers } = contact;
 		return (
 			<Table.Row key={contactId}>
 				<Table.Cell collapsing>
@@ -17,13 +18,14 @@ const TableBody = ({ numberData, removeNumber, textNumber, callNumber, handleSel
 				{numbers.map((number) => (
 					<Table.Cell key={number} style={{ display: 'flex', justifyContent: 'space-around' }}>
 						<span>{number}</span>
-						<Icon onClick={() => removeNumber({ contactId, number })} name="trash" style={{ cursor: 'pointer' }} />
-						<Icon
-							onClick={() => textNumber({ contactId, number })}
-							name="comment alternate"
-							style={{ cursor: 'pointer' }}
-						/>
-						<Icon onClick={() => callNumber({ contactId, number })} name="phone" style={{ cursor: 'pointer' }} />
+						<Icon onClick={() => removeNumber({ contact, number })} name="trash" style={{ cursor: 'pointer' }} />
+						<Dropdown icon="comment alternate" className="icon">
+							<Dropdown.Menu>
+								<Dropdown.Item onClick={() => textNumber({ contact, number, dock: false })}>Modal</Dropdown.Item>
+								<Dropdown.Item onClick={() => textNumber({ contact, number, dock: true })}>Dock</Dropdown.Item>
+							</Dropdown.Menu>
+						</Dropdown>
+						<Icon onClick={() => callNumber({ contact, number })} name="phone" style={{ cursor: 'pointer' }} />
 					</Table.Cell>
 				))}
 			</Table.Row>
