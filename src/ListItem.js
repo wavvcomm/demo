@@ -30,7 +30,9 @@ const ListItem = ({
 				<Icon onClick={() => removeContact({ contactId, skip: true })} name="close" style={{ cursor: 'pointer' }} />
 			</Table.Cell>
 			<Table.Cell>
-				<Link to={`/detail/${contactId}`}>{name}</Link>
+				<Link className="detailsLink" to={`/detail/${contactId}`}>
+					{name}
+				</Link>
 			</Table.Cell>
 			<Table.Cell>{address}</Table.Cell>
 			<Table.Cell>{city}</Table.Cell>
