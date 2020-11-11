@@ -33,8 +33,7 @@ describe('Home Page', () => {
 	});
 
 	it('can add new numbers to leads', () => {
-		home.addNewNumberToTableRow(0, '8012438376');
-		console.log(home.getPhoneNumbersOnTableRow(0));
-		home.getPhoneNumbersOnTableRow(0).should('contain.text', '8012438376');
+		home.addNewNumberToTableRow(0, '8018018018');
+		home.getPhoneNumbersOnTableRow(0).should('contain.text', '8018018018');
 	});
 });
