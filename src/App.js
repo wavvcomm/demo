@@ -3,17 +3,28 @@ import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
 import styled from '@emotion/styled';
 import { init, auth } from '@wavv/core';
-import { startCampaign, callPhone } from '@wavv/dialer';
+import {
+	startCampaign,
+	callPhone,
+	addPhone,
+	removePhone,
+	removeContact,
+	addDncNumber,
+	removeDncNumber,
+} from '@wavv/dialer';
 import { openMessengerThread, openMessenger } from '@wavv/messenger';
-import { Container, Button } from 'semantic-ui-react';
+import { Container, Button, Dropdown, Modal, Input } from 'semantic-ui-react';
 import { Route, Switch } from 'react-router-dom';
 import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
 import ListView from './ListView';
 import DetailView from './DetailView';
+import { registerCallbacks } from './utils';
 
 const App = () => {
-	const [numbers, setNumbers] = useState(contacts);
+	const [contactList, setContacts] = useState(contacts);
 	const [selected, setSelected] = useState([]);
+	const [dncAction, setDncAction] = useState('');
+	const [dncNumber, setDncNumber] = useState('');
 
 	const authWavv = async () => {
 		const issuer = VENDOR_ID;
@@ -25,6 +36,7 @@ const App = () => {
 		try {
 			await init({ server: 'stage1' });
 			await auth({ token });
+			registerCallbacks();
 		} catch (error) {
 			console.error(error);
 		}
@@ -34,16 +46,43 @@ const App = () => {
 		authWavv();
 	}, []);
 
-	const removeNumber = (index) => {
-		const newNumbers = numbers.filter((number, i) => {
-			return i !== index;
+	const removeNumber = ({ contactId, number }) => {
+		const updatedContacts = contactList.map((contact) => {
+			if (contact.contactId === contactId) {
+				const filteredNumbers = contact.numbers.filter((num) => num !== number);
+				return { ...contact, numbers: filteredNumbers };
+			}
+			return contact;
 		});
-		setNumbers(newNumbers);
+		setContacts(updatedContacts);
+		removePhone({ contactId, number });
 	};
+
+	const addNumber = ({ contactId, number }) => {
+		const updatedContacts = contactList.map((contact) => {
+			if (contact.contactId === contactId) {
+				const newNumbers = [...contact.numbers, number];
+				return { ...contact, numbers: newNumbers };
+			}
+			return contact;
+		});
+		setContacts(updatedContacts);
+		addPhone({ contactId, number });
+	};
+
+	const deleteContact = ({ contactId, skip = false }) => {
+		if (!skip) {
+			const updatedContacts = contactList.filter((contact) => contact.contactId !== contactId);
+			setContacts(updatedContacts);
+		}
+		removeContact({ contactId, hangup: skip, resume: skip });
+	};
+
 	const textNumber = (params) => {
 		console.log(params);
 		openMessengerThread(params);
 	};
+
 	const callNumber = (ops) => {
 		// add Wavv calling functionality
 		callPhone(ops);
@@ -51,7 +90,7 @@ const App = () => {
 	};
 
 	const handleStart = async () => {
-		const filteredContacts = numbers.filter((number) => selected.includes(number.contactId));
+		const filteredContacts = contactList.filter((contact) => selected.includes(contact.contactId));
 		try {
 			startCampaign({ contacts: filteredContacts });
 		} catch (error) {
@@ -62,16 +101,22 @@ const App = () => {
 	const handleSelected = (param) => {
 		let newSelected = [...selected];
 		if (param === 'all') {
-			if (newSelected.length === numbers.length) newSelected = [];
-			else newSelected = numbers.map((number) => number.contactId);
+			if (newSelected.length === contactList.length) newSelected = [];
+			else newSelected = contactList.map((contact) => contact.contactId);
 		} else {
 			if (newSelected.includes(param)) newSelected = newSelected.filter((selected) => selected !== param);
 			else newSelected.push(param);
 		}
 		setSelected(newSelected);
 	};
+
 	const openWavvMessenger = () => {
 		openMessenger();
+	};
+
+	const reset = () => {
+		setDncAction('');
+		setDncNumber('');
 	};
 
 	return (
@@ -79,6 +124,25 @@ const App = () => {
 			<Nav>
 				WAVV Demo
 				<NavItems>
+					<Dropdown text="DNC Actions" button>
+						<Dropdown.Menu>
+							<Dropdown.Item
+								onClick={() => {
+									setDncAction('Remove');
+								}}
+							>
+								Remove
+							</Dropdown.Item>
+							<Dropdown.Item
+								onClick={() => {
+									setDncAction('Add');
+								}}
+							>
+								Add
+							</Dropdown.Item>
+						</Dropdown.Menu>
+					</Dropdown>
+
 					<Button content="Open Messenger" onClick={openWavvMessenger} />
 					<Button primary disabled={!selected.length} onClick={handleStart} content="Start Campaign" />
 				</NavItems>
@@ -93,8 +157,10 @@ const App = () => {
 						render={(props) => (
 							<ListView
 								{...props}
-								numberData={numbers}
+								contacts={contactList}
+								removeContact={deleteContact}
 								removeNumber={removeNumber}
+								addNumber={addNumber}
 								textNumber={textNumber}
 								callNumber={callNumber}
 								handleSelected={handleSelected}
@@ -104,6 +170,32 @@ const App = () => {
 					/>
 					<Route exact path="/detail/:id" component={DetailView} />
 				</Switch>
+				<Modal onClose={() => setDncAction('')} open={!!dncAction} size="mini">
+					<Modal.Header>{`DNC List: ${dncAction} Number`}</Modal.Header>
+					<Modal.Content>
+						<Input value={dncNumber} onChange={({ target }) => setDncNumber(target.value)} placeholder="Number" />
+					</Modal.Content>
+					<Modal.Actions>
+						<Button
+							onClick={() => {
+								setDncAction('');
+							}}
+						>
+							Cancel
+						</Button>
+						<Button
+							onClick={() => {
+								if (dncAction === 'Remove') {
+									removeDncNumber({ number: dncNumber });
+								} else addDncNumber({ number: dncNumber });
+								reset();
+							}}
+							positive
+						>
+							{dncAction}
+						</Button>
+					</Modal.Actions>
+				</Modal>
 			</Container>
 		</div>
 	);
@@ -123,6 +215,7 @@ const Nav = styled.div({
 const NavItems = styled.div({
 	display: 'flex',
 	alignItems: 'center',
+	zIndex: 1000,
 });
 
 export default App;
