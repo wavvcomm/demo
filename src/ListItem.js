@@ -39,7 +39,7 @@ const ListItem = ({
 			<Table.Cell>
 				{numbers.map((number) => (
 					<Number key={number}>
-						<span>{number}</span>
+						<span className="leadPhoneNumber">{number}</span>
 						<Icon onClick={() => removeNumber({ contactId, number })} name="close" style={{ cursor: 'pointer' }} />
 						<Dropdown icon="comment alternate" className="icon">
 							<Dropdown.Menu>

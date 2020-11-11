@@ -4,6 +4,8 @@ const tableRows = 'table tbody tr';
 const rowMessagingIcon = '.comment';
 const messagingClientModal = '#storm-frame-app';
 const tableHeader = 'table thead tr';
+const tableHeaderCheckbox = 'table thead .checkbox';
+const rowAddNumberIcon = '.plus';
 
 class HomePage {
 	visit() {
@@ -41,6 +43,21 @@ class HomePage {
 
 	getStartCampaignButton() {
 		return cy.get('button').contains('Start Campaign');
+	}
+
+	clickSelectAllInput() {
+		cy.get(tableHeaderCheckbox).click();
+	}
+
+	addNewNumberToTableRow(rowNum, phoneNumber) {
+		cy.get(tableRows).eq(rowNum).find(rowAddNumberIcon).click();
+		cy.get('.modals.active').contains('Add Number').should('be.visible');
+		cy.get('.modals.active input').type(phoneNumber);
+		cy.get('.positive.button').click();
+	}
+
+	getPhoneNumbersOnTableRow(rowNum) {
+		return cy.get(tableRows).eq(rowNum).find('.leadPhoneNumber');
 	}
 }
 
