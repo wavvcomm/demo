@@ -48,3 +48,6 @@ Thumbs.db
 *.mov
 *.wmv
 
+# Cypress Ignore Files
+cypress/videos/*
+

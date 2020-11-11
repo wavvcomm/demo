@@ -30,14 +30,16 @@ const ListItem = ({
 				<Icon onClick={() => removeContact({ contactId, skip: true })} name="close" style={{ cursor: 'pointer' }} />
 			</Table.Cell>
 			<Table.Cell>
-				<Link to={`/detail/${contactId}`}>{name}</Link>
+				<Link className="detailsLink" to={`/detail/${contactId}`}>
+					{name}
+				</Link>
 			</Table.Cell>
 			<Table.Cell>{address}</Table.Cell>
 			<Table.Cell>{city}</Table.Cell>
 			<Table.Cell>
 				{numbers.map((number) => (
 					<Number key={number}>
-						<span>{number}</span>
+						<span className="leadPhoneNumber">{number}</span>
 						<Icon onClick={() => removeNumber({ contactId, number })} name="close" style={{ cursor: 'pointer' }} />
 						<Dropdown icon="comment alternate" className="icon">
 							<Dropdown.Menu>
