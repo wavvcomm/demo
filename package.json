@@ -32,7 +32,10 @@
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
-		"lint": "pretty-quick --staged && lint-staged"
+		"lint": "pretty-quick --staged && lint-staged",
+		"cypress:open": "cypress open --browser chrome",
+		"cypress:run": "cypress run --browser chrome",
+		"cypress:run:headless": "cypress run --browser chrome --headless"
 	},
 	"browserslist": {
 		"production": [
