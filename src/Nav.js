@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { Button, Dropdown, Label, Menu } from 'semantic-ui-react';
-import { openMessenger } from '@wavv/messenger';
 import { Link } from 'react-router-dom';
 
 const Nav = ({ setDncAction, disableStart, startCampaign }) => {
+	const { openMessenger } = window.Storm;
 	return (
 		<NavBar>
 			<Link to="/" style={{ color: 'inherit' }}>

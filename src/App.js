@@ -1,22 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
-import { init, auth } from '@wavv/core';
-import {
-	startCampaign,
-	callPhone,
-	addPhone,
-	removePhone,
-	removeContact,
-	addDncNumber,
-	removeDncNumber,
-} from '@wavv/dialer';
-import { openMessengerThread } from '@wavv/messenger';
 import { Container, Button, Modal, Input } from 'semantic-ui-react';
 import { Route, Switch } from 'react-router-dom';
 import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
 import ListView from './ListView';
 import DetailView from './DetailView';
-import { registerCallbacks } from './utils';
 import Nav from './Nav';
 
 const App = () => {
@@ -24,6 +12,17 @@ const App = () => {
 	const [selected, setSelected] = useState([]);
 	const [dncAction, setDncAction] = useState('');
 	const [dncNumber, setDncNumber] = useState('');
+	const {
+		auth,
+		removePhone,
+		addPhone,
+		callPhone,
+		removeContact,
+		openMessengerThread,
+		startCampaign,
+		addDncNumber,
+		removeDncNumber,
+	} = window.Storm;
 
 	const authWavv = async () => {
 		const issuer = VENDOR_ID;
@@ -31,11 +30,9 @@ const App = () => {
 		const userId = VENDER_USER_ID;
 		const payload = { userId };
 		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
-
 		try {
-			await init({ server: 'stage1' });
 			await auth({ token });
-			registerCallbacks();
+			// registerCallbacks();
 		} catch (error) {
 			console.error(error);
 		}
