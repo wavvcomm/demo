@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { Button, Dropdown } from 'semantic-ui-react';
+import { Button, Dropdown, Label, Menu } from 'semantic-ui-react';
 import { openMessenger } from '@wavv/messenger';
 import { Link } from 'react-router-dom';
 
@@ -10,29 +10,25 @@ const Nav = ({ setDncAction, disableStart, startCampaign }) => {
 			<Link to="/" style={{ color: 'inherit' }}>
 				WAVV Demo
 			</Link>
-			<NavItems>
-				<Dropdown text="DNC Actions" button>
-					<Dropdown.Menu>
-						<Dropdown.Item
-							onClick={() => {
-								setDncAction('Remove');
-							}}
-						>
-							Remove
-						</Dropdown.Item>
-						<Dropdown.Item
-							onClick={() => {
-								setDncAction('Add');
-							}}
-						>
-							Add
-						</Dropdown.Item>
-					</Dropdown.Menu>
-				</Dropdown>
-
-				<Button content="Open Messenger" onClick={openMessenger} />
-				<Button primary disabled={disableStart} onClick={startCampaign} content="Start Campaign" />
-			</NavItems>
+			<Menu secondary size="tiny" style={{ zIndex: 1000, marginTop: 0 }}>
+				<Menu.Item>
+					<Dropdown text="DNC Actions" button>
+						<Dropdown.Menu>
+							<Dropdown.Item onClick={() => setDncAction('Remove')}>Remove</Dropdown.Item>
+							<Dropdown.Item onClick={() => setDncAction('Add')}>Add</Dropdown.Item>
+						</Dropdown.Menu>
+					</Dropdown>
+				</Menu.Item>
+				<Menu.Item>
+					<Button onClick={openMessenger}>
+						Open Messenger
+						<Label color="red" circular floating content="34" />
+					</Button>
+				</Menu.Item>
+				<Menu.Item>
+					<Button primary disabled={disableStart} onClick={startCampaign} content="Start Campaign" />
+				</Menu.Item>
+			</Menu>
 		</NavBar>
 	);
 };
@@ -42,16 +38,9 @@ const NavBar = styled.div({
 	alignItems: 'center',
 	justifyContent: 'space-between',
 	width: '100%',
-	height: 50,
 	backgroundColor: '#EAEAEA',
 	fontSize: 30,
-	padding: 20,
-});
-
-const NavItems = styled.div({
-	display: 'flex',
-	alignItems: 'center',
-	zIndex: 1000,
+	padding: '15px 20px',
 });
 
 export default Nav;
