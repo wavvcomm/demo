@@ -1,24 +1,11 @@
-/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
-import styled from '@emotion/styled';
-import { init, auth } from '@wavv/core';
-import {
-	startCampaign,
-	callPhone,
-	addPhone,
-	removePhone,
-	removeContact,
-	addDncNumber,
-	removeDncNumber,
-} from '@wavv/dialer';
-import { openMessengerThread, openMessenger } from '@wavv/messenger';
-import { Container, Button, Dropdown, Modal, Input } from 'semantic-ui-react';
+import { Container, Button, Modal, Input } from 'semantic-ui-react';
 import { Route, Switch } from 'react-router-dom';
 import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
 import ListView from './ListView';
 import DetailView from './DetailView';
-import { registerCallbacks } from './utils';
+import Nav from './Nav';
 
 const App = () => {
 	const [contactList, setContacts] = useState(contacts);
@@ -26,17 +13,25 @@ const App = () => {
 	const [dncAction, setDncAction] = useState('');
 	const [dncNumber, setDncNumber] = useState('');
 
+	const loadSnippet = () =>
+		new Promise((resolve, reject) => {
+			const server = 'devstorm';
+			const script = document.createElement('script');
+			script.src = `https://${server}.stormapp.com/storm.js`;
+			script.onload = () => resolve();
+			script.onerror = (err) => reject(err);
+			document.body.appendChild(script);
+		});
+
 	const authWavv = async () => {
 		const issuer = VENDOR_ID;
 		const signature = APP_ID;
 		const userId = VENDER_USER_ID;
 		const payload = { userId };
 		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
-
 		try {
-			await init({ server: 'stage1' });
-			await auth({ token });
-			registerCallbacks();
+			await loadSnippet();
+			window.Storm.auth({ token });
 		} catch (error) {
 			console.error(error);
 		}
@@ -55,7 +50,7 @@ const App = () => {
 			return contact;
 		});
 		setContacts(updatedContacts);
-		removePhone({ contactId, number });
+		window.Storm.removePhone({ contactId, number });
 	};
 
 	const addNumber = ({ contactId, number }) => {
@@ -67,7 +62,7 @@ const App = () => {
 			return contact;
 		});
 		setContacts(updatedContacts);
-		addPhone({ contactId, number });
+		window.Storm.addPhone({ contactId, number });
 	};
 
 	const deleteContact = ({ contactId, skip = false }) => {
@@ -75,24 +70,24 @@ const App = () => {
 			const updatedContacts = contactList.filter((contact) => contact.contactId !== contactId);
 			setContacts(updatedContacts);
 		}
-		removeContact({ contactId, hangup: skip, resume: skip });
+		window.Storm.removeContact({ contactId, hangup: skip, resume: skip });
 	};
 
 	const textNumber = (params) => {
 		console.log(params);
-		openMessengerThread(params);
+		window.Storm.openMessengerThread(params);
 	};
 
 	const callNumber = (ops) => {
 		// add Wavv calling functionality
-		callPhone(ops);
+		window.Storm.callPhone(ops);
 		console.log(ops);
 	};
 
 	const handleStart = async () => {
 		const filteredContacts = contactList.filter((contact) => selected.includes(contact.contactId));
 		try {
-			startCampaign({ contacts: filteredContacts });
+			window.Storm.startCampaign({ contacts: filteredContacts });
 		} catch (error) {
 			console.error(error);
 		}
@@ -103,15 +98,13 @@ const App = () => {
 		if (param === 'all') {
 			if (newSelected.length === contactList.length) newSelected = [];
 			else newSelected = contactList.map((contact) => contact.contactId);
+		} else if (newSelected.includes(param)) {
+			newSelected = newSelected.filter((item) => item !== param);
 		} else {
-			if (newSelected.includes(param)) newSelected = newSelected.filter((selected) => selected !== param);
-			else newSelected.push(param);
+			newSelected.push(param);
 		}
-		setSelected(newSelected);
-	};
 
-	const openWavvMessenger = () => {
-		openMessenger();
+		setSelected(newSelected);
 	};
 
 	const reset = () => {
@@ -121,32 +114,7 @@ const App = () => {
 
 	return (
 		<div>
-			<Nav>
-				WAVV Demo
-				<NavItems>
-					<Dropdown text="DNC Actions" button>
-						<Dropdown.Menu>
-							<Dropdown.Item
-								onClick={() => {
-									setDncAction('Remove');
-								}}
-							>
-								Remove
-							</Dropdown.Item>
-							<Dropdown.Item
-								onClick={() => {
-									setDncAction('Add');
-								}}
-							>
-								Add
-							</Dropdown.Item>
-						</Dropdown.Menu>
-					</Dropdown>
-
-					<Button content="Open Messenger" onClick={openWavvMessenger} />
-					<Button primary disabled={!selected.length} onClick={handleStart} content="Start Campaign" />
-				</NavItems>
-			</Nav>
+			<Nav disableStart={!selected.length} startCampaign={handleStart} setDncAction={setDncAction} />
 			<div id="storm-dialer-bar" />
 			<div id="storm-dialer-mini" />
 			<Container style={{ marginTop: 20 }}>
@@ -186,8 +154,8 @@ const App = () => {
 						<Button
 							onClick={() => {
 								if (dncAction === 'Remove') {
-									removeDncNumber({ number: dncNumber });
-								} else addDncNumber({ number: dncNumber });
+									window.Storm.removeDncNumber({ number: dncNumber });
+								} else window.Storm.addDncNumber({ number: dncNumber });
 								reset();
 							}}
 							positive
@@ -200,22 +168,5 @@ const App = () => {
 		</div>
 	);
 };
-
-const Nav = styled.div({
-	display: 'flex',
-	alignItems: 'center',
-	justifyContent: 'space-between',
-	width: '100%',
-	height: 50,
-	backgroundColor: '#EAEAEA',
-	fontSize: 30,
-	padding: 20,
-});
-
-const NavItems = styled.div({
-	display: 'flex',
-	alignItems: 'center',
-	zIndex: 1000,
-});
 
 export default App;
