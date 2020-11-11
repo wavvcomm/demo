@@ -4,7 +4,6 @@ import { Button, Dropdown, Label, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
 const Nav = ({ setDncAction, disableStart, startCampaign }) => {
-	const { openMessenger } = window.Storm;
 	return (
 		<NavBar>
 			<Link to="/" style={{ color: 'inherit' }}>
@@ -20,7 +19,7 @@ const Nav = ({ setDncAction, disableStart, startCampaign }) => {
 					</Dropdown>
 				</Menu.Item>
 				<Menu.Item>
-					<Button onClick={openMessenger}>
+					<Button onClick={() => window.Storm.openMessenger()}>
 						Open Messenger
 						<Label color="red" circular floating content="34" />
 					</Button>

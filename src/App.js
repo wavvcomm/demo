@@ -12,17 +12,16 @@ const App = () => {
 	const [selected, setSelected] = useState([]);
 	const [dncAction, setDncAction] = useState('');
 	const [dncNumber, setDncNumber] = useState('');
-	const {
-		auth,
-		removePhone,
-		addPhone,
-		callPhone,
-		removeContact,
-		openMessengerThread,
-		startCampaign,
-		addDncNumber,
-		removeDncNumber,
-	} = window.Storm;
+
+	const loadSnippet = () =>
+		new Promise((resolve, reject) => {
+			const server = 'devstorm';
+			const script = document.createElement('script');
+			script.src = `https://${server}.stormapp.com/storm.js`;
+			script.onload = () => resolve();
+			script.onerror = (err) => reject(err);
+			document.body.appendChild(script);
+		});
 
 	const authWavv = async () => {
 		const issuer = VENDOR_ID;
@@ -31,8 +30,8 @@ const App = () => {
 		const payload = { userId };
 		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
 		try {
-			await auth({ token });
-			// registerCallbacks();
+			await loadSnippet();
+			window.Storm.auth({ token });
 		} catch (error) {
 			console.error(error);
 		}
@@ -51,7 +50,7 @@ const App = () => {
 			return contact;
 		});
 		setContacts(updatedContacts);
-		removePhone({ contactId, number });
+		window.Storm.removePhone({ contactId, number });
 	};
 
 	const addNumber = ({ contactId, number }) => {
@@ -63,7 +62,7 @@ const App = () => {
 			return contact;
 		});
 		setContacts(updatedContacts);
-		addPhone({ contactId, number });
+		window.Storm.addPhone({ contactId, number });
 	};
 
 	const deleteContact = ({ contactId, skip = false }) => {
@@ -71,24 +70,24 @@ const App = () => {
 			const updatedContacts = contactList.filter((contact) => contact.contactId !== contactId);
 			setContacts(updatedContacts);
 		}
-		removeContact({ contactId, hangup: skip, resume: skip });
+		window.Storm.removeContact({ contactId, hangup: skip, resume: skip });
 	};
 
 	const textNumber = (params) => {
 		console.log(params);
-		openMessengerThread(params);
+		window.Storm.openMessengerThread(params);
 	};
 
 	const callNumber = (ops) => {
 		// add Wavv calling functionality
-		callPhone(ops);
+		window.Storm.callPhone(ops);
 		console.log(ops);
 	};
 
 	const handleStart = async () => {
 		const filteredContacts = contactList.filter((contact) => selected.includes(contact.contactId));
 		try {
-			startCampaign({ contacts: filteredContacts });
+			window.Storm.startCampaign({ contacts: filteredContacts });
 		} catch (error) {
 			console.error(error);
 		}
@@ -155,8 +154,8 @@ const App = () => {
 						<Button
 							onClick={() => {
 								if (dncAction === 'Remove') {
-									removeDncNumber({ number: dncNumber });
-								} else addDncNumber({ number: dncNumber });
+									window.Storm.removeDncNumber({ number: dncNumber });
+								} else window.Storm.addDncNumber({ number: dncNumber });
 								reset();
 							}}
 							positive
