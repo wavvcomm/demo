@@ -22,8 +22,9 @@ class HomePage {
 		return cy.get(tableRows).eq(rowNum);
 	}
 
-	clickMessagingOnTableRow(rowNum) {
-		cy.get(tableRows).eq(rowNum).find(rowMessagingIcon).click();
+	openMessagingOnTableRow(rowNum = 0, phoneNum = 0, modalOrDock = 'Modal') {
+		cy.get(tableRows).eq(rowNum).find(rowMessagingIcon).eq(phoneNum).click();
+		cy.get(tableRows).eq(rowNum).contains(modalOrDock).click();
 	}
 
 	getMessagingModal() {
@@ -36,6 +37,10 @@ class HomePage {
 
 	goToClientDetailsPage(rowNum) {
 		cy.get(tableRows).eq(rowNum).find('.detailsLink').click();
+	}
+
+	getStartCampaignButton() {
+		return cy.get('button').contains('Start Campaign');
 	}
 }
 

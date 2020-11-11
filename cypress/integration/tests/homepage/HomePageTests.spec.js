@@ -14,7 +14,7 @@ describe('Home Page', () => {
 
 	it('can open messaging window for a lead', () => {
 		home.visit();
-		home.clickMessagingOnTableRow(0);
+		home.openMessagingOnTableRow(0, 0);
 		home.getMessagingModal().should('be.visible');
 	});
 
@@ -23,5 +23,9 @@ describe('Home Page', () => {
 		home.getTableHeaders().contains('Address');
 		home.getTableHeaders().contains('City');
 		home.getTableHeaders().contains('Numbers');
+	});
+
+	it('cannot start campaign until lead', () => {
+		home.getStartCampaignButton().should('be.disabled');
 	});
 });
