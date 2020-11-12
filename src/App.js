@@ -215,7 +215,14 @@ const App = () => {
 						exact
 						path="/detail/:id"
 						component={(props) => (
-							<DetailView {...props} notes={notes} setNotes={setNotes} outcomes={outcomes} setOutcomes={setOutcomes} />
+							<DetailView
+								{...props}
+								notes={notes}
+								setNotes={setNotes}
+								outcomes={outcomes}
+								setOutcomes={setOutcomes}
+								unreadCounts={unreadCounts}
+							/>
 						)}
 					/>
 				</Switch>
