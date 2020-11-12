@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
 import { Container, Button, Modal, Input } from 'semantic-ui-react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
 import ListView from './ListView';
 import DetailView from './DetailView';
 import Nav from './Nav';
 
 const App = () => {
+	const history = useHistory();
 	const [contactList, setContacts] = useState(contacts);
 	const [selected, setSelected] = useState([]);
 	const [dncAction, setDncAction] = useState('');
@@ -40,6 +41,18 @@ const App = () => {
 	useEffect(() => {
 		authWavv();
 	}, []);
+
+	useEffect(() => {
+		if (window.Storm) {
+			window.Storm.onLinesChanged(({ lines }) => {
+				lines.forEach((call) => {
+					if (call.focused) {
+						history.push(`/detail/${call.contactId}`);
+					}
+				});
+			});
+		}
+	}, [window.Storm]);
 
 	const removeNumber = ({ contactId, number }) => {
 		const updatedContacts = contactList.map((contact) => {

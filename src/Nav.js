@@ -19,7 +19,7 @@ const Nav = ({ setDncAction, disableStart, startCampaign }) => {
 					</Dropdown>
 				</Menu.Item>
 				<Menu.Item>
-					<Button onClick={() => window.Storm.openMessenger()}>
+					<Button onClick={() => window.Storm.openMessenger({ dock: true })}>
 						Open Messenger
 						<Label color="red" circular floating content="34" />
 					</Button>

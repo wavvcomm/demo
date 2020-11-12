@@ -1,13 +1,14 @@
-export const VENDOR_ID = '00000000000000000000000000000000';
-export const APP_ID = 'GXkxpyuqT9kmTdMcbn4EWUatkjTSD5H8mqRZQSEz8JCPuKThquTdmw2GGt2iVMHf';
-export const VENDER_USER_ID = '11111';
+export const VENDOR_ID = '90d267ae9889abf5cb9e3539d213e99b';
+export const APP_ID = 'c1577a7e48dd721e5783851898c51e2bc62f84da7a40ccade2d872e7d8ce7fd2';
+export const VENDER_USER_ID = '1841521';
 export const contacts = [
 	{
 		contactId: '1',
-		numbers: ['(570) 387-0000', '(202) 965-9970'],
+		numbers: ['(208) 206-0861', '(202) 965-9970'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '10All circuits are busy now',
+		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1568401491/napoleon_djrmp5.png',
 	},
 	{
 		contactId: '2',
@@ -15,6 +16,7 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '15SIT requires deposit',
+		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png',
 	},
 	{
 		contactId: '3',
@@ -22,6 +24,7 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '1Number Disconnected',
+		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png',
 	},
 	{
 		contactId: '4',
@@ -29,6 +32,7 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '23Time and Temp recording',
+		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png',
 	},
 	{
 		contactId: '5',
