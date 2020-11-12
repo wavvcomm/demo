@@ -25,7 +25,7 @@ const ListItem = ({
 			<Table.Cell collapsing>
 				<Checkbox checked={selected.includes(contactId)} onClick={() => handleSelected(contactId)} />
 			</Table.Cell>
-			<Table.Cell collapsing>
+			<Table.Cell collapsing textAlign="center">
 				<Icon onClick={() => removeContact({ contactId })} name="trash" style={{ cursor: 'pointer' }} />
 				<Icon onClick={() => removeContact({ contactId, skip: true })} name="close" style={{ cursor: 'pointer' }} />
 			</Table.Cell>
@@ -49,7 +49,7 @@ const ListItem = ({
 					</Number>
 				))}
 			</Table.Cell>
-			<Table.Cell collapsing>
+			<Table.Cell collapsing textAlign="center">
 				<Modal
 					onClose={() => setOpen(false)}
 					onOpen={() => setOpen(true)}
