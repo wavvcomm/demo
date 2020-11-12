@@ -3,47 +3,22 @@ import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import _ from 'lodash';
 import { Card, Icon, Image, Button, Feed, Header, Modal, Input } from 'semantic-ui-react';
-import { contacts } from './constants';
+import { formatPhone } from './utils';
 
-const DetailView = ({ match, notes, setNotes, outcomes, setOutcomes }) => {
-	const [outcome, setOutcome] = useState(null);
+const DetailView = ({ contactList, setContacts, match, getContactById, stormLoaded, open, setOpen, numberDialing }) => {
 	const [note, setNote] = useState('');
-	const [open, setOpen] = useState(false);
-	const [newNumber, setNumber] = useState('');
-	const [name, setName] = useState('');
 	const { id } = match.params;
-	const contact = contacts.find((item) => item.contactId === id);
+	const contact = getContactById(id);
 
 	useEffect(() => {
-		if (window.Storm) {
-			window.Storm.onWaitingForContinue(({ waiting, number, contactId: cId }) => {
+		if (stormLoaded) {
+			window.Storm.onWaitingForContinue(({ waiting }) => {
 				if (waiting) {
 					setOpen(true);
-					setNumber(number);
-					const contactName = contacts.find((item) => item.contactId === cId).name;
-					setName(contactName);
 				}
 			});
-
-			window.Storm.onCallEnded((outcome) => {
-				const contactName = contacts.find((item) => item.contactId === outcome.contactId).name;
-				const newOutcome = { ...outcome, name: contactName };
-				setOutcome(newOutcome);
-			});
 		}
-	}, []);
-
-	useEffect(() => {
-		if (outcome) {
-			const newOutcomes = [...outcomes, outcome];
-			setOutcomes(_.uniq(newOutcomes));
-		}
-	}, [outcome]);
-
-	const reset = () => {
-		setNumber('');
-		setName('');
-	};
+	}, [stormLoaded]);
 
 	return (
 		<Container>
@@ -65,7 +40,7 @@ const DetailView = ({ match, notes, setNotes, outcomes, setOutcomes }) => {
 				<Card.Content extra>
 					{contact.numbers.map((number) => {
 						return (
-							<Number>
+							<Number key={number} dialing={formatPhone(numberDialing) === formatPhone(number)}>
 								{number}
 								<Button icon="phone" size="mini" onClick={() => window.Storm.callPhone({ number })} />
 								<Button
@@ -81,11 +56,11 @@ const DetailView = ({ match, notes, setNotes, outcomes, setOutcomes }) => {
 			<FeedContainer>
 				<Feed>
 					<Header as="h3">Call Notes</Header>
-					{notes.map(({ note: nte, time, number, name }) => (
-						<Feed.Event>
+					{contact.notes.map(({ note: nte, time }) => (
+						<Feed.Event key={time}>
 							<Feed.Content>
 								<Feed.Summary>
-									Note for {name} - {number}
+									Note
 									<Feed.Date>{time}</Feed.Date>
 								</Feed.Summary>
 								<Feed.Meta>{nte}</Feed.Meta>
@@ -97,11 +72,11 @@ const DetailView = ({ match, notes, setNotes, outcomes, setOutcomes }) => {
 			<FeedContainer>
 				<Feed>
 					<Header as="h3">Call Outcomes</Header>
-					{outcomes.map(({ number, name, duration, human, outcome }) => (
-						<Feed.Event>
+					{contact.callOutcomes.map(({ number, duration, human, outcome }) => (
+						<Feed.Event key={`${number} - ${duration} - ${outcome}`}>
 							<Feed.Content>
 								<Feed.Summary>
-									Outcome for {name} - {number}
+									{number}
 									<Feed.Date>Duration of call {duration}</Feed.Date>
 								</Feed.Summary>
 								<Feed.Meta>
@@ -113,10 +88,26 @@ const DetailView = ({ match, notes, setNotes, outcomes, setOutcomes }) => {
 					))}
 				</Feed>
 			</FeedContainer>
+			<FeedContainer>
+				<Feed>
+					<Header as="h3">Call Recordings</Header>
+					{contact.callRecordings.map(({ id, phone, seconds, date, url }) => (
+						<Feed.Event key={id}>
+							<Feed.Content>
+								<Feed.Summary>
+									{phone}
+									<Feed.Date>Duration of call {seconds}</Feed.Date>
+								</Feed.Summary>
+								<Feed.Meta>{date}</Feed.Meta>
+								<audio controls src={url} />
+							</Feed.Content>
+						</Feed.Event>
+					))}
+				</Feed>
+			</FeedContainer>
 			<Modal
 				onClose={() => {
 					setOpen(false);
-					reset();
 				}}
 				open={open}
 				size="mini"
@@ -129,17 +120,22 @@ const DetailView = ({ match, notes, setNotes, outcomes, setOutcomes }) => {
 					<Button
 						onClick={() => {
 							setOpen(false);
-							reset();
 						}}
 					>
 						Cancel
 					</Button>
 					<Button
 						onClick={() => {
-							const newNotes = [...notes, { note, time: 'just now', number: newNumber, name }];
-							setNotes(newNotes);
+							const newNotes = [...contact.notes, { note, time: Date.now() }];
+							const updatedContacts = contactList.map((item) => {
+								if (item.contactId === id) {
+									item.notes = newNotes;
+									return item;
+								}
+								return item;
+							});
+							setContacts(updatedContacts);
 							setOpen(false);
-							reset();
 							window.Storm.continue();
 						}}
 						positive
@@ -158,17 +154,20 @@ const Container = styled.div({
 });
 
 const FeedContainer = styled.div({
-	width: 400,
+	width: 270,
 	borderLeft: '1px solid black',
 	padding: '5px 10px',
 });
 
-const Number = styled.div({
+const Number = styled.div(({ dialing }) => ({
 	display: 'flex',
 	alignItems: 'center',
 	justifyContent: 'space-between',
+	padding: '3px 1px 3px 3px',
 	marginBottom: 10,
 	width: '70%',
-});
+	border: dialing && '1px solid #2185D0',
+	borderRadius: 5,
+}));
 
 export default DetailView;

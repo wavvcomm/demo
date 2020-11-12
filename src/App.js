@@ -1,9 +1,11 @@
+/* eslint-disable */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
+import axios from 'axios';
 import { Container, Button, Modal, Input } from 'semantic-ui-react';
 import { Route, Switch, useHistory } from 'react-router-dom';
-import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
+import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID, SERVER } from './constants';
 import ListView from './ListView';
 import DetailView from './DetailView';
 import Nav from './Nav';
@@ -11,20 +13,19 @@ import { rawPhone } from './utils';
 
 const App = () => {
 	const [stormLoaded, setStormLoaded] = useState(false);
+	const [openNote, setOpenNote] = useState(false);
 	const [contactList, setContacts] = useState(contacts);
 	const [selected, setSelected] = useState([]);
 	const [dncAction, setDncAction] = useState('');
 	const [dncNumber, setDncNumber] = useState('');
-	const [notes, setNotes] = useState([]);
-	const [outcomes, setOutcomes] = useState([]);
 	const [unreadMessages, setUnreadMessages] = useState(0);
+	const [numberDialing, setNumberDialing] = useState(null);
 	const history = useHistory();
 
 	const loadSnippet = () =>
 		new Promise((resolve, reject) => {
-			const server = 'devstorm';
 			const script = document.createElement('script');
-			script.src = `https://${server}.stormapp.com/storm.js`;
+			script.src = `https://${SERVER}.stormapp.com/storm.js`;
 			script.onload = () => resolve();
 			script.onerror = (err) => reject(err);
 			document.body.appendChild(script);
@@ -104,6 +105,40 @@ const App = () => {
 						if (call.contactId) history.push(`/detail/${call.contactId}`);
 					}
 				});
+			});
+
+			window.Storm.onCallEnded((outcome) => {
+				const updatedContacts = contactList.map((contact) => {
+					if (contact.contactId === outcome.contactId) {
+						return { ...contact, callOutcomes: [...contact.callOutcomes, outcome] };
+					}
+					return contact;
+				});
+				setContacts(updatedContacts);
+			});
+
+			window.Storm.onCallStarted(({ number }) => {
+				setNumberDialing(number);
+			});
+
+			window.Storm.onCallRecorded(({ recordingId: id, contactId }) => {
+				axios
+					.get(`http://${SERVER}:7073/api/customers/${VENDER_USER_ID}/recordings/${id}`, {
+						auth: {
+							username: VENDOR_ID,
+							password: APP_ID,
+						},
+					})
+					.then(({ data }) => {
+						const updatedContacts = contactList.map((contact) => {
+							if (contact.contactId === contactId) {
+								return { ...contact, callRecordings: [...contact.callRecordings, data] };
+							}
+							return contact;
+						});
+						setContacts(updatedContacts);
+					})
+					.catch((err) => console.log({ err }));
 			});
 		}
 	}, [stormLoaded]);
@@ -212,7 +247,16 @@ const App = () => {
 						exact
 						path="/detail/:id"
 						component={(props) => (
-							<DetailView {...props} notes={notes} setNotes={setNotes} outcomes={outcomes} setOutcomes={setOutcomes} />
+							<DetailView
+								{...props}
+								contactList={contactList}
+								setContacts={setContacts}
+								getContactById={getContactById}
+								stormLoaded={stormLoaded}
+								open={openNote}
+								setOpen={setOpenNote}
+								numberDialing={numberDialing}
+							/>
 						)}
 					/>
 				</Switch>

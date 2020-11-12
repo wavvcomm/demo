@@ -13,6 +13,7 @@
 		"@wavv/messenger": "^1.0.0",
 		"ag-grid-community": "^24.1.0",
 		"ag-grid-react": "^24.1.1",
+		"axios": "^0.21.0",
 		"eslint": "^7.11.0",
 		"jsonwebtoken": "^8.5.1",
 		"lodash": "^4.17.20",

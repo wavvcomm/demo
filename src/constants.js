@@ -1,6 +1,7 @@
 export const VENDOR_ID = '90d267ae9889abf5cb9e3539d213e99b';
 export const APP_ID = 'c1577a7e48dd721e5783851898c51e2bc62f84da7a40ccade2d872e7d8ce7fd2';
 export const VENDER_USER_ID = '1841521';
+export const SERVER = 'devstorm';
 export const contacts = [
 	{
 		contactId: '1',
@@ -9,6 +10,9 @@ export const contacts = [
 		city: 'Some City',
 		name: '10All circuits are busy now',
 		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1568401491/napoleon_djrmp5.png',
+		notes: [],
+		callOutcomes: [],
+		callRecordings: [],
 	},
 	{
 		contactId: '2',
@@ -17,6 +21,9 @@ export const contacts = [
 		city: 'Some City',
 		name: '15SIT requires deposit',
 		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png',
+		notes: [],
+		callOutcomes: [],
+		callRecordings: [],
 	},
 	{
 		contactId: '3',
@@ -25,6 +32,9 @@ export const contacts = [
 		city: 'Some City',
 		name: '1Number Disconnected',
 		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png',
+		notes: [],
+		callOutcomes: [],
+		callRecordings: [],
 	},
 	{
 		contactId: '4',
@@ -33,6 +43,9 @@ export const contacts = [
 		city: 'Some City',
 		name: '23Time and Temp recording',
 		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png',
+		notes: [],
+		callOutcomes: [],
+		callRecordings: [],
 	},
 	{
 		contactId: '5',
@@ -40,6 +53,9 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'Welcome to inum.',
+		notes: [],
+		callOutcomes: [],
+		callRecordings: [],
 	},
 	{
 		contactId: '6',
@@ -47,6 +63,9 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'North Staten Island	',
+		notes: [],
+		callOutcomes: [],
+		callRecordings: [],
 	},
 	{
 		contactId: '7',
@@ -54,6 +73,9 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'Excuse me, please deposit five cents',
+		notes: [],
+		callOutcomes: [],
+		callRecordings: [],
 	},
 	{
 		contactId: '8',
@@ -61,6 +83,9 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'Continious ring',
+		notes: [],
+		callOutcomes: [],
+		callRecordings: [],
 	},
 	{
 		contactId: '9',
@@ -68,6 +93,9 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '26Time and Temp recording',
+		notes: [],
+		callOutcomes: [],
+		callRecordings: [],
 	},
 	{
 		contactId: '10',
@@ -75,6 +103,9 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '28SIT network difficulties',
+		notes: [],
+		callOutcomes: [],
+		callRecordings: [],
 	},
 	{
 		contactId: '11',
@@ -82,6 +113,9 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '32Number Disconnected',
+		notes: [],
+		callOutcomes: [],
+		callRecordings: [],
 	},
 	{
 		contactId: '12',
@@ -89,5 +123,8 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '42National Weather in Seattle',
+		notes: [],
+		callOutcomes: [],
+		callRecordings: [],
 	},
 ];
