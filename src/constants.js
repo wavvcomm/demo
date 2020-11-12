@@ -1,10 +1,11 @@
-export const VENDOR_ID = '90d267ae9889abf5cb9e3539d213e99b';
-export const APP_ID = 'c1577a7e48dd721e5783851898c51e2bc62f84da7a40ccade2d872e7d8ce7fd2';
-export const VENDER_USER_ID = '1841521';
+export const VENDOR_ID = '00000000000000000000000000000000';
+export const APP_ID = 'GXkxpyuqT9kmTdMcbn4EWUatkjTSD5H8mqRZQSEz8JCPuKThquTdmw2GGt2iVMHf';
+export const VENDER_USER_ID = '11111';
+
 export const contacts = [
 	{
 		contactId: '1',
-		numbers: ['(208) 206-0861', '(202) 965-9970'],
+		numbers: ['2082060861', '2029659970'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '10All circuits are busy now',
@@ -12,7 +13,7 @@ export const contacts = [
 	},
 	{
 		contactId: '2',
-		numbers: ['(409) 724-3137', '(801) 959-1122', '(801) 204-9175'],
+		numbers: ['4097243137', '8019591122', '8012049175'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '15SIT requires deposit',
@@ -20,7 +21,7 @@ export const contacts = [
 	},
 	{
 		contactId: '3',
-		numbers: ['(541) 967-0010', '(537) 996-0002'],
+		numbers: ['5419670010', '5379960002'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '1Number Disconnected',
@@ -28,7 +29,7 @@ export const contacts = [
 	},
 	{
 		contactId: '4',
-		numbers: ['(207) 775-4321', '(801) 218-2321', '(509) 457-0044'],
+		numbers: ['2077754321', '8012182321', '5094570044'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '23Time and Temp recording',
@@ -36,56 +37,56 @@ export const contacts = [
 	},
 	{
 		contactId: '5',
-		numbers: ['(619) 330-9640'],
+		numbers: ['6193309640'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'Welcome to inum.',
 	},
 	{
 		contactId: '6',
-		numbers: ['(718) 816-9901'],
+		numbers: ['7188169901'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'North Staten Island	',
 	},
 	{
 		contactId: '7',
-		numbers: ['(610) 797-0014'],
+		numbers: ['6107970014'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'Excuse me, please deposit five cents',
 	},
 	{
 		contactId: '8',
-		numbers: ['(330) 572-0999'],
+		numbers: ['3305720999'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'Continious ring',
 	},
 	{
 		contactId: '9',
-		numbers: ['(228) 868-9600', '(251) 743-4844', '(251) 368-9311'],
+		numbers: ['2288689600', '2517434844', '2513689311'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '26Time and Temp recording',
 	},
 	{
 		contactId: '10',
-		numbers: ['(541) 967-0006', '(857) 767-9903', '(801) 590-4556'],
+		numbers: ['5419670006', '8577679903', '8015904556'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '28SIT network difficulties',
 	},
 	{
 		contactId: '11',
-		numbers: ['(818) 782-7481', '(212) 967-9999', '(215) 979-0028'],
+		numbers: ['8187827481', '2129679999', '2159790028'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '32Number Disconnected',
 	},
 	{
 		contactId: '12',
-		numbers: ['(206) 526-8530', '(203) 777-4647', '(310) 825-4321'],
+		numbers: ['2065268530', '2037774647', '3108254321'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '42National Weather in Seattle',
