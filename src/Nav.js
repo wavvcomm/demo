@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { Button, Dropdown, Label, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
-const Nav = ({ setDncAction, disableStart, startCampaign }) => {
+const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
 	return (
 		<NavBar>
 			<Link to="/" style={{ color: 'inherit' }}>
@@ -19,9 +19,9 @@ const Nav = ({ setDncAction, disableStart, startCampaign }) => {
 					</Dropdown>
 				</Menu.Item>
 				<Menu.Item>
-					<Button onClick={() => window.Storm.openMessenger()}>
+					<Button onClick={() => window.Storm.openMessenger({ dock: true })}>
 						Open Messenger
-						<Label color="red" circular floating content="34" />
+						{unreadCount ? <Label color="red" circular floating content={unreadCount} /> : null}
 					</Button>
 				</Menu.Item>
 				<Menu.Item>

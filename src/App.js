@@ -15,6 +15,7 @@ const App = () => {
 	const [selected, setSelected] = useState([]);
 	const [dncAction, setDncAction] = useState('');
 	const [dncNumber, setDncNumber] = useState('');
+	const [unreadMessages, setUnreadMessages] = useState(0);
 	const history = useHistory();
 
 	const loadSnippet = () =>
@@ -84,6 +85,15 @@ const App = () => {
 					});
 					callback(results);
 				}
+			});
+
+			window.Storm.onUnreadCount(({ unreadCount }) => {
+				setUnreadMessages(unreadCount);
+			});
+
+			window.Storm.onMessageReceived(({ number }) => {
+				const contact = getContactByPhone(number);
+				window.Storm.openMessengerThread({ number, dock: true, contact });
 			});
 		}
 	}, [stormLoaded]);
@@ -161,7 +171,12 @@ const App = () => {
 
 	return (
 		<div>
-			<Nav disableStart={!selected.length} startCampaign={handleStart} setDncAction={setDncAction} />
+			<Nav
+				disableStart={!selected.length}
+				startCampaign={handleStart}
+				setDncAction={setDncAction}
+				unreadCount={unreadMessages}
+			/>
 			<div id="storm-dialer-bar" />
 			<div id="storm-dialer-mini" />
 			<Container style={{ marginTop: 20 }}>
