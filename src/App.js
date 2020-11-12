@@ -1,17 +1,21 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
 import { Container, Button, Modal, Input } from 'semantic-ui-react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
 import ListView from './ListView';
 import DetailView from './DetailView';
 import Nav from './Nav';
+import { rawPhone } from './utils';
 
 const App = () => {
+	const [stormLoaded, setStormLoaded] = useState(false);
 	const [contactList, setContacts] = useState(contacts);
 	const [selected, setSelected] = useState([]);
 	const [dncAction, setDncAction] = useState('');
 	const [dncNumber, setDncNumber] = useState('');
+	const history = useHistory();
 
 	const loadSnippet = () =>
 		new Promise((resolve, reject) => {
@@ -31,6 +35,7 @@ const App = () => {
 		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
 		try {
 			await loadSnippet();
+			setStormLoaded(true);
 			window.Storm.auth({ token });
 		} catch (error) {
 			console.error(error);
@@ -40,6 +45,48 @@ const App = () => {
 	useEffect(() => {
 		authWavv();
 	}, []);
+
+	const getContactById = (id) => contactList.find((contact) => contact.contactId === id);
+
+	const getContactByPhone = (number) =>
+		contactList.find((contact) => {
+			const rawNumbers = contact.numbers.map((num) => rawPhone(num));
+			return rawNumbers.includes(rawPhone(number));
+		});
+
+	const getContactsBySearchTerms = (search) => {
+		const formattedSearch = search.toLowerCase();
+
+		const results = contactList.filter((contact) => {
+			const numbersString = contact.numbers.join(' ');
+			return contact.name.includes(formattedSearch) || numbersString.includes(formattedSearch);
+		});
+
+		return results;
+	};
+
+	useEffect(() => {
+		if (stormLoaded) {
+			window.Storm.onContactLink((contact) => {
+				const { contactId, name } = contact;
+				const id = contactId || getContactByPhone(name).contactId;
+				if (id) history.push(`/detail/${id}`);
+			});
+
+			window.Storm.onContactSearch(({ search, contacts: returnedContacts, callback }) => {
+				if (search) {
+					const results = getContactsBySearchTerms(search);
+					callback(results);
+				} else {
+					const results = returnedContacts.map((contact) => {
+						const { id, number } = contact;
+						return id ? getContactById(id) : getContactByPhone(number);
+					});
+					callback(results);
+				}
+			});
+		}
+	}, [stormLoaded]);
 
 	const removeNumber = ({ contactId, number }) => {
 		const updatedContacts = contactList.map((contact) => {
