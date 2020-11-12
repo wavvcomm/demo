@@ -13,6 +13,8 @@ const App = () => {
 	const [selected, setSelected] = useState([]);
 	const [dncAction, setDncAction] = useState('');
 	const [dncNumber, setDncNumber] = useState('');
+	const [notes, setNotes] = useState([]);
+	const [outcomes, setOutcomes] = useState([]);
 
 	const loadSnippet = () =>
 		new Promise((resolve, reject) => {
@@ -47,7 +49,7 @@ const App = () => {
 			window.Storm.onLinesChanged(({ lines }) => {
 				lines.forEach((call) => {
 					if (call.focused) {
-						history.push(`/detail/${call.contactId}`);
+						if (call.contactId) history.push(`/detail/${call.contactId}`);
 					}
 				});
 			});
@@ -149,7 +151,13 @@ const App = () => {
 							/>
 						)}
 					/>
-					<Route exact path="/detail/:id" component={DetailView} />
+					<Route
+						exact
+						path="/detail/:id"
+						component={(props) => (
+							<DetailView {...props} notes={notes} setNotes={setNotes} outcomes={outcomes} setOutcomes={setOutcomes} />
+						)}
+					/>
 				</Switch>
 				<Modal onClose={() => setDncAction('')} open={!!dncAction} size="mini">
 					<Modal.Header>{`DNC List: ${dncAction} Number`}</Modal.Header>

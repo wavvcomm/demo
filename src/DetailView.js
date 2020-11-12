@@ -1,26 +1,49 @@
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
+import _ from 'lodash';
 import { Card, Icon, Image, Button, Feed, Header, Modal, Input } from 'semantic-ui-react';
 import { contacts } from './constants';
 
-const DetailView = ({ match }) => {
-	const [notes, setNotes] = useState([{ note: 'note...', time: '2 weeks ago', user: 'You', number: '(555) 555-5555' }]);
+const DetailView = ({ match, notes, setNotes, outcomes, setOutcomes }) => {
+	const [outcome, setOutcome] = useState(null);
 	const [note, setNote] = useState('');
 	const [open, setOpen] = useState(false);
 	const [newNumber, setNumber] = useState('');
+	const [name, setName] = useState('');
 	const { id } = match.params;
 	const contact = contacts.find((item) => item.contactId === id);
 
 	useEffect(() => {
 		if (window.Storm) {
-			window.Storm.onWaitingForContinue(({ waiting, number }) => {
+			window.Storm.onWaitingForContinue(({ waiting, number, contactId: cId }) => {
 				if (waiting) {
 					setOpen(true);
 					setNumber(number);
+					const contactName = contacts.find((item) => item.contactId === cId).name;
+					setName(contactName);
 				}
+			});
+
+			window.Storm.onCallEnded((outcome) => {
+				const contactName = contacts.find((item) => item.contactId === outcome.contactId).name;
+				const newOutcome = { ...outcome, name: contactName };
+				setOutcome(newOutcome);
 			});
 		}
 	}, []);
+
+	useEffect(() => {
+		if (outcome) {
+			const newOutcomes = [...outcomes, outcome];
+			setOutcomes(_.uniq(newOutcomes));
+		}
+	}, [outcome]);
+
+	const reset = () => {
+		setNumber('');
+		setName('');
+	};
 
 	return (
 		<Container>
@@ -55,21 +78,49 @@ const DetailView = ({ match }) => {
 					})}
 				</Card.Content>
 			</Card>
-			<Feed>
-				<Header as="h3">Call Notes</Header>
-				{notes.map(({ user, note: nte, time, number }) => (
-					<Feed.Event>
-						<Feed.Content>
-							<Feed.Summary>
-								<Feed.User>{user}</Feed.User> added a note for {number}
-								<Feed.Date>{time}</Feed.Date>
-							</Feed.Summary>
-							<Feed.Meta>{nte}</Feed.Meta>
-						</Feed.Content>
-					</Feed.Event>
-				))}
-			</Feed>
-			<Modal onClose={() => {}} open={open} size="mini">
+			<FeedContainer>
+				<Feed>
+					<Header as="h3">Call Notes</Header>
+					{notes.map(({ note: nte, time, number, name }) => (
+						<Feed.Event>
+							<Feed.Content>
+								<Feed.Summary>
+									Note for {name} - {number}
+									<Feed.Date>{time}</Feed.Date>
+								</Feed.Summary>
+								<Feed.Meta>{nte}</Feed.Meta>
+							</Feed.Content>
+						</Feed.Event>
+					))}
+				</Feed>
+			</FeedContainer>
+			<FeedContainer>
+				<Feed>
+					<Header as="h3">Call Outcomes</Header>
+					{outcomes.map(({ number, name, duration, human, outcome }) => (
+						<Feed.Event>
+							<Feed.Content>
+								<Feed.Summary>
+									Outcome for {name} - {number}
+									<Feed.Date>Duration of call {duration}</Feed.Date>
+								</Feed.Summary>
+								<Feed.Meta>
+									Outcome - {outcome}
+									{human ? ', answered' : ''}
+								</Feed.Meta>
+							</Feed.Content>
+						</Feed.Event>
+					))}
+				</Feed>
+			</FeedContainer>
+			<Modal
+				onClose={() => {
+					setOpen(false);
+					reset();
+				}}
+				open={open}
+				size="mini"
+			>
 				<Modal.Header>Add Note</Modal.Header>
 				<Modal.Content>
 					<Input value={note} onChange={({ target }) => setNote(target.value)} />
@@ -78,16 +129,17 @@ const DetailView = ({ match }) => {
 					<Button
 						onClick={() => {
 							setOpen(false);
+							reset();
 						}}
 					>
 						Cancel
 					</Button>
 					<Button
 						onClick={() => {
-							const newNotes = [...notes, { note, user: 'You', time: 'just now', number: newNumber }];
+							const newNotes = [...notes, { note, time: 'just now', number: newNumber, name }];
 							setNotes(newNotes);
 							setOpen(false);
-							setNumber('');
+							reset();
 							window.Storm.continue();
 						}}
 						positive
@@ -103,7 +155,12 @@ const DetailView = ({ match }) => {
 const Container = styled.div({
 	display: 'flex',
 	justifyContent: 'space-between',
-	maxWidth: 650,
+});
+
+const FeedContainer = styled.div({
+	width: 400,
+	borderLeft: '1px solid black',
+	padding: '5px 10px',
 });
 
 const Number = styled.div({
