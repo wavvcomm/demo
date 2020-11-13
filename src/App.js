@@ -21,7 +21,16 @@ const App = () => {
 	const [numberDialing, setNumberDialing] = useState(null);
 	const [unreadCounts, setUnreadCounts] = useState({});
 	const [enableClickToCall, setEnableClickToCall] = useState(true);
-	const [notes, setNotes] = useState({});
+	const [notes, setNotes] = useState({
+		1: [
+			{
+				note:
+					'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+				time: new Date('2019-02-19T06:00:00Z').toLocaleDateString('en-US'),
+				number: '2082060861',
+			},
+		],
+	});
 	const [recordings, setRecordings] = useState({});
 	const [outcomes, setOutcomes] = useState({});
 	const history = useHistory();
@@ -141,6 +150,7 @@ const App = () => {
 	useEffect(() => {
 		if (stormLoaded) {
 			window.Storm.onCallRecorded(({ recordingId: id, contactId }) => {
+				// TODO: make dynamic url for PROD
 				axios
 					.get(`http://${SERVER}:7073/api/customers/${VENDER_USER_ID}/recordings/${id}`, {
 						auth: {
