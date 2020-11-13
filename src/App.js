@@ -7,6 +7,7 @@ import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
 import ListView from './ListView';
 import DetailView from './DetailView';
 import Nav from './Nav';
+import Toast from './Toast';
 import { rawPhone } from './utils';
 
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
 	const [outcomes, setOutcomes] = useState([]);
 	const [unreadMessages, setUnreadMessages] = useState(0);
 	const [unreadCounts, setUnreadCounts] = useState({});
+	const [messageReceivedToast, setMessageReceivedToast] = useState({});
 	const history = useHistory();
 
 	const loadSnippet = () =>
@@ -95,9 +97,13 @@ const App = () => {
 				setUnreadCounts(numberCounts);
 			});
 
-			window.Storm.onMessageReceived(({ number }) => {
+			window.Storm.onMessageReceived(({ number, body }) => {
 				const contact = getContactByPhone(number);
-				window.Storm.openMessengerThread({ number, dock: true, contact });
+				const header = `New Message from ${contact.name || number}`;
+				setMessageReceivedToast({
+					header,
+					message: body,
+				});
 			});
 
 			window.Storm.onLinesChanged(({ lines }) => {
@@ -253,6 +259,7 @@ const App = () => {
 					</Modal.Actions>
 				</Modal>
 			</Container>
+			<Toast {...messageReceivedToast} onHide={() => setMessageReceivedToast({})} delay={5000} />
 		</div>
 	);
 };
