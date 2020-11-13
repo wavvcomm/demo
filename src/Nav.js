@@ -17,7 +17,9 @@ const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
 								<Dropdown text="Light">
 									<Dropdown.Menu>
 										<Dropdown.Header>Accents</Dropdown.Header>
-										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'light' })}>Standard</Dropdown.Item>
+										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'light', primaryColor: '#48B0D6' })}>
+											Standard
+										</Dropdown.Item>
 										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'light', primaryColor: '#ff0000' })}>
 											Red
 										</Dropdown.Item>
@@ -37,7 +39,9 @@ const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
 								<Dropdown text="Dark">
 									<Dropdown.Menu>
 										<Dropdown.Header>Accents</Dropdown.Header>
-										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'dark' })}>Standard</Dropdown.Item>
+										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'dark', primaryColor: '#48B0D6' })}>
+											Standard
+										</Dropdown.Item>
 										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'dark', primaryColor: '#ff0000' })}>
 											Red
 										</Dropdown.Item>
