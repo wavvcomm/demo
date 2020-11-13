@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import _ from 'lodash';
-import { Card, Icon, Image, Button, Feed, Header, Modal, Input } from 'semantic-ui-react';
+import { Card, Icon, Image, Button, Feed, Header, Modal, Input, Label } from 'semantic-ui-react';
 import { contacts } from './constants';
+import { formatPhone } from './utils';
 
-const DetailView = ({ match, notes, setNotes, outcomes, setOutcomes }) => {
+const DetailView = ({ match, notes, setNotes, outcomes, setOutcomes, unreadCounts }) => {
 	const [outcome, setOutcome] = useState(null);
 	const [note, setNote] = useState('');
 	const [open, setOpen] = useState(false);
@@ -66,13 +67,18 @@ const DetailView = ({ match, notes, setNotes, outcomes, setOutcomes }) => {
 					{contact.numbers.map((number) => {
 						return (
 							<Number>
-								{number}
+								{formatPhone(number)}
 								<Button icon="phone" size="mini" onClick={() => window.Storm.callPhone({ number })} />
-								<Button
-									icon="comment alternate"
-									size="mini"
-									onClick={() => window.Storm.openMessengerThread({ contact, number, dock: true })}
-								/>
+								<div style={{ position: 'relative' }}>
+									<Button
+										icon="comment alternate"
+										size="mini"
+										onClick={() => window.Storm.openMessengerThread({ contact, number, dock: true })}
+									/>
+									{unreadCounts[number] ? (
+										<Label color="red" size="tiny" circular floating content={unreadCounts[number]} />
+									) : null}
+								</div>
 							</Number>
 						);
 					})}
@@ -168,7 +174,7 @@ const Number = styled.div({
 	alignItems: 'center',
 	justifyContent: 'space-between',
 	marginBottom: 10,
-	width: '70%',
+	width: '80%',
 });
 
 export default DetailView;

@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
-import { Table, Icon, Checkbox, Modal, Input, Button, Dropdown } from 'semantic-ui-react';
+import { Table, Checkbox, Modal, Input, Button, Dropdown, Label } from 'semantic-ui-react';
+import { formatPhone } from './utils';
+
+const MessageCount = ({ count }) => (
+	<MessageButton>
+		<Button size="mini" icon="comment alternate" />
+		{count ? <Label color="red" size="tiny" circular floating content={count} /> : null}
+	</MessageButton>
+);
 
 const ListItem = ({
 	contact,
+	unreadCounts,
 	removeContact,
 	removeNumber,
 	addNumber,
@@ -26,8 +35,8 @@ const ListItem = ({
 				<Checkbox checked={selected.includes(contactId)} onClick={() => handleSelected(contactId)} />
 			</Table.Cell>
 			<Table.Cell collapsing textAlign="center">
-				<Icon onClick={() => removeContact({ contactId })} name="trash" style={{ cursor: 'pointer' }} />
-				<Icon onClick={() => removeContact({ contactId, skip: true })} name="close" style={{ cursor: 'pointer' }} />
+				<Button onClick={() => removeContact({ contactId })} icon="trash" size="small" />
+				<Button onClick={() => removeContact({ contactId, skip: true })} icon="close" size="small" />
 			</Table.Cell>
 			<Table.Cell>
 				<Link className="detailsLink" to={`/detail/${contactId}`}>
@@ -39,15 +48,15 @@ const ListItem = ({
 			<Table.Cell>
 				{numbers.map((number) => (
 					<Number key={number}>
-						<span className="leadPhoneNumber">{number}</span>
-						<Icon onClick={() => removeNumber({ contactId, number })} name="close" style={{ cursor: 'pointer' }} />
-						<Dropdown icon="comment alternate" className="icon">
+						<span className="leadPhoneNumber">{formatPhone(number)}</span>
+						<Button icon="close" size="mini" onClick={() => removeNumber({ contactId, number })} />
+						<Dropdown trigger={<MessageCount count={unreadCounts[number]} />} icon={null}>
 							<Dropdown.Menu>
 								<Dropdown.Item onClick={() => textNumber({ contact, number, dock: false })}>Modal</Dropdown.Item>
 								<Dropdown.Item onClick={() => textNumber({ contact, number, dock: true })}>Dock</Dropdown.Item>
 							</Dropdown.Menu>
 						</Dropdown>
-						<Icon onClick={() => callNumber({ contactId, number })} name="phone" style={{ cursor: 'pointer' }} />
+						<Button icon="phone" size="mini" onClick={() => callNumber({ contactId, number })} />
 					</Number>
 				))}
 			</Table.Cell>
@@ -56,7 +65,7 @@ const ListItem = ({
 					onClose={() => setOpen(false)}
 					onOpen={() => setOpen(true)}
 					open={open}
-					trigger={<Icon name="plus square" style={{ cursor: 'pointer' }} />}
+					trigger={<Button icon="plus square" />}
 					size="mini"
 				>
 					<Modal.Header>Add Number</Modal.Header>
@@ -84,7 +93,13 @@ const ListItem = ({
 const Number = styled.div({
 	display: 'flex',
 	justifyContent: 'space-around',
-	margin: '5px 0',
+	alignItems: 'center',
+	margin: '10px 0',
+});
+
+const MessageButton = styled.div({
+	position: 'relative',
+	zIndex: 0,
 });
 
 export default ListItem;

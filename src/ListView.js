@@ -4,6 +4,7 @@ import ListItem from './ListItem';
 
 const ListView = ({
 	contacts,
+	unreadCounts,
 	removeContact,
 	removeNumber,
 	addNumber,
@@ -32,6 +33,7 @@ const ListView = ({
 					<ListItem
 						key={contact.contactId}
 						contact={contact}
+						unreadCounts={unreadCounts}
 						removeContact={removeContact}
 						removeNumber={removeNumber}
 						addNumber={addNumber}
