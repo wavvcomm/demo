@@ -55,6 +55,8 @@ const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
 							</Dropdown.Item>
 						</Dropdown.Menu>
 					</Dropdown>
+				</Menu.Item>
+				<Menu.Item>
 					<Dropdown text="DNC Actions" button>
 						<Dropdown.Menu>
 							<Dropdown.Item onClick={() => setDncAction('Remove')}>Remove</Dropdown.Item>
