@@ -1,21 +1,22 @@
-/* eslint-disable */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
-import _ from 'lodash';
 import { Card, Icon, Image, Button, Feed, Header, Modal, Input, Label } from 'semantic-ui-react';
 import { formatPhone } from './utils';
 
 const DetailView = ({
+	notes,
+	setNotes,
+	recordings,
+	outcomes,
 	match,
 	unreadCounts,
-	contactList,
-	setContacts,
-	match,
 	getContactById,
 	stormLoaded,
 	open,
 	setOpen,
 	numberDialing,
+	enableClickToCall,
 }) => {
 	const [note, setNote] = useState('');
 	const { id } = match.params;
@@ -53,7 +54,12 @@ const DetailView = ({
 						return (
 							<Number key={number} dialing={formatPhone(numberDialing) === formatPhone(number)}>
 								{formatPhone(number)}
-								<Button icon="phone" size="mini" onClick={() => window.Storm.callPhone({ number })} />
+								<Button
+									icon="phone"
+									size="mini"
+									disabled={!enableClickToCall}
+									onClick={() => window.Storm.callPhone({ number })}
+								/>
 								<div style={{ position: 'relative' }}>
 									<Button
 										icon="comment alternate"
@@ -72,7 +78,7 @@ const DetailView = ({
 			<FeedContainer>
 				<Feed>
 					<Header as="h3">Call Notes</Header>
-					{contact.notes.map(({ note: nte, time }) => (
+					{notes[id]?.map(({ note: nte, time }) => (
 						<Feed.Event key={time}>
 							<Feed.Content>
 								<Feed.Summary>
@@ -88,7 +94,7 @@ const DetailView = ({
 			<FeedContainer>
 				<Feed>
 					<Header as="h3">Call Outcomes</Header>
-					{contact.callOutcomes.map(({ number, duration, human, outcome }) => (
+					{outcomes[id]?.map(({ number, duration, human, outcome }) => (
 						<Feed.Event key={`${number} - ${duration} - ${outcome}`}>
 							<Feed.Content>
 								<Feed.Summary>
@@ -107,15 +113,17 @@ const DetailView = ({
 			<FeedContainer>
 				<Feed>
 					<Header as="h3">Call Recordings</Header>
-					{contact.callRecordings.map(({ id, phone, seconds, date, url }) => (
-						<Feed.Event key={id}>
+					{recordings[id]?.map(({ id: recordingId, phone, seconds, date, url }) => (
+						<Feed.Event key={recordingId}>
 							<Feed.Content>
 								<Feed.Summary>
 									{phone}
 									<Feed.Date>Duration of call {seconds}</Feed.Date>
 								</Feed.Summary>
 								<Feed.Meta>{date}</Feed.Meta>
-								<audio controls src={url} />
+								<audio controls src={url}>
+									<track kind="captions" />
+								</audio>
 							</Feed.Content>
 						</Feed.Event>
 					))}
@@ -142,15 +150,10 @@ const DetailView = ({
 					</Button>
 					<Button
 						onClick={() => {
-							const newNotes = [...contact.notes, { note, time: Date.now() }];
-							const updatedContacts = contactList.map((item) => {
-								if (item.contactId === id) {
-									item.notes = newNotes;
-									return item;
-								}
-								return item;
-							});
-							setContacts(updatedContacts);
+							const newNotes = { ...notes };
+							if (newNotes[id]) newNotes[id].push({ note, time: Date.now() });
+							else newNotes[id] = [{ note, time: Date.now() }];
+							setNotes(newNotes);
 							setOpen(false);
 							window.Storm.continue();
 						}}

@@ -1,4 +1,3 @@
-/* eslint-disable */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
@@ -21,6 +20,10 @@ const App = () => {
 	const [unreadMessages, setUnreadMessages] = useState(0);
 	const [numberDialing, setNumberDialing] = useState(null);
 	const [unreadCounts, setUnreadCounts] = useState({});
+	const [enableClickToCall, setEnableClickToCall] = useState(true);
+	const [notes, setNotes] = useState({});
+	const [recordings, setRecordings] = useState({});
+	const [outcomes, setOutcomes] = useState({});
 	const history = useHistory();
 
 	const loadSnippet = () =>
@@ -96,10 +99,10 @@ const App = () => {
 				setUnreadCounts(numberCounts);
 			});
 
-			window.Storm.onMessageReceived(({ number }) => {
-				const contact = getContactByPhone(number);
-				window.Storm.openMessengerThread({ number, dock: true, contact });
-			});
+			// window.Storm.onMessageReceived(({ number }) => {
+			// 	const contact = getContactByPhone(number);
+			// 	window.Storm.openMessengerThread({ number, dock: true, contact });
+			// });
 
 			window.Storm.onLinesChanged(({ lines }) => {
 				lines.forEach((call) => {
@@ -109,20 +112,34 @@ const App = () => {
 				});
 			});
 
-			window.Storm.onCallEnded((outcome) => {
-				const updatedContacts = contactList.map((contact) => {
-					if (contact.contactId === outcome.contactId) {
-						return { ...contact, callOutcomes: [...contact.callOutcomes, outcome] };
-					}
-					return contact;
-				});
-				setContacts(updatedContacts);
-			});
-
 			window.Storm.onCallStarted(({ number }) => {
 				setNumberDialing(number);
 			});
 
+			window.Storm.onCampaignEnded(() => {
+				setNumberDialing(null);
+			});
+
+			window.Storm.onDialerIdle(({ idle }) => {
+				setEnableClickToCall(idle);
+			});
+		}
+	}, [stormLoaded]);
+
+	useEffect(() => {
+		if (stormLoaded) {
+			window.Storm.onCallEnded((outcome) => {
+				const { contactId } = outcome;
+				const newOutcomes = { ...outcomes };
+				if (newOutcomes[contactId]) newOutcomes[contactId].push(outcome);
+				else newOutcomes[contactId] = [outcome];
+				setOutcomes(newOutcomes);
+			});
+		}
+	}, [stormLoaded, outcomes]);
+
+	useEffect(() => {
+		if (stormLoaded) {
 			window.Storm.onCallRecorded(({ recordingId: id, contactId }) => {
 				axios
 					.get(`http://${SERVER}:7073/api/customers/${VENDER_USER_ID}/recordings/${id}`, {
@@ -132,18 +149,15 @@ const App = () => {
 						},
 					})
 					.then(({ data }) => {
-						const updatedContacts = contactList.map((contact) => {
-							if (contact.contactId === contactId) {
-								return { ...contact, callRecordings: [...contact.callRecordings, data] };
-							}
-							return contact;
-						});
-						setContacts(updatedContacts);
+						const newRecordings = { ...recordings };
+						if (newRecordings[contactId]) newRecordings[contactId].push(recordings);
+						else newRecordings[contactId] = [data];
+						setRecordings(newRecordings);
 					})
 					.catch((err) => console.log({ err }));
 			});
 		}
-	}, [stormLoaded]);
+	}, [stormLoaded, recordings]);
 
 	const removeNumber = ({ contactId, number }) => {
 		const updatedContacts = contactList.map((contact) => {
@@ -178,14 +192,11 @@ const App = () => {
 	};
 
 	const textNumber = (params) => {
-		console.log(params);
 		window.Storm.openMessengerThread(params);
 	};
 
 	const callNumber = (ops) => {
-		// add Wavv calling functionality
 		window.Storm.callPhone(ops);
-		console.log(ops);
 	};
 
 	const handleStart = async () => {
@@ -264,6 +275,8 @@ const App = () => {
 								outcomes={outcomes}
 								setOutcomes={setOutcomes}
 								unreadCounts={unreadCounts}
+								enableClickToCall={enableClickToCall}
+								recordings={recordings}
 							/>
 						)}
 					/>
