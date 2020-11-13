@@ -31,18 +31,6 @@ const App = () => {
 			document.body.appendChild(script);
 		});
 
-	// const setCustomMergeFields = () => {
-	// 	const params = {
-	// 		fields: [
-	// 			{ id: 'first_name', label: 'First Name' },
-	// 			{ id: 'last_name', label: 'Last Name' },
-	// 			{ id: 'email', label: 'Email' },
-	// 		],
-	// 	};
-
-	// 	Storm.setMergeFields(params);
-	// };
-
 	const authWavv = async () => {
 		const issuer = VENDOR_ID;
 		const signature = APP_ID;
@@ -83,6 +71,16 @@ const App = () => {
 
 	useEffect(() => {
 		if (stormLoaded) {
+			const params = {
+				fields: [
+					{ id: 'first_name', label: 'First Name' },
+					{ id: 'last_name', label: 'Last Name' },
+					{ id: 'email', label: 'Email' },
+				],
+			};
+
+			window.Storm.setMergeFields(params);
+
 			window.Storm.onContactLink((contact) => {
 				const { contactId, name } = contact;
 				const id = contactId || getContactByPhone(name).contactId;

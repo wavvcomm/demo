@@ -1,6 +1,6 @@
-export const VENDOR_ID = '00000000000000000000000000000000';
-export const APP_ID = 'GXkxpyuqT9kmTdMcbn4EWUatkjTSD5H8mqRZQSEz8JCPuKThquTdmw2GGt2iVMHf';
-export const VENDER_USER_ID = '11111';
+export const VENDOR_ID = '90d267ae9889abf5cb9e3539d213e99b';
+export const APP_ID = 'c1577a7e48dd721e5783851898c51e2bc62f84da7a40ccade2d872e7d8ce7fd2';
+export const VENDER_USER_ID = '661271';
 
 export const contacts = [
 	{
