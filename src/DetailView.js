@@ -2,10 +2,21 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import _ from 'lodash';
-import { Card, Icon, Image, Button, Feed, Header, Modal, Input } from 'semantic-ui-react';
+import { Card, Icon, Image, Button, Feed, Header, Modal, Input, Label } from 'semantic-ui-react';
 import { formatPhone } from './utils';
 
-const DetailView = ({ contactList, setContacts, match, getContactById, stormLoaded, open, setOpen, numberDialing }) => {
+const DetailView = ({
+	match,
+	unreadCounts,
+	contactList,
+	setContacts,
+	match,
+	getContactById,
+	stormLoaded,
+	open,
+	setOpen,
+	numberDialing,
+}) => {
 	const [note, setNote] = useState('');
 	const { id } = match.params;
 	const contact = getContactById(id);
@@ -41,13 +52,18 @@ const DetailView = ({ contactList, setContacts, match, getContactById, stormLoad
 					{contact.numbers.map((number) => {
 						return (
 							<Number key={number} dialing={formatPhone(numberDialing) === formatPhone(number)}>
-								{number}
+								{formatPhone(number)}
 								<Button icon="phone" size="mini" onClick={() => window.Storm.callPhone({ number })} />
-								<Button
-									icon="comment alternate"
-									size="mini"
-									onClick={() => window.Storm.openMessengerThread({ contact, number, dock: true })}
-								/>
+								<div style={{ position: 'relative' }}>
+									<Button
+										icon="comment alternate"
+										size="mini"
+										onClick={() => window.Storm.openMessengerThread({ contact, number, dock: true })}
+									/>
+									{unreadCounts[number] ? (
+										<Label color="red" size="tiny" circular floating content={unreadCounts[number]} />
+									) : null}
+								</div>
 							</Number>
 						);
 					})}
@@ -165,7 +181,7 @@ const Number = styled.div(({ dialing }) => ({
 	justifyContent: 'space-between',
 	padding: '3px 1px 3px 3px',
 	marginBottom: 10,
-	width: '70%',
+	width: '80%',
 	border: dialing && '1px solid #2185D0',
 	borderRadius: 5,
 }));

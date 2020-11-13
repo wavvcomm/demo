@@ -20,6 +20,7 @@ const App = () => {
 	const [dncNumber, setDncNumber] = useState('');
 	const [unreadMessages, setUnreadMessages] = useState(0);
 	const [numberDialing, setNumberDialing] = useState(null);
+	const [unreadCounts, setUnreadCounts] = useState({});
 	const history = useHistory();
 
 	const loadSnippet = () =>
@@ -90,8 +91,9 @@ const App = () => {
 				}
 			});
 
-			window.Storm.onUnreadCount(({ unreadCount }) => {
+			window.Storm.onUnreadCount(({ unreadCount, numberCounts }) => {
 				setUnreadMessages(unreadCount);
+				setUnreadCounts(numberCounts);
 			});
 
 			window.Storm.onMessageReceived(({ number }) => {
@@ -233,6 +235,7 @@ const App = () => {
 							<ListView
 								{...props}
 								contacts={contactList}
+								unreadCounts={unreadCounts}
 								removeContact={deleteContact}
 								removeNumber={removeNumber}
 								addNumber={addNumber}
@@ -256,6 +259,11 @@ const App = () => {
 								open={openNote}
 								setOpen={setOpenNote}
 								numberDialing={numberDialing}
+								notes={notes}
+								setNotes={setNotes}
+								outcomes={outcomes}
+								setOutcomes={setOutcomes}
+								unreadCounts={unreadCounts}
 							/>
 						)}
 					/>
