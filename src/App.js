@@ -31,6 +31,18 @@ const App = () => {
 			document.body.appendChild(script);
 		});
 
+	// const setCustomMergeFields = () => {
+	// 	const params = {
+	// 		fields: [
+	// 			{ id: 'first_name', label: 'First Name' },
+	// 			{ id: 'last_name', label: 'Last Name' },
+	// 			{ id: 'email', label: 'Email' },
+	// 		],
+	// 	};
+
+	// 	Storm.setMergeFields(params);
+	// };
+
 	const authWavv = async () => {
 		const issuer = VENDOR_ID;
 		const signature = APP_ID;
