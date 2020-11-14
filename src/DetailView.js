@@ -2,7 +2,20 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import axios from 'axios';
-import { Image, Button, Feed, Header, Label, Grid, List, Menu, Segment } from 'semantic-ui-react';
+import {
+	Image,
+	Button,
+	Feed,
+	Header,
+	Label,
+	Grid,
+	List,
+	Menu,
+	Segment,
+	Modal,
+	Form,
+	TextArea,
+} from 'semantic-ui-react';
 import { formatPhone, rawPhone } from './utils';
 import { SERVER, VENDER_USER_ID, VENDOR_ID, APP_ID } from './constants';
 
@@ -17,6 +30,10 @@ const DetailView = ({
 	setOpen,
 	numberDialing,
 	enableClickToCall,
+	setNotes,
+	open,
+	tags,
+	setTags,
 }) => {
 	const [activeMain, setActiveMain] = useState('notes');
 	const [activeSub, setActiveSub] = useState('messages');
@@ -41,7 +58,7 @@ const DetailView = ({
 		},
 	]);
 	// const [nextPageToken, setNextPageToken] = useState(null);
-	// const [note, setNote] = useState('');
+	const [note, setNote] = useState('');
 	const { id } = match.params;
 	const contact = getContactById(id);
 
@@ -122,6 +139,28 @@ const DetailView = ({
 								);
 							})}
 						</List>
+						<div>
+							{tags['Warm Lead'] && (
+								<Label as="h6" tag color="blue" style={{ marginRight: 7 }}>
+									Warm Lead
+								</Label>
+							)}
+							{tags['Follow Up'] && (
+								<Label as="h6" tag color="teal" style={{ marginRight: 7 }}>
+									Follow Up
+								</Label>
+							)}
+							{tags['Wrong Number'] && (
+								<Label as="h6" tag color="yellow" style={{ marginRight: 7 }}>
+									Wrong Number
+								</Label>
+							)}
+							{tags['Do Not Call'] && (
+								<Label as="h6" tag color="red">
+									Do Not Call
+								</Label>
+							)}
+						</div>
 					</Grid.Column>
 				</Grid>
 			</HeaderContainer>
@@ -147,10 +186,10 @@ const DetailView = ({
 						{activeMain === 'notes' ? (
 							<FeedContainer>
 								<Feed>
-									{notes[id]?.map(({ note: nte, time }) => (
-										<Feed.Event key={time} style={{ width: 500, marginBottom: 20 }}>
+									{notes[id]?.map(({ note: nte, date }) => (
+										<Feed.Event key={date} style={{ width: 500, marginBottom: 20 }}>
 											<Feed.Content>
-												<Feed.Summary>{time}</Feed.Summary>
+												<Feed.Summary>{new Date(date).toLocaleDateString('en-US')}</Feed.Summary>
 												<Feed.Extra>{nte}</Feed.Extra>
 											</Feed.Content>
 										</Feed.Event>
@@ -220,42 +259,100 @@ const DetailView = ({
 					</Grid.Column>
 				</Grid>
 			</MainContainer>
+
+			<Modal
+				onClose={() => {
+					setOpen(false);
+				}}
+				open={open}
+				size="mini"
+			>
+				<Modal.Header>Call Disposition</Modal.Header>
+				<Modal.Content>
+					<Form>
+						<Form.Group grouped>
+							<Form.Field
+								label="Warm Lead"
+								name="Warm Lead"
+								control="input"
+								type="checkbox"
+								value={tags['Warm Lead']}
+								onChange={({ target }) => {
+									const newTags = { ...tags };
+									newTags[target.name] = target.value;
+									setTags(newTags);
+								}}
+							/>
+							<Form.Field
+								label="Follow Up"
+								name="Follow Up"
+								control="input"
+								type="checkbox"
+								value={tags['Follow Up']}
+								onChange={({ target }) => {
+									const newTags = { ...tags };
+									newTags[target.name] = target.value;
+									setTags(newTags);
+								}}
+							/>
+							<Form.Field
+								label="Wrong Number"
+								name="Wrong Number"
+								control="input"
+								type="checkbox"
+								value={tags['Wrong Number']}
+								onChange={({ target }) => {
+									const newTags = { ...tags };
+									newTags[target.name] = target.value;
+									setTags(newTags);
+								}}
+							/>
+							<Form.Field
+								label="Do Not Call"
+								name="Do Not Call"
+								control="input"
+								type="checkbox"
+								value={tags['Do Not Call']}
+								onChange={({ target }) => {
+									const newTags = { ...tags };
+									newTags[target.name] = target.value;
+									setTags(newTags);
+								}}
+							/>
+							<Form.Field
+								control={TextArea}
+								label="Notes"
+								placeholder="How did the call go?"
+								value={note}
+								onChange={({ target }) => setNote(target.value)}
+							/>
+						</Form.Group>
+					</Form>
+				</Modal.Content>
+				<Modal.Actions>
+					<Button
+						onClick={() => {
+							setOpen(false);
+						}}
+					>
+						Cancel
+					</Button>
+					<Button
+						onClick={() => {
+							const newNotes = { ...notes };
+							if (newNotes[id]) newNotes[id].push({ note, date: Date.now() });
+							else newNotes[id] = [{ note, date: Date.now() }];
+							setNotes(newNotes);
+							setOpen(false);
+							window.Storm.continue();
+						}}
+						positive
+					>
+						Save
+					</Button>
+				</Modal.Actions>
+			</Modal>
 		</Container>
-		// 	<Modal
-		// 		onClose={() => {
-		// 			setOpen(false);
-		// 		}}
-		// 		open={open}
-		// 		size="mini"
-		// 	>
-		// 		<Modal.Header>Add Note</Modal.Header>
-		// 		<Modal.Content>
-		// 			<Input value={note} onChange={({ target }) => setNote(target.value)} />
-		// 		</Modal.Content>
-		// 		<Modal.Actions>
-		// 			<Button
-		// 				onClick={() => {
-		// 					setOpen(false);
-		// 				}}
-		// 			>
-		// 				Cancel
-		// 			</Button>
-		// 			<Button
-		// 				onClick={() => {
-		// 					const newNotes = { ...notes };
-		// 					if (newNotes[id]) newNotes[id].push({ note, time: Date.now() });
-		// 					else newNotes[id] = [{ note, time: Date.now() }];
-		// 					setNotes(newNotes);
-		// 					setOpen(false);
-		// 					window.Storm.continue();
-		// 				}}
-		// 				positive
-		// 			>
-		// 				Done
-		// 			</Button>
-		// 		</Modal.Actions>
-		// 	</Modal>
-		// </Container>
 	);
 };
 

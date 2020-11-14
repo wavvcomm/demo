@@ -21,18 +21,24 @@ const App = () => {
 	const [numberDialing, setNumberDialing] = useState(null);
 	const [unreadCounts, setUnreadCounts] = useState({});
 	const [enableClickToCall, setEnableClickToCall] = useState(true);
+	const [tags, setTags] = useState({
+		'Warm Lead': false,
+		'Wrong Number': false,
+		'Do Not Call': false,
+		'Follow Up': false,
+	});
 	const [notes, setNotes] = useState({
 		1: [
 			{
 				note:
 					'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. *See recording',
-				time: new Date('2019-02-19T06:00:00Z').toLocaleDateString('en-US'),
+				date: '2019-02-19T06:00:00Z',
 				number: '2029659970',
 			},
 			{
 				note:
 					'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-				time: new Date('2019-09-25T06:00:00Z').toLocaleDateString('en-US'),
+				date: '2019-05-14T06:00:00Z',
 				number: '2029659970',
 			},
 		],
@@ -202,7 +208,7 @@ const App = () => {
 					})
 					.then(({ data }) => {
 						const newRecordings = { ...recordings };
-						if (newRecordings[contactId]) newRecordings[contactId].push(recordings);
+						if (newRecordings[contactId]) newRecordings[contactId].push(data);
 						else newRecordings[contactId] = [data];
 						setRecordings(newRecordings);
 					})
@@ -329,6 +335,8 @@ const App = () => {
 								unreadCounts={unreadCounts}
 								enableClickToCall={enableClickToCall}
 								recordings={recordings}
+								tags={tags}
+								setTags={setTags}
 							/>
 						)}
 					/>
