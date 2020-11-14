@@ -25,14 +25,45 @@ const App = () => {
 		1: [
 			{
 				note:
-					'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+					'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. *See recording',
 				time: new Date('2019-02-19T06:00:00Z').toLocaleDateString('en-US'),
-				number: '2082060861',
+				number: '2029659970',
+			},
+			{
+				note:
+					'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+				time: new Date('2019-09-25T06:00:00Z').toLocaleDateString('en-US'),
+				number: '2029659970',
 			},
 		],
 	});
-	const [recordings, setRecordings] = useState({});
-	const [outcomes, setOutcomes] = useState({});
+	const [recordings, setRecordings] = useState({
+		1: [
+			{
+				id: '0234982f-6339-4a9d-8f79-efb6e83d228f',
+				date: '2019-02-19T06:00:00Z',
+				url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg',
+			},
+		],
+	});
+	const [outcomes, setOutcomes] = useState({
+		1: [
+			{
+				date: '2020-10-13T06:00:00Z',
+				number: '2029659970',
+				duration: 32,
+				outcome: 'USER_HUNG_UP',
+				human: true,
+			},
+			{
+				date: '2020-07-03T06:00:00Z',
+				number: '2029659970',
+				duration: 7,
+				outcome: 'BUSY',
+				human: false,
+			},
+		],
+	});
 	const history = useHistory();
 
 	const loadSnippet = () =>
@@ -140,6 +171,7 @@ const App = () => {
 			window.Storm.onCallEnded((outcome) => {
 				const { contactId } = outcome;
 				const newOutcomes = { ...outcomes };
+				outcome.date = Date.now();
 				if (newOutcomes[contactId]) newOutcomes[contactId].push(outcome);
 				else newOutcomes[contactId] = [outcome];
 				setOutcomes(newOutcomes);

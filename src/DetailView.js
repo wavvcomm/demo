@@ -20,7 +20,26 @@ const DetailView = ({
 }) => {
 	const [activeMain, setActiveMain] = useState('notes');
 	const [activeSub, setActiveSub] = useState('messages');
-	const [messages, setMessages] = useState([]);
+	const [messages, setMessages] = useState([
+		{
+			id: 'b809f77f-ea6d-45f1-9608-b123b71c2f4b',
+			body: 'Ut enim ad minim veniam, quis nostrud exercitation.',
+			status: 'RECEIVED',
+		},
+		{ id: 'c809f742-a234d-45f1-9608-b123b71c2f4b', body: 'quis nostrud exercitation.', status: 'DELIVERED' },
+		{
+			id: 'c809f742-a234d-45f1-9608-b1223456df4b',
+			body:
+				'nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation.',
+			status: 'RECEIVED',
+		},
+		{
+			id: 'bgs4f77f-ea6d-45f1-9608-b123b71c2f4b',
+			body:
+				'Ad minim veniam, quis nostrud exercitation. nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation. Ut enim ad minim veniam. nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation. Ut enim ad minim veniam.',
+			status: 'DELIVERED',
+		},
+	]);
 	// const [nextPageToken, setNextPageToken] = useState(null);
 	// const [note, setNote] = useState('');
 	const { id } = match.params;
@@ -42,7 +61,7 @@ const DetailView = ({
 				const contactMessages = data.messages.filter((message) => {
 					return contact.numbers.find((number) => rawPhone(number) === rawPhone(message.number));
 				});
-				setMessages(contactMessages);
+				if (contactMessages.length > 0) setMessages(contactMessages);
 				// setNextPageToken(data.nextPageToken);
 			})
 			.catch((err) => console.log({ err }));
@@ -129,10 +148,10 @@ const DetailView = ({
 							<FeedContainer>
 								<Feed>
 									{notes[id]?.map(({ note: nte, time }) => (
-										<Feed.Event key={time}>
+										<Feed.Event key={time} style={{ width: 500, marginBottom: 20 }}>
 											<Feed.Content>
 												<Feed.Summary>{time}</Feed.Summary>
-												<Feed.Meta>{nte}</Feed.Meta>
+												<Feed.Extra>{nte}</Feed.Extra>
 											</Feed.Content>
 										</Feed.Event>
 									))}
@@ -184,14 +203,13 @@ const DetailView = ({
 							) : (
 								<FeedContainer>
 									<Feed>
-										{outcomes[id]?.map(({ number, duration, human, outcome }) => (
-											<Feed.Event key={`${number} - ${duration} - ${outcome}`}>
+										{outcomes[id]?.map(({ number, duration, human, outcome, date }) => (
+											<Feed.Event key={`${number} - ${duration} - ${outcome}`} style={{ marginBottom: 15 }}>
 												<Feed.Content>
-													<Feed.Summary>Duration {duration} seconds</Feed.Summary>
-													<Feed.Meta>
-														Outcome - {outcome}
-														{human ? ', answered' : ''}
-													</Feed.Meta>
+													<Feed.Summary>{new Date(date).toLocaleDateString('en-US')}</Feed.Summary>
+													<Feed.Extra>
+														{outcome} {human ? '- human answered' : ''}
+													</Feed.Extra>
 												</Feed.Content>
 											</Feed.Event>
 										))}
@@ -258,14 +276,13 @@ const MainContainer = styled.div({
 	marginTop: 20,
 });
 
-const Number = styled.div(() => ({
-	width: '27%',
+const Number = styled.div(({ received }) => ({
 	display: 'flex',
+	width: 'fit-content',
 	alignItems: 'center',
 	marginTop: 12,
-	marginLeft: 15,
-	paddingLeft: 5,
-	border: '1px solid #2185D0',
+	paddingLeft: 4,
+	border: received && '1px solid #2185D0',
 	borderRadius: 5,
 }));
 

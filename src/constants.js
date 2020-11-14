@@ -6,7 +6,7 @@ export const SERVER = 'devstorm';
 export const contacts = [
 	{
 		contactId: '1',
-		numbers: ['2082060861', '2029659970'],
+		numbers: ['2029659970'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '10All circuits are busy now',
@@ -18,7 +18,6 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '15SIT requires deposit',
-		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png',
 	},
 	{
 		contactId: '3',
@@ -26,7 +25,6 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '1Number Disconnected',
-		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png',
 	},
 	{
 		contactId: '4',
@@ -34,7 +32,6 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '23Time and Temp recording',
-		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png',
 	},
 	{
 		contactId: '5',
