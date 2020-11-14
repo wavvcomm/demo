@@ -115,6 +115,16 @@ const App = () => {
 
 	useEffect(() => {
 		if (stormLoaded) {
+			const params = {
+				fields: [
+					{ id: 'first_name', label: 'First Name' },
+					{ id: 'last_name', label: 'Last Name' },
+					{ id: 'email', label: 'Email' },
+				],
+			};
+
+			window.Storm.setMergeFields(params);
+
 			window.Storm.onContactLink((contact) => {
 				const { contactId, name } = contact;
 				const id = contactId || getContactByPhone(name).contactId;

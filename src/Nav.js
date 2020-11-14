@@ -11,6 +11,56 @@ const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
 			</Link>
 			<Menu secondary size="tiny" style={{ zIndex: 1000, marginTop: 0 }}>
 				<Menu.Item>
+					<Dropdown text="Set Theme" button>
+						<Dropdown.Menu>
+							<Dropdown.Item>
+								<Dropdown text="Light">
+									<Dropdown.Menu>
+										<Dropdown.Header>Accents</Dropdown.Header>
+										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'light', primaryColor: '#48B0D6' })}>
+											Standard
+										</Dropdown.Item>
+										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'light', primaryColor: '#ff0000' })}>
+											Red
+										</Dropdown.Item>
+										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'light', primaryColor: '#ffff00' })}>
+											Yellow
+										</Dropdown.Item>
+										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'light', primaryColor: '#33cc33' })}>
+											Green
+										</Dropdown.Item>
+										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'light', primaryColor: '#0000ff' })}>
+											Blue
+										</Dropdown.Item>
+									</Dropdown.Menu>
+								</Dropdown>
+							</Dropdown.Item>
+							<Dropdown.Item>
+								<Dropdown text="Dark">
+									<Dropdown.Menu>
+										<Dropdown.Header>Accents</Dropdown.Header>
+										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'dark', primaryColor: '#48B0D6' })}>
+											Standard
+										</Dropdown.Item>
+										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'dark', primaryColor: '#ff0000' })}>
+											Red
+										</Dropdown.Item>
+										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'dark', primaryColor: '#ffff00' })}>
+											Yellow
+										</Dropdown.Item>
+										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'dark', primaryColor: '#33cc33' })}>
+											Green
+										</Dropdown.Item>
+										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'dark', primaryColor: '#0000ff' })}>
+											Blue
+										</Dropdown.Item>
+									</Dropdown.Menu>
+								</Dropdown>
+							</Dropdown.Item>
+						</Dropdown.Menu>
+					</Dropdown>
+				</Menu.Item>
+				<Menu.Item>
 					<Dropdown text="DNC Actions" button>
 						<Dropdown.Menu>
 							<Dropdown.Item onClick={() => setDncAction('Remove')}>Remove</Dropdown.Item>

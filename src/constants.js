@@ -11,6 +11,11 @@ export const contacts = [
 		city: 'Some City',
 		name: '10All circuits are busy now',
 		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1568401491/napoleon_djrmp5.png',
+		mergeFields: [
+			{ id: 'first_name', label: 'First Name', value: '10All' },
+			{ id: 'last_name', label: 'Last Name', value: 'circuits are busy now' },
+			{ id: 'email', label: 'Email', value: 'test@test.com' },
+		],
 	},
 	{
 		contactId: '2',
@@ -18,6 +23,11 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '15SIT requires deposit',
+		mergeFields: [
+			{ id: 'first_name', label: 'First Name', value: '15SIT' },
+			{ id: 'last_name', label: 'Last Name', value: 'requires deposit' },
+			{ id: 'email', label: 'Email', value: 'test@test.com' },
+		],
 	},
 	{
 		contactId: '3',
@@ -25,6 +35,11 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '1Number Disconnected',
+		mergeFields: [
+			{ id: 'first_name', label: 'First Name', value: '1Number' },
+			{ id: 'last_name', label: 'Last Name', value: 'Disconnected' },
+			{ id: 'email', label: 'Email', value: 'test@test.com' },
+		],
 	},
 	{
 		contactId: '4',
@@ -32,6 +47,11 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: '23Time and Temp recording',
+		mergeFields: [
+			{ id: 'first_name', label: 'First Name', value: '23Time' },
+			{ id: 'last_name', label: 'Last Name', value: 'and Temp recording' },
+			{ id: 'email', label: 'Email', value: 'test@test.com' },
+		],
 	},
 	{
 		contactId: '5',
@@ -39,13 +59,23 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'Welcome to inum.',
+		mergeFields: [
+			{ id: 'first_name', label: 'First Name', value: 'Welcome' },
+			{ id: 'last_name', label: 'Last Name', value: 'to inum.' },
+			{ id: 'email', label: 'Email', value: 'test@test.com' },
+		],
 	},
 	{
 		contactId: '6',
 		numbers: ['7188169901'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
-		name: 'North Staten Island	',
+		name: 'North Staten Island',
+		mergeFields: [
+			{ id: 'first_name', label: 'First Name', value: 'North' },
+			{ id: 'last_name', label: 'Last Name', value: 'Staten Island' },
+			{ id: 'email', label: 'Email', value: 'test@test.com' },
+		],
 	},
 	{
 		contactId: '7',
@@ -53,6 +83,11 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'Excuse me, please deposit five cents',
+		mergeFields: [
+			{ id: 'first_name', label: 'First Name', value: 'Excuse' },
+			{ id: 'last_name', label: 'Last Name', value: 'me, please deposit five cents' },
+			{ id: 'email', label: 'Email', value: 'test@test.com' },
+		],
 	},
 	{
 		contactId: '8',
@@ -60,6 +95,11 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'Continious ring',
+		mergeFields: [
+			{ id: 'first_name', label: 'First Name', value: 'Continious' },
+			{ id: 'last_name', label: 'Last Name', value: 'ring' },
+			{ id: 'email', label: 'Email', value: 'test@test.com' },
+		],
 	},
 	{
 		contactId: '9',
