@@ -1,22 +1,19 @@
-/* eslint-disable */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import axios from 'axios';
 import { Image, Button, Feed, Header, Label, Grid, List, Menu, Segment } from 'semantic-ui-react';
-import { formatPhone } from './utils';
+import { formatPhone, rawPhone } from './utils';
 import { SERVER, VENDER_USER_ID, VENDOR_ID, APP_ID } from './constants';
 
 const DetailView = ({
 	notes,
-	setNotes,
 	recordings,
 	outcomes,
 	match,
 	unreadCounts,
 	getContactById,
 	stormLoaded,
-	open,
 	setOpen,
 	numberDialing,
 	enableClickToCall,
@@ -24,8 +21,8 @@ const DetailView = ({
 	const [activeMain, setActiveMain] = useState('notes');
 	const [activeSub, setActiveSub] = useState('messages');
 	const [messages, setMessages] = useState([]);
-	const [nextPageToken, setNextPageToken] = useState(null);
-	const [note, setNote] = useState('');
+	// const [nextPageToken, setNextPageToken] = useState(null);
+	// const [note, setNote] = useState('');
 	const { id } = match.params;
 	const contact = getContactById(id);
 
@@ -42,8 +39,11 @@ const DetailView = ({
 				},
 			})
 			.then(({ data }) => {
-				setMessages([...messages, ...data.messages]);
-				setNextPageToken(data.nextPageToken);
+				const contactMessages = data.messages.filter((message) => {
+					return contact.numbers.find((number) => rawPhone(number) === rawPhone(message.number));
+				});
+				setMessages(contactMessages);
+				// setNextPageToken(data.nextPageToken);
 			})
 			.catch((err) => console.log({ err }));
 	};
@@ -141,8 +141,8 @@ const DetailView = ({
 						) : (
 							<FeedContainer>
 								<Feed>
-									{recordings[id]?.map(({ id, date, url }) => (
-										<Feed.Event key={id}>
+									{recordings[id]?.map(({ id: recordingId, date, url }) => (
+										<Feed.Event key={recordingId}>
 											<Feed.Content>
 												<Feed.Summary>{new Date(date).toLocaleDateString('en-US')}</Feed.Summary>
 												<audio controls src={url} style={{ marginTop: 10 }}>
@@ -172,11 +172,11 @@ const DetailView = ({
 								}}
 							/>
 						</Menu>
-						<Segment attached="bottom" placeholder>
+						<Segment attached="bottom" placeholder style={{ justifyContent: 'flex-start' }}>
 							{activeSub === 'messages' ? (
 								<MessagesContainer>
-									{messages?.map(({ id, number, body, date, status }) => (
-										<Message received={status === 'RECEIVED'} key={id}>
+									{messages?.map(({ id: messageId, body, status }) => (
+										<Message received={status === 'RECEIVED'} key={messageId}>
 											<MessageBubble received={status === 'RECEIVED'}>{body}</MessageBubble>
 										</Message>
 									))}
@@ -187,10 +187,7 @@ const DetailView = ({
 										{outcomes[id]?.map(({ number, duration, human, outcome }) => (
 											<Feed.Event key={`${number} - ${duration} - ${outcome}`}>
 												<Feed.Content>
-													<Feed.Summary>
-														{number}
-														<Feed.Date>Duration of call {duration}</Feed.Date>
-													</Feed.Summary>
+													<Feed.Summary>Duration {duration} seconds</Feed.Summary>
 													<Feed.Meta>
 														Outcome - {outcome}
 														{human ? ', answered' : ''}
@@ -261,13 +258,14 @@ const MainContainer = styled.div({
 	marginTop: 20,
 });
 
-const Number = styled.div(({ dialing }) => ({
+const Number = styled.div(() => ({
+	width: '27%',
 	display: 'flex',
 	alignItems: 'center',
 	marginTop: 12,
-	marginLeft: 20,
-	width: '80%',
-	border: dialing && '1px solid #2185D0',
+	marginLeft: 15,
+	paddingLeft: 5,
+	border: '1px solid #2185D0',
 	borderRadius: 5,
 }));
 
@@ -280,11 +278,27 @@ const Message = styled.div(({ received }) => ({
 }));
 
 const MessageBubble = styled.div(({ received }) => ({
-	border: '1px solid blue',
-	borderRadius: 5,
-	padding: 3,
-	margin: '5px 0',
-	backgroundColor: received ? null : 'blue',
+	maxWidth: 220,
+	margin: 5,
+	padding: '8px 12px',
+	borderRadius: 10,
+	background: '#2185D0',
+	color: '#fff',
+	position: 'relative',
+
+	'&:before': {
+		content: '" "',
+		width: 0,
+		height: 0,
+		position: 'absolute',
+		borderRight: `8px solid ${received ? '#2185D0' : 'transparent'}`,
+		borderLeft: `8px solid ${received ? 'transparent' : '#2185D0'}`,
+		borderTop: '8px solid #2185D0',
+		borderBottom: '8px solid transparent',
+		right: !received && -8,
+		left: received && -8,
+		top: 0,
+	},
 }));
 
 export default DetailView;
