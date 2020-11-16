@@ -98,6 +98,13 @@ const DetailView = ({
 		}
 	}, [stormLoaded]);
 
+	const handleTags = ({ target }) => {
+		const newTags = { ...tags };
+		if (!newTags[id]) newTags[id] = {};
+		newTags[id][target.name] = target.checked;
+		setTags(newTags);
+	};
+
 	return (
 		<Container>
 			<HeaderContainer>
@@ -272,12 +279,7 @@ const DetailView = ({
 								control="input"
 								type="checkbox"
 								checked={tags?.[id]?.['Warm Lead']}
-								onChange={({ target }) => {
-									const newTags = { ...tags };
-									if (!newTags[id]) newTags[id] = {};
-									newTags[id][target.name] = target.checked;
-									setTags(newTags);
-								}}
+								onChange={handleTags}
 							/>
 							<Form.Field
 								label="Follow Up"
@@ -285,12 +287,7 @@ const DetailView = ({
 								control="input"
 								type="checkbox"
 								checked={tags?.[id]?.['Follow Up']}
-								onChange={({ target }) => {
-									const newTags = { ...tags };
-									if (!newTags[id]) newTags[id] = {};
-									newTags[id][target.name] = target.checked;
-									setTags(newTags);
-								}}
+								onChange={handleTags}
 							/>
 							<Form.Field
 								label="Do Not Call"
@@ -298,12 +295,7 @@ const DetailView = ({
 								control="input"
 								type="checkbox"
 								checked={tags?.[id]?.['Do Not Call']}
-								onChange={({ target }) => {
-									const newTags = { ...tags };
-									if (!newTags[id]) newTags[id] = {};
-									newTags[id][target.name] = target.checked;
-									setTags(newTags);
-								}}
+								onChange={handleTags}
 							/>
 							<Form.Field
 								control={TextArea}

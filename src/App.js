@@ -196,7 +196,7 @@ const App = () => {
 
 	useEffect(() => {
 		if (stormLoaded) {
-			window.Storm.onCallRecorded(({ recordingId: id, contactId }) => {
+			window.Storm.onCallRecorded(({ recordingId: id, contactId, number }) => {
 				// TODO: make dynamic url for PROD
 				axios
 					.get(`http://${SERVER}:7073/api/customers/${VENDER_USER_ID}/recordings/${id}`, {
@@ -206,6 +206,7 @@ const App = () => {
 						},
 					})
 					.then(({ data }) => {
+						if (!contactId) contactId = getContactByPhone(number).id;
 						const newRecordings = { ...recordings };
 						if (newRecordings[contactId]) newRecordings[contactId].push(data);
 						else newRecordings[contactId] = [data];
