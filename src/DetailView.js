@@ -2,22 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import axios from 'axios';
-import {
-	Image,
-	Button,
-	Feed,
-	Header,
-	Label,
-	Grid,
-	List,
-	Menu,
-	Segment,
-	Modal,
-	Form,
-	TextArea,
-} from 'semantic-ui-react';
+import { Image, Button, Feed, Header, Label, Grid, List, Menu, Segment } from 'semantic-ui-react';
 import { formatPhone, rawPhone } from './utils';
-import { SERVER, VENDER_USER_ID, VENDOR_ID, APP_ID } from './constants';
+import { SERVER, VENDER_USER_ID, VENDOR_ID, APP_ID, exampleMessages } from './constants';
+import CallDispositionModal from './CallDispositionModal';
 
 const DetailView = ({
 	notes,
@@ -37,26 +25,7 @@ const DetailView = ({
 }) => {
 	const [activeMain, setActiveMain] = useState('notes');
 	const [activeSub, setActiveSub] = useState('messages');
-	const [messages, setMessages] = useState([
-		{
-			id: 'b809f77f-ea6d-45f1-9608-b123b71c2f4b',
-			body: 'Ut enim ad minim veniam, quis nostrud exercitation.',
-			status: 'RECEIVED',
-		},
-		{ id: 'c809f742-a234d-45f1-9608-b123b71c2f4b', body: 'quis nostrud exercitation.', status: 'DELIVERED' },
-		{
-			id: 'c809f742-a234d-45f1-9608-b1223456df4b',
-			body:
-				'nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation.',
-			status: 'RECEIVED',
-		},
-		{
-			id: 'bgs4f77f-ea6d-45f1-9608-b123b71c2f4b',
-			body:
-				'Ad minim veniam, quis nostrud exercitation. nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation. Ut enim ad minim veniam. nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation. Ut enim ad minim veniam.',
-			status: 'DELIVERED',
-		},
-	]);
+	const [messages, setMessages] = useState(exampleMessages);
 	// const [nextPageToken, setNextPageToken] = useState(null);
 	const [note, setNote] = useState('');
 	const { id } = match.params;
@@ -97,13 +66,6 @@ const DetailView = ({
 			});
 		}
 	}, [stormLoaded]);
-
-	const handleTags = ({ target }) => {
-		const newTags = { ...tags };
-		if (!newTags[id]) newTags[id] = {};
-		newTags[id][target.name] = target.checked;
-		setTags(newTags);
-	};
 
 	return (
 		<Container>
@@ -261,75 +223,17 @@ const DetailView = ({
 					</Grid.Column>
 				</Grid>
 			</MainContainer>
-
-			<Modal
-				onClose={() => {
-					setOpen(false);
-				}}
+			<CallDispositionModal
+				tags={tags}
+				contactId={id}
+				setTags={setTags}
+				note={note}
+				setNote={setNote}
 				open={open}
-				size="mini"
-			>
-				<Modal.Header>Call Disposition</Modal.Header>
-				<Modal.Content>
-					<Form>
-						<Form.Group grouped>
-							<Form.Field
-								label="Warm Lead"
-								name="Warm Lead"
-								control="input"
-								type="checkbox"
-								checked={tags?.[id]?.['Warm Lead']}
-								onChange={handleTags}
-							/>
-							<Form.Field
-								label="Follow Up"
-								name="Follow Up"
-								control="input"
-								type="checkbox"
-								checked={tags?.[id]?.['Follow Up']}
-								onChange={handleTags}
-							/>
-							<Form.Field
-								label="Do Not Call"
-								name="Do Not Call"
-								control="input"
-								type="checkbox"
-								checked={tags?.[id]?.['Do Not Call']}
-								onChange={handleTags}
-							/>
-							<Form.Field
-								control={TextArea}
-								label="Notes"
-								placeholder="How did the call go?"
-								value={note}
-								onChange={({ target }) => setNote(target.value)}
-							/>
-						</Form.Group>
-					</Form>
-				</Modal.Content>
-				<Modal.Actions>
-					<Button
-						onClick={() => {
-							setOpen(false);
-						}}
-					>
-						Cancel
-					</Button>
-					<Button
-						onClick={() => {
-							const newNotes = { ...notes };
-							if (newNotes[id]) newNotes[id].push({ note, date: Date.now() });
-							else newNotes[id] = [{ note, date: Date.now() }];
-							setNotes(newNotes);
-							setOpen(false);
-							window.Storm.continue();
-						}}
-						positive
-					>
-						Save
-					</Button>
-				</Modal.Actions>
-			</Modal>
+				setOpen={setOpen}
+				notes={notes}
+				setNotes={setNotes}
+			/>
 		</Container>
 	);
 };
@@ -366,31 +270,36 @@ const MessagesContainer = styled.div({});
 const Message = styled.div(({ received }) => ({
 	display: 'flex',
 	justifyContent: received ? 'flex-start' : 'flex-end',
-	color: received ? 'black' : 'white',
+	color: received ? '#000' : '#fff',
 }));
 
-const MessageBubble = styled.div(({ received }) => ({
-	maxWidth: 220,
-	margin: 5,
-	padding: '8px 12px',
-	borderRadius: 10,
-	background: '#2185D0',
-	color: '#fff',
-	position: 'relative',
+const MessageBubble = styled.div(({ received }) => {
+	const textColor = received ? '#000' : '#fff';
+	const bubbleColor = received ? '#fff' : '#2185D0';
 
-	'&:before': {
-		content: '" "',
-		width: 0,
-		height: 0,
-		position: 'absolute',
-		borderRight: `8px solid ${received ? '#2185D0' : 'transparent'}`,
-		borderLeft: `8px solid ${received ? 'transparent' : '#2185D0'}`,
-		borderTop: '8px solid #2185D0',
-		borderBottom: '8px solid transparent',
-		right: !received && -8,
-		left: received && -8,
-		top: 0,
-	},
-}));
+	return {
+		maxWidth: 220,
+		margin: 5,
+		padding: '8px 12px',
+		borderRadius: 10,
+		background: bubbleColor,
+		color: textColor,
+		position: 'relative',
+
+		'&:before': {
+			content: '" "',
+			width: 0,
+			height: 0,
+			position: 'absolute',
+			borderRight: `8px solid ${received ? bubbleColor : 'transparent'}`,
+			borderLeft: `8px solid ${received ? 'transparent' : bubbleColor}`,
+			borderTop: `8px solid ${bubbleColor}`,
+			borderBottom: '8px solid transparent',
+			right: !received && -8,
+			left: received && -8,
+			top: 0,
+		},
+	};
+});
 
 export default DetailView;
