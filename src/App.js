@@ -22,10 +22,9 @@ const App = () => {
 	const [unreadCounts, setUnreadCounts] = useState({});
 	const [enableClickToCall, setEnableClickToCall] = useState(true);
 	const [tags, setTags] = useState({
-		'Warm Lead': false,
-		'Wrong Number': false,
-		'Do Not Call': false,
-		'Follow Up': false,
+		1: {
+			'Warm Lead': true,
+		},
 	});
 	const [notes, setNotes] = useState({
 		1: [

@@ -140,22 +140,17 @@ const DetailView = ({
 							})}
 						</List>
 						<div>
-							{tags['Warm Lead'] && (
+							{tags?.[id]?.['Warm Lead'] && (
 								<Label as="h6" tag color="blue" style={{ marginRight: 7 }}>
 									Warm Lead
 								</Label>
 							)}
-							{tags['Follow Up'] && (
+							{tags?.[id]?.['Follow Up'] && (
 								<Label as="h6" tag color="teal" style={{ marginRight: 7 }}>
 									Follow Up
 								</Label>
 							)}
-							{tags['Wrong Number'] && (
-								<Label as="h6" tag color="yellow" style={{ marginRight: 7 }}>
-									Wrong Number
-								</Label>
-							)}
-							{tags['Do Not Call'] && (
+							{tags?.[id]?.['Do Not Call'] && (
 								<Label as="h6" tag color="red">
 									Do Not Call
 								</Label>
@@ -276,10 +271,11 @@ const DetailView = ({
 								name="Warm Lead"
 								control="input"
 								type="checkbox"
-								value={tags['Warm Lead']}
+								checked={tags?.[id]?.['Warm Lead']}
 								onChange={({ target }) => {
 									const newTags = { ...tags };
-									newTags[target.name] = target.value;
+									if (!newTags[id]) newTags[id] = {};
+									newTags[id][target.name] = target.checked;
 									setTags(newTags);
 								}}
 							/>
@@ -288,22 +284,11 @@ const DetailView = ({
 								name="Follow Up"
 								control="input"
 								type="checkbox"
-								value={tags['Follow Up']}
+								checked={tags?.[id]?.['Follow Up']}
 								onChange={({ target }) => {
 									const newTags = { ...tags };
-									newTags[target.name] = target.value;
-									setTags(newTags);
-								}}
-							/>
-							<Form.Field
-								label="Wrong Number"
-								name="Wrong Number"
-								control="input"
-								type="checkbox"
-								value={tags['Wrong Number']}
-								onChange={({ target }) => {
-									const newTags = { ...tags };
-									newTags[target.name] = target.value;
+									if (!newTags[id]) newTags[id] = {};
+									newTags[id][target.name] = target.checked;
 									setTags(newTags);
 								}}
 							/>
@@ -312,10 +297,11 @@ const DetailView = ({
 								name="Do Not Call"
 								control="input"
 								type="checkbox"
-								value={tags['Do Not Call']}
+								checked={tags?.[id]?.['Do Not Call']}
 								onChange={({ target }) => {
 									const newTags = { ...tags };
-									newTags[target.name] = target.value;
+									if (!newTags[id]) newTags[id] = {};
+									newTags[id][target.name] = target.checked;
 									setTags(newTags);
 								}}
 							/>
