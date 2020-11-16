@@ -23,7 +23,7 @@ const App = () => {
 
 	const loadSnippet = () =>
 		new Promise((resolve, reject) => {
-			const server = 'devstorm';
+			const server = 'stage1';
 			const script = document.createElement('script');
 			script.src = `https://${server}.stormapp.com/storm.js`;
 			script.onload = () => resolve();

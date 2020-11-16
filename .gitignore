@@ -50,4 +50,5 @@ Thumbs.db
 
 # Cypress Ignore Files
 cypress/videos/*
+cypress/screenshots/
 

@@ -34,6 +34,6 @@ describe('Home Page', () => {
 
 	it('can add new numbers to leads', () => {
 		home.addNewNumberToTableRow(0, '8018018018');
-		home.getPhoneNumbersOnTableRow(0).should('contain.text', '8018018018');
+		home.getPhoneNumbersOnTableRow(0).should('contain.text', '(801) 801-8018');
 	});
 });

@@ -2,5 +2,14 @@
 	"baseUrl": "http://localhost:3000",
 	"viewportHeight": 1080,
 	"viewportWidth": 1920,
-	"integrationFolder": "cypress/integration/tests"
+	"integrationFolder": "cypress/integration/tests",
+	"reporter": "cypress-testrail-reporter",
+	"chromeWebSecurity": false,
+	"reporterOptions": {
+		"domain": "wavv.testrail.com",
+		"username": "steve@wavv.com",
+		"password": "DkTOZSubRdAxf3t80j2T-Bz.o1ilr.4N38d.PtIhg",
+		"projectId": 1,
+		"suiteId": 1
+	}
 }
