@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import axios from 'axios';
 import { Image, Button, Feed, Header, Label, Grid, List, Menu, Segment } from 'semantic-ui-react';
 import { formatPhone, rawPhone } from './utils';
-import { SERVER, VENDOR_USER_ID, VENDOR_ID, APP_ID, exampleMessages } from './constants';
+import { SERVER_API, VENDOR_USER_ID, VENDOR_ID, APP_ID, exampleMessages } from './constants';
 import CallDispositionModal from './CallDispositionModal';
 
 const DetailView = ({
@@ -33,7 +33,7 @@ const DetailView = ({
 
 	const getMessages = (token) => {
 		axios
-			.get(`${SERVER}/api/customers/${VENDOR_USER_ID}/messages`, {
+			.get(`${SERVER_API}/api/customers/${VENDOR_USER_ID}/messages`, {
 				params: {
 					limit: 15,
 					token,

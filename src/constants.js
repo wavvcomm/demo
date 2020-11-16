@@ -2,7 +2,9 @@ export const VENDOR_ID = '00000000000000000000000000000000';
 export const APP_ID = 'GXkxpyuqT9kmTdMcbn4EWUatkjTSD5H8mqRZQSEz8JCPuKThquTdmw2GGt2iVMHf';
 export const VENDOR_USER_ID = '11111';
 export const SERVER = 'https://stage1.stormapp.com';
-// export const SERVER = 'http://devstorm:7073';
+export const SERVER_API = 'https://stage1.stormapp.com';
+// export const SERVER = 'http://devstorm.stormapp.com';
+// export const SERVER_API = 'http://devstorm:7073';
 
 export const contacts = [
 	{
