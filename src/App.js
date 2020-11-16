@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
+import axios from 'axios';
 import { Container, Button, Modal, Input } from 'semantic-ui-react';
 import { Route, Switch, useHistory } from 'react-router-dom';
-import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
+import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID, SERVER } from './constants';
 import ListView from './ListView';
 import DetailView from './DetailView';
 import Nav from './Nav';
@@ -11,21 +12,69 @@ import { rawPhone } from './utils';
 
 const App = () => {
 	const [stormLoaded, setStormLoaded] = useState(false);
+	const [openNote, setOpenNote] = useState(false);
 	const [contactList, setContacts] = useState(contacts);
 	const [selected, setSelected] = useState([]);
 	const [dncAction, setDncAction] = useState('');
 	const [dncNumber, setDncNumber] = useState('');
-	const [notes, setNotes] = useState([]);
-	const [outcomes, setOutcomes] = useState([]);
 	const [unreadMessages, setUnreadMessages] = useState(0);
+	const [numberDialing, setNumberDialing] = useState(null);
 	const [unreadCounts, setUnreadCounts] = useState({});
+	const [enableClickToCall, setEnableClickToCall] = useState(true);
+	const [tags, setTags] = useState({
+		1: {
+			'Warm Lead': true,
+		},
+	});
+	const [notes, setNotes] = useState({
+		1: [
+			{
+				note:
+					'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. *See recording',
+				date: '2019-02-19T06:00:00Z',
+				number: '2029659970',
+			},
+			{
+				note:
+					'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+				date: '2019-05-14T06:00:00Z',
+				number: '2029659970',
+			},
+		],
+	});
+	const [recordings, setRecordings] = useState({
+		1: [
+			{
+				id: '0234982f-6339-4a9d-8f79-efb6e83d228f',
+				date: '2019-02-19T06:00:00Z',
+				url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg',
+			},
+		],
+	});
+	const [outcomes, setOutcomes] = useState({
+		1: [
+			{
+				date: '2020-10-13T06:00:00Z',
+				number: '2029659970',
+				duration: 32,
+				outcome: 'USER_HUNG_UP',
+				human: true,
+			},
+			{
+				date: '2020-07-03T06:00:00Z',
+				number: '2029659970',
+				duration: 7,
+				outcome: 'BUSY',
+				human: false,
+			},
+		],
+	});
 	const history = useHistory();
 
 	const loadSnippet = () =>
 		new Promise((resolve, reject) => {
-			const server = 'devstorm';
 			const script = document.createElement('script');
-			script.src = `https://${server}.stormapp.com/storm.js`;
+			script.src = `https://${SERVER}.stormapp.com/storm.js`;
 			script.onload = () => resolve();
 			script.onerror = (err) => reject(err);
 			document.body.appendChild(script);
@@ -105,10 +154,10 @@ const App = () => {
 				setUnreadCounts(numberCounts);
 			});
 
-			window.Storm.onMessageReceived(({ number }) => {
-				const contact = getContactByPhone(number);
-				window.Storm.openMessengerThread({ number, dock: true, contact });
-			});
+			// window.Storm.onMessageReceived(({ number }) => {
+			// 	const contact = getContactByPhone(number);
+			// 	window.Storm.openMessengerThread({ number, dock: true, contact });
+			// });
 
 			window.Storm.onLinesChanged(({ lines }) => {
 				lines.forEach((call) => {
@@ -117,8 +166,56 @@ const App = () => {
 					}
 				});
 			});
+
+			window.Storm.onCallStarted(({ number }) => {
+				setNumberDialing(number);
+			});
+
+			window.Storm.onCampaignEnded(() => {
+				setNumberDialing(null);
+			});
+
+			window.Storm.onDialerIdle(({ idle }) => {
+				setEnableClickToCall(idle);
+			});
 		}
 	}, [stormLoaded]);
+
+	useEffect(() => {
+		if (stormLoaded) {
+			window.Storm.onCallEnded((outcome) => {
+				const { contactId } = outcome;
+				const newOutcomes = { ...outcomes };
+				outcome.date = Date.now();
+				if (newOutcomes[contactId]) newOutcomes[contactId].push(outcome);
+				else newOutcomes[contactId] = [outcome];
+				setOutcomes(newOutcomes);
+			});
+		}
+	}, [stormLoaded, outcomes]);
+
+	useEffect(() => {
+		if (stormLoaded) {
+			window.Storm.onCallRecorded(({ recordingId: id, contactId, number }) => {
+				// TODO: make dynamic url for PROD
+				axios
+					.get(`http://${SERVER}:7073/api/customers/${VENDER_USER_ID}/recordings/${id}`, {
+						auth: {
+							username: VENDOR_ID,
+							password: APP_ID,
+						},
+					})
+					.then(({ data }) => {
+						if (!contactId) contactId = getContactByPhone(number).id;
+						const newRecordings = { ...recordings };
+						if (newRecordings[contactId]) newRecordings[contactId].push(data);
+						else newRecordings[contactId] = [data];
+						setRecordings(newRecordings);
+					})
+					.catch((err) => console.log({ err }));
+			});
+		}
+	}, [stormLoaded, recordings]);
 
 	const removeNumber = ({ contactId, number }) => {
 		const updatedContacts = contactList.map((contact) => {
@@ -153,14 +250,11 @@ const App = () => {
 	};
 
 	const textNumber = (params) => {
-		console.log(params);
 		window.Storm.openMessengerThread(params);
 	};
 
 	const callNumber = (ops) => {
-		// add Wavv calling functionality
 		window.Storm.callPhone(ops);
-		console.log(ops);
 	};
 
 	const handleStart = async () => {
@@ -227,11 +321,22 @@ const App = () => {
 						component={(props) => (
 							<DetailView
 								{...props}
+								contactList={contactList}
+								setContacts={setContacts}
+								getContactById={getContactById}
+								stormLoaded={stormLoaded}
+								open={openNote}
+								setOpen={setOpenNote}
+								numberDialing={numberDialing}
 								notes={notes}
 								setNotes={setNotes}
 								outcomes={outcomes}
 								setOutcomes={setOutcomes}
 								unreadCounts={unreadCounts}
+								enableClickToCall={enableClickToCall}
+								recordings={recordings}
+								tags={tags}
+								setTags={setTags}
 							/>
 						)}
 					/>
