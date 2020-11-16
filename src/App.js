@@ -1,31 +1,58 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
+import axios from 'axios';
 import { Container, Button, Modal, Input } from 'semantic-ui-react';
 import { Route, Switch, useHistory } from 'react-router-dom';
-import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID } from './constants';
+import {
+	APP_ID,
+	contacts,
+	VENDOR_USER_ID,
+	VENDOR_ID,
+	SERVER,
+	exampleOutcomes,
+	exampleNotes,
+	exampleRecordings,
+} from './constants';
 import ListView from './ListView';
 import DetailView from './DetailView';
 import Nav from './Nav';
+import Toast from './Toast';
 import { rawPhone } from './utils';
 
 const App = () => {
 	const [stormLoaded, setStormLoaded] = useState(false);
+	const [openNote, setOpenNote] = useState(false);
 	const [contactList, setContacts] = useState(contacts);
 	const [selected, setSelected] = useState([]);
 	const [dncAction, setDncAction] = useState('');
 	const [dncNumber, setDncNumber] = useState('');
-	const [notes, setNotes] = useState([]);
-	const [outcomes, setOutcomes] = useState([]);
 	const [unreadMessages, setUnreadMessages] = useState(0);
+	const [numberDialing, setNumberDialing] = useState(null);
 	const [unreadCounts, setUnreadCounts] = useState({});
+	const [messageReceivedToast, setMessageReceivedToast] = useState({});
+	const [enableClickToCall, setEnableClickToCall] = useState(true);
+	const [tags, setTags] = useState({
+		1: {
+			'Warm Lead': true,
+		},
+	});
+	const [notes, setNotes] = useState({
+		1: exampleNotes,
+	});
+	const [recordings, setRecordings] = useState({
+		1: exampleRecordings,
+	});
+	const [outcomes, setOutcomes] = useState({
+		1: exampleOutcomes,
+	});
 	const history = useHistory();
 
 	const loadSnippet = () =>
 		new Promise((resolve, reject) => {
 			const server = 'stage1';
 			const script = document.createElement('script');
-			script.src = `https://${server}.stormapp.com/storm.js`;
+			script.src = `${server}/storm.js`;
 			script.onload = () => resolve();
 			script.onerror = (err) => reject(err);
 			document.body.appendChild(script);
@@ -34,7 +61,7 @@ const App = () => {
 	const authWavv = async () => {
 		const issuer = VENDOR_ID;
 		const signature = APP_ID;
-		const userId = VENDER_USER_ID;
+		const userId = VENDOR_USER_ID;
 		const payload = { userId };
 		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
 		try {
@@ -105,9 +132,13 @@ const App = () => {
 				setUnreadCounts(numberCounts);
 			});
 
-			window.Storm.onMessageReceived(({ number }) => {
+			window.Storm.onMessageReceived(({ number, body }) => {
 				const contact = getContactByPhone(number);
-				window.Storm.openMessengerThread({ number, dock: true, contact });
+				const header = `New Message from ${contact.name || number}`;
+				setMessageReceivedToast({
+					header,
+					message: body,
+				});
 			});
 
 			window.Storm.onLinesChanged(({ lines }) => {
@@ -117,8 +148,56 @@ const App = () => {
 					}
 				});
 			});
+
+			window.Storm.onCallStarted(({ number }) => {
+				setNumberDialing(number);
+			});
+
+			window.Storm.onCampaignEnded(() => {
+				setNumberDialing(null);
+			});
+
+			window.Storm.onDialerIdle(({ idle }) => {
+				setEnableClickToCall(idle);
+			});
 		}
 	}, [stormLoaded]);
+
+	useEffect(() => {
+		if (stormLoaded) {
+			window.Storm.onCallEnded((outcome) => {
+				const { contactId } = outcome;
+				const newOutcomes = { ...outcomes };
+				outcome.date = Date.now();
+				if (newOutcomes[contactId]) newOutcomes[contactId].push(outcome);
+				else newOutcomes[contactId] = [outcome];
+				setOutcomes(newOutcomes);
+			});
+		}
+	}, [stormLoaded, outcomes]);
+
+	useEffect(() => {
+		if (stormLoaded) {
+			window.Storm.onCallRecorded(({ recordingId: id, contactId, number }) => {
+				// TODO: make dynamic url for PROD
+				axios
+					.get(`${SERVER}/api/customers/${VENDOR_USER_ID}/recordings/${id}`, {
+						auth: {
+							username: VENDOR_ID,
+							password: APP_ID,
+						},
+					})
+					.then(({ data }) => {
+						if (!contactId) contactId = getContactByPhone(number).id;
+						const newRecordings = { ...recordings };
+						if (newRecordings[contactId]) newRecordings[contactId].push(data);
+						else newRecordings[contactId] = [data];
+						setRecordings(newRecordings);
+					})
+					.catch((err) => console.log({ err }));
+			});
+		}
+	}, [stormLoaded, recordings]);
 
 	const removeNumber = ({ contactId, number }) => {
 		const updatedContacts = contactList.map((contact) => {
@@ -153,14 +232,11 @@ const App = () => {
 	};
 
 	const textNumber = (params) => {
-		console.log(params);
 		window.Storm.openMessengerThread(params);
 	};
 
 	const callNumber = (ops) => {
-		// add Wavv calling functionality
 		window.Storm.callPhone(ops);
-		console.log(ops);
 	};
 
 	const handleStart = async () => {
@@ -227,11 +303,22 @@ const App = () => {
 						component={(props) => (
 							<DetailView
 								{...props}
+								contactList={contactList}
+								setContacts={setContacts}
+								getContactById={getContactById}
+								stormLoaded={stormLoaded}
+								open={openNote}
+								setOpen={setOpenNote}
+								numberDialing={numberDialing}
 								notes={notes}
 								setNotes={setNotes}
 								outcomes={outcomes}
 								setOutcomes={setOutcomes}
 								unreadCounts={unreadCounts}
+								enableClickToCall={enableClickToCall}
+								recordings={recordings}
+								tags={tags}
+								setTags={setTags}
 							/>
 						)}
 					/>
@@ -263,6 +350,7 @@ const App = () => {
 					</Modal.Actions>
 				</Modal>
 			</Container>
+			<Toast {...messageReceivedToast} onHide={() => setMessageReceivedToast({})} delay={5000} />
 		</div>
 	);
 };
