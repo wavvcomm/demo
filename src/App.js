@@ -8,6 +8,7 @@ import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID, SERVER } from './constants
 import ListView from './ListView';
 import DetailView from './DetailView';
 import Nav from './Nav';
+import Toast from './Toast';
 import { rawPhone } from './utils';
 
 const App = () => {
@@ -20,6 +21,7 @@ const App = () => {
 	const [unreadMessages, setUnreadMessages] = useState(0);
 	const [numberDialing, setNumberDialing] = useState(null);
 	const [unreadCounts, setUnreadCounts] = useState({});
+	const [messageReceivedToast, setMessageReceivedToast] = useState({});
 	const [enableClickToCall, setEnableClickToCall] = useState(true);
 	const [tags, setTags] = useState({
 		1: {
@@ -154,10 +156,14 @@ const App = () => {
 				setUnreadCounts(numberCounts);
 			});
 
-			// window.Storm.onMessageReceived(({ number }) => {
-			// 	const contact = getContactByPhone(number);
-			// 	window.Storm.openMessengerThread({ number, dock: true, contact });
-			// });
+			window.Storm.onMessageReceived(({ number, body }) => {
+				const contact = getContactByPhone(number);
+				const header = `New Message from ${contact.name || number}`;
+				setMessageReceivedToast({
+					header,
+					message: body,
+				});
+			});
 
 			window.Storm.onLinesChanged(({ lines }) => {
 				lines.forEach((call) => {
@@ -368,6 +374,7 @@ const App = () => {
 					</Modal.Actions>
 				</Modal>
 			</Container>
+			<Toast {...messageReceivedToast} onHide={() => setMessageReceivedToast({})} delay={5000} />
 		</div>
 	);
 };
