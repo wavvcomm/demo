@@ -4,7 +4,16 @@ import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import { Container, Button, Modal, Input } from 'semantic-ui-react';
 import { Route, Switch, useHistory } from 'react-router-dom';
-import { APP_ID, contacts, VENDER_USER_ID, VENDOR_ID, SERVER } from './constants';
+import {
+	APP_ID,
+	contacts,
+	VENDOR_USER_ID,
+	VENDOR_ID,
+	SERVER,
+	exampleOutcomes,
+	exampleNotes,
+	exampleRecordings,
+} from './constants';
 import ListView from './ListView';
 import DetailView from './DetailView';
 import Nav from './Nav';
@@ -29,54 +38,20 @@ const App = () => {
 		},
 	});
 	const [notes, setNotes] = useState({
-		1: [
-			{
-				note:
-					'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. *See recording',
-				date: '2019-02-19T06:00:00Z',
-				number: '2029659970',
-			},
-			{
-				note:
-					'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-				date: '2019-05-14T06:00:00Z',
-				number: '2029659970',
-			},
-		],
+		1: exampleNotes,
 	});
 	const [recordings, setRecordings] = useState({
-		1: [
-			{
-				id: '0234982f-6339-4a9d-8f79-efb6e83d228f',
-				date: '2019-02-19T06:00:00Z',
-				url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg',
-			},
-		],
+		1: exampleRecordings,
 	});
 	const [outcomes, setOutcomes] = useState({
-		1: [
-			{
-				date: '2020-10-13T06:00:00Z',
-				number: '2029659970',
-				duration: 32,
-				outcome: 'USER_HUNG_UP',
-				human: true,
-			},
-			{
-				date: '2020-07-03T06:00:00Z',
-				number: '2029659970',
-				duration: 7,
-				outcome: 'BUSY',
-				human: false,
-			},
-		],
+		1: exampleOutcomes,
 	});
 	const history = useHistory();
 
 	const loadSnippet = () =>
 		new Promise((resolve, reject) => {
 			const script = document.createElement('script');
-			script.src = `https://${SERVER}.stormapp.com/storm.js`;
+			script.src = `${SERVER}/storm.js`;
 			script.onload = () => resolve();
 			script.onerror = (err) => reject(err);
 			document.body.appendChild(script);
@@ -85,7 +60,7 @@ const App = () => {
 	const authWavv = async () => {
 		const issuer = VENDOR_ID;
 		const signature = APP_ID;
-		const userId = VENDER_USER_ID;
+		const userId = VENDOR_USER_ID;
 		const payload = { userId };
 		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
 		try {
@@ -205,7 +180,7 @@ const App = () => {
 			window.Storm.onCallRecorded(({ recordingId: id, contactId, number }) => {
 				// TODO: make dynamic url for PROD
 				axios
-					.get(`http://${SERVER}:7073/api/customers/${VENDER_USER_ID}/recordings/${id}`, {
+					.get(`${SERVER}/api/customers/${VENDOR_USER_ID}/recordings/${id}`, {
 						auth: {
 							username: VENDOR_ID,
 							password: APP_ID,

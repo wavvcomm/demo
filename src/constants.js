@@ -1,132 +1,130 @@
 export const VENDOR_ID = '00000000000000000000000000000000';
 export const APP_ID = 'GXkxpyuqT9kmTdMcbn4EWUatkjTSD5H8mqRZQSEz8JCPuKThquTdmw2GGt2iVMHf';
-export const VENDER_USER_ID = '11111';
-export const SERVER = 'devstorm';
+export const VENDOR_USER_ID = '11111';
+export const SERVER = 'https://stage1.stormapp.com';
+// export const SERVER = 'http://devstorm:7073';
 
 export const contacts = [
 	{
 		contactId: '1',
-		numbers: ['2029659970'],
+		numbers: ['9588880000'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
-		name: '10All circuits are busy now',
+		name: 'Voice Mail',
 		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1568401491/napoleon_djrmp5.png',
 		mergeFields: [
-			{ id: 'first_name', label: 'First Name', value: '10All' },
-			{ id: 'last_name', label: 'Last Name', value: 'circuits are busy now' },
-			{ id: 'email', label: 'Email', value: 'test@test.com' },
-		],
-	},
-	{
-		contactId: '2',
-		numbers: ['4097243137', '8019591122', '8012049175'],
-		address: '123 E. 456 S.',
-		city: 'Some City',
-		name: '15SIT requires deposit',
-		mergeFields: [
-			{ id: 'first_name', label: 'First Name', value: '15SIT' },
-			{ id: 'last_name', label: 'Last Name', value: 'requires deposit' },
+			{ id: 'first_name', label: 'First Name', value: 'Voice' },
+			{ id: 'last_name', label: 'Last Name', value: 'Mail' },
 			{ id: 'email', label: 'Email', value: 'test@test.com' },
 		],
 	},
 	{
 		contactId: '3',
-		numbers: ['5419670010', '5379960002'],
+		numbers: ['9586660000', '9586660001', '9586660002'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
-		name: '1Number Disconnected',
+		name: 'Ring',
 		mergeFields: [
-			{ id: 'first_name', label: 'First Name', value: '1Number' },
-			{ id: 'last_name', label: 'Last Name', value: 'Disconnected' },
+			{ id: 'first_name', label: 'First Name', value: 'Ring' },
+			{ id: 'last_name', label: 'Last Name', value: 'Phone' },
+			{ id: 'email', label: 'Email', value: 'test@test.com' },
+		],
+	},
+	{
+		contactId: '2',
+		numbers: ['9587770000', '9587770001'],
+		address: '123 E. 456 S.',
+		city: 'Some City',
+		name: 'Answer',
+		mergeFields: [
+			{ id: 'first_name', label: 'First Name', value: 'Answer' },
+			{ id: 'last_name', label: 'Last Name', value: 'Phone' },
 			{ id: 'email', label: 'Email', value: 'test@test.com' },
 		],
 	},
 	{
 		contactId: '4',
-		numbers: ['2077754321', '8012182321', '5094570044'],
+		numbers: ['9585550000'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
-		name: '23Time and Temp recording',
+		name: 'Echo',
 		mergeFields: [
-			{ id: 'first_name', label: 'First Name', value: '23Time' },
-			{ id: 'last_name', label: 'Last Name', value: 'and Temp recording' },
+			{ id: 'first_name', label: 'First Name', value: 'Echo' },
+			{ id: 'last_name', label: 'Last Name', value: 'Phone' },
 			{ id: 'email', label: 'Email', value: 'test@test.com' },
 		],
 	},
 	{
 		contactId: '5',
-		numbers: ['6193309640'],
+		numbers: ['9584440000', '9584440001'],
 		address: '123 E. 456 S.',
 		city: 'Some City',
-		name: 'Welcome to inum.',
+		name: 'Hang Up',
 		mergeFields: [
-			{ id: 'first_name', label: 'First Name', value: 'Welcome' },
-			{ id: 'last_name', label: 'Last Name', value: 'to inum.' },
+			{ id: 'first_name', label: 'First Name', value: 'Hang' },
+			{ id: 'last_name', label: 'Last Name', value: 'Up' },
 			{ id: 'email', label: 'Email', value: 'test@test.com' },
 		],
 	},
+];
+
+export const exampleMessages = [
 	{
-		contactId: '6',
-		numbers: ['7188169901'],
-		address: '123 E. 456 S.',
-		city: 'Some City',
-		name: 'North Staten Island',
-		mergeFields: [
-			{ id: 'first_name', label: 'First Name', value: 'North' },
-			{ id: 'last_name', label: 'Last Name', value: 'Staten Island' },
-			{ id: 'email', label: 'Email', value: 'test@test.com' },
-		],
+		id: 'b809f77f-ea6d-45f1-9608-b123b71c2f4b',
+		body: 'Ut enim ad minim veniam, quis nostrud exercitation.',
+		status: 'RECEIVED',
+	},
+	{ id: 'c809f742-a234d-45f1-9608-b123b71c2f4b', body: 'quis nostrud exercitation.', status: 'DELIVERED' },
+	{
+		id: 'c809f742-a234d-45f1-9608-b1223456df4b',
+		body:
+			'nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation.',
+		status: 'RECEIVED',
 	},
 	{
-		contactId: '7',
-		numbers: ['6107970014'],
-		address: '123 E. 456 S.',
-		city: 'Some City',
-		name: 'Excuse me, please deposit five cents',
-		mergeFields: [
-			{ id: 'first_name', label: 'First Name', value: 'Excuse' },
-			{ id: 'last_name', label: 'Last Name', value: 'me, please deposit five cents' },
-			{ id: 'email', label: 'Email', value: 'test@test.com' },
-		],
+		id: 'bgs4f77f-ea6d-45f1-9608-b123b71c2f4b',
+		body:
+			'Ad minim veniam, quis nostrud exercitation. nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation. Ut enim ad minim veniam. nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation. Ut enim ad minim veniam.',
+		status: 'DELIVERED',
+	},
+];
+
+export const exampleNotes = [
+	{
+		note:
+			'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. *See recording',
+		date: '2019-02-19T06:00:00Z',
+		number: '2029659970',
 	},
 	{
-		contactId: '8',
-		numbers: ['3305720999'],
-		address: '123 E. 456 S.',
-		city: 'Some City',
-		name: 'Continious ring',
-		mergeFields: [
-			{ id: 'first_name', label: 'First Name', value: 'Continious' },
-			{ id: 'last_name', label: 'Last Name', value: 'ring' },
-			{ id: 'email', label: 'Email', value: 'test@test.com' },
-		],
+		note:
+			'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+		date: '2019-05-14T06:00:00Z',
+		number: '2029659970',
+	},
+];
+
+export const exampleRecordings = [
+	{
+		id: '0234982f-6339-4a9d-8f79-efb6e83d228f',
+		date: '2019-02-19T06:00:00Z',
+		url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg',
+	},
+];
+
+export const exampleOutcomes = [
+	{
+		date: '2020-10-13T06:00:00Z',
+		number: '2029659970',
+		duration: 32,
+		outcome: 'USER_HUNG_UP',
+		human: true,
 	},
 	{
-		contactId: '9',
-		numbers: ['2288689600', '2517434844', '2513689311'],
-		address: '123 E. 456 S.',
-		city: 'Some City',
-		name: '26Time and Temp recording',
-	},
-	{
-		contactId: '10',
-		numbers: ['5419670006', '8577679903', '8015904556'],
-		address: '123 E. 456 S.',
-		city: 'Some City',
-		name: '28SIT network difficulties',
-	},
-	{
-		contactId: '11',
-		numbers: ['8187827481', '2129679999', '2159790028'],
-		address: '123 E. 456 S.',
-		city: 'Some City',
-		name: '32Number Disconnected',
-	},
-	{
-		contactId: '12',
-		numbers: ['2065268530', '2037774647', '3108254321'],
-		address: '123 E. 456 S.',
-		city: 'Some City',
-		name: '42National Weather in Seattle',
+		date: '2020-07-03T06:00:00Z',
+		number: '2029659970',
+		duration: 7,
+		outcome: 'BUSY',
+		human: false,
 	},
 ];

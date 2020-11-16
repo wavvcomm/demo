@@ -59,6 +59,7 @@ const CallDispositonModal = ({ tags, contactId: id, setTags, note, setNote, open
 				<Button
 					onClick={() => {
 						setOpen(false);
+						window.Storm.continue();
 					}}
 				>
 					Cancel
