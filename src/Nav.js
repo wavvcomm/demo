@@ -7,11 +7,11 @@ const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
 	return (
 		<NavBar>
 			<Link to="/" style={{ color: 'inherit' }}>
-				WAVV Demo
+				CRM Demo
 			</Link>
 			<Menu secondary size="tiny" style={{ zIndex: 1000, marginTop: 0 }}>
 				<Menu.Item>
-					<Dropdown text="Set Theme" button>
+					<Dropdown text="Set WAVV Theme" button>
 						<Dropdown.Menu>
 							<Dropdown.Item>
 								<Dropdown text="Light">
