@@ -10,6 +10,7 @@ import {
 	VENDOR_USER_ID,
 	VENDOR_ID,
 	SERVER,
+	SERVER_API,
 	exampleOutcomes,
 	exampleNotes,
 	exampleRecordings,
@@ -180,7 +181,7 @@ const App = () => {
 			window.Storm.onCallRecorded(({ recordingId: id, contactId, number }) => {
 				// TODO: make dynamic url for PROD
 				axios
-					.get(`${SERVER}/api/customers/${VENDOR_USER_ID}/recordings/${id}`, {
+					.get(`${SERVER_API}/api/customers/${VENDOR_USER_ID}/recordings/${id}`, {
 						auth: {
 							username: VENDOR_ID,
 							password: APP_ID,
