@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
-import { Container, Button, Modal, Input } from 'semantic-ui-react';
+import { Container } from 'semantic-ui-react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import {
 	APP_ID,
@@ -26,8 +26,6 @@ const App = () => {
 	const [openNote, setOpenNote] = useState(false);
 	const [contactList, setContacts] = useState(contacts);
 	const [selected, setSelected] = useState([]);
-	const [dncAction, setDncAction] = useState('');
-	const [dncNumber, setDncNumber] = useState('');
 	const [unreadMessages, setUnreadMessages] = useState(0);
 	const [numberDialing, setNumberDialing] = useState(null);
 	const [unreadCounts, setUnreadCounts] = useState({});
@@ -262,19 +260,9 @@ const App = () => {
 		setSelected(newSelected);
 	};
 
-	const reset = () => {
-		setDncAction('');
-		setDncNumber('');
-	};
-
 	return (
 		<div>
-			<Nav
-				disableStart={!selected.length}
-				startCampaign={handleStart}
-				setDncAction={setDncAction}
-				unreadCount={unreadMessages}
-			/>
+			<Nav disableStart={!selected.length} startCampaign={handleStart} unreadCount={unreadMessages} />
 			<div id="storm-dialer-bar" />
 			<div id="storm-dialer-mini" />
 			<Container style={{ marginTop: 20 }}>
@@ -323,32 +311,6 @@ const App = () => {
 						)}
 					/>
 				</Switch>
-				<Modal onClose={() => setDncAction('')} open={!!dncAction} size="mini">
-					<Modal.Header>{`DNC List: ${dncAction} Number`}</Modal.Header>
-					<Modal.Content>
-						<Input value={dncNumber} onChange={({ target }) => setDncNumber(target.value)} placeholder="Number" />
-					</Modal.Content>
-					<Modal.Actions>
-						<Button
-							onClick={() => {
-								setDncAction('');
-							}}
-						>
-							Cancel
-						</Button>
-						<Button
-							onClick={() => {
-								if (dncAction === 'Remove') {
-									window.Storm.removeDncNumber({ number: dncNumber });
-								} else window.Storm.addDncNumber({ number: dncNumber });
-								reset();
-							}}
-							positive
-						>
-							{dncAction}
-						</Button>
-					</Modal.Actions>
-				</Modal>
 			</Container>
 			<Toast {...messageReceivedToast} onHide={() => setMessageReceivedToast({})} delay={5000} />
 		</div>

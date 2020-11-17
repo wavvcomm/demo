@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { Button, Dropdown, Label, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
-const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
+const Nav = ({ disableStart, startCampaign, unreadCount }) => {
 	return (
 		<NavBar>
 			<Link to="/" style={{ color: 'inherit' }}>
@@ -57,14 +57,6 @@ const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
 									</Dropdown.Menu>
 								</Dropdown>
 							</Dropdown.Item>
-						</Dropdown.Menu>
-					</Dropdown>
-				</Menu.Item>
-				<Menu.Item>
-					<Dropdown text="DNC Actions" button>
-						<Dropdown.Menu>
-							<Dropdown.Item onClick={() => setDncAction('Remove')}>Remove</Dropdown.Item>
-							<Dropdown.Item onClick={() => setDncAction('Add')}>Add</Dropdown.Item>
 						</Dropdown.Menu>
 					</Dropdown>
 				</Menu.Item>
