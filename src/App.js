@@ -50,9 +50,8 @@ const App = () => {
 
 	const loadSnippet = () =>
 		new Promise((resolve, reject) => {
-			const server = 'stage1';
 			const script = document.createElement('script');
-			script.src = `${server}/storm.js`;
+			script.src = `${SERVER}/storm.js`;
 			script.onload = () => resolve();
 			script.onerror = (err) => reject(err);
 			document.body.appendChild(script);

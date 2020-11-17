@@ -26,6 +26,8 @@ module.exports = (on, config) => {
 			launchOptions.args.push('--use-fake-ui-for-media-stream');
 			launchOptions.args.push('--use-fake-device-for-media-stream');
 			launchOptions.args.push('--use-file-for-fake-audio-capture=cypress/fixtures/your_sound.wav');
+			launchOptions.args.push('--ignore-ssl-errors=yes');
+			launchOptions.args.push('--ignore-certificate-errors');
 
 			return launchOptions;
 		}

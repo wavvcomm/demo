@@ -8,7 +8,7 @@ class DialerBar {
 
 	clickStartButton() {
 		cy.get(dialerBarFrame).iframe(() => {
-			cy.get(startButton).click();
+			cy.get(startButton, { timeout: 10 * 1000 }).click();
 		});
 	}
 }
