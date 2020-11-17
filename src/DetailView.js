@@ -49,8 +49,7 @@ const DetailView = ({
 				});
 				if (contactMessages.length > 0) setMessages(contactMessages);
 				// setNextPageToken(data.nextPageToken);
-			})
-			.catch((err) => console.log({ err }));
+			});
 	};
 
 	useEffect(() => {

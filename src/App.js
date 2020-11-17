@@ -64,13 +64,9 @@ const App = () => {
 		const userId = VENDOR_USER_ID;
 		const payload = { userId };
 		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
-		try {
-			await loadSnippet();
-			setStormLoaded(true);
-			window.Storm.auth({ token });
-		} catch (error) {
-			console.error(error);
-		}
+		await loadSnippet();
+		setStormLoaded(true);
+		window.Storm.auth({ token });
 	};
 
 	useEffect(() => {
@@ -193,8 +189,7 @@ const App = () => {
 						if (newRecordings[contactId]) newRecordings[contactId].push(data);
 						else newRecordings[contactId] = [data];
 						setRecordings(newRecordings);
-					})
-					.catch((err) => console.log({ err }));
+					});
 			});
 		}
 	}, [stormLoaded, recordings]);
@@ -241,11 +236,7 @@ const App = () => {
 
 	const handleStart = async () => {
 		const filteredContacts = contactList.filter((contact) => selected.includes(contact.contactId));
-		try {
-			window.Storm.startCampaign({ contacts: filteredContacts });
-		} catch (error) {
-			console.error(error);
-		}
+		window.Storm.startCampaign({ contacts: filteredContacts });
 	};
 
 	const handleSelected = (param) => {
