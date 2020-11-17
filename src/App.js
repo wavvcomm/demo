@@ -5,12 +5,11 @@ import axios from 'axios';
 import { Container, Button, Modal, Input } from 'semantic-ui-react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import {
-	APP_ID,
+	API_KEY,
 	contacts,
 	VENDOR_USER_ID,
 	VENDOR_ID,
-	SERVER,
-	SERVER_API,
+	SERVER_URL,
 	exampleOutcomes,
 	exampleNotes,
 	exampleRecordings,
@@ -52,7 +51,7 @@ const App = () => {
 	const loadSnippet = () =>
 		new Promise((resolve, reject) => {
 			const script = document.createElement('script');
-			script.src = `${SERVER}/storm.js`;
+			script.src = `${SERVER_URL}/storm.js`;
 			script.onload = () => resolve();
 			script.onerror = (err) => reject(err);
 			document.body.appendChild(script);
@@ -60,7 +59,7 @@ const App = () => {
 
 	const authWavv = async () => {
 		const issuer = VENDOR_ID;
-		const signature = APP_ID;
+		const signature = API_KEY;
 		const userId = VENDOR_USER_ID;
 		const payload = { userId };
 		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
@@ -177,10 +176,10 @@ const App = () => {
 			window.Storm.onCallRecorded(({ recordingId: id, contactId, number }) => {
 				// TODO: make dynamic url for PROD
 				axios
-					.get(`${SERVER_API}/api/customers/${VENDOR_USER_ID}/recordings/${id}`, {
+					.get(`${SERVER_URL}/api/customers/${VENDOR_USER_ID}/recordings/${id}`, {
 						auth: {
 							username: VENDOR_ID,
-							password: APP_ID,
+							password: API_KEY,
 						},
 					})
 					.then(({ data }) => {
