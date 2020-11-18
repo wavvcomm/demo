@@ -5,12 +5,11 @@ import axios from 'axios';
 import { Container } from 'semantic-ui-react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import {
-	APP_ID,
+	API_KEY,
 	contacts,
 	VENDOR_USER_ID,
 	VENDOR_ID,
-	SERVER,
-	SERVER_API,
+	SERVER_URL,
 	exampleOutcomes,
 	exampleNotes,
 	exampleRecordings,
@@ -26,6 +25,7 @@ const App = () => {
 	const [openNote, setOpenNote] = useState(false);
 	const [contactList, setContacts] = useState(contacts);
 	const [selected, setSelected] = useState([]);
+	const [skipped, setSkipped] = useState([]);
 	const [unreadMessages, setUnreadMessages] = useState(0);
 	const [numberDialing, setNumberDialing] = useState(null);
 	const [unreadCounts, setUnreadCounts] = useState({});
@@ -50,7 +50,7 @@ const App = () => {
 	const loadSnippet = () =>
 		new Promise((resolve, reject) => {
 			const script = document.createElement('script');
-			script.src = `${SERVER}/storm.js`;
+			script.src = `${SERVER_URL}/storm.js`;
 			script.onload = () => resolve();
 			script.onerror = (err) => reject(err);
 			document.body.appendChild(script);
@@ -58,17 +58,13 @@ const App = () => {
 
 	const authWavv = async () => {
 		const issuer = VENDOR_ID;
-		const signature = APP_ID;
+		const signature = API_KEY;
 		const userId = VENDOR_USER_ID;
 		const payload = { userId };
 		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
-		try {
-			await loadSnippet();
-			setStormLoaded(true);
-			window.Storm.auth({ token });
-		} catch (error) {
-			console.error(error);
-		}
+		await loadSnippet();
+		setStormLoaded(true);
+		window.Storm.auth({ token });
 	};
 
 	useEffect(() => {
@@ -179,10 +175,10 @@ const App = () => {
 			window.Storm.onCallRecorded(({ recordingId: id, contactId, number }) => {
 				// TODO: make dynamic url for PROD
 				axios
-					.get(`${SERVER_API}/api/customers/${VENDOR_USER_ID}/recordings/${id}`, {
+					.get(`${SERVER_URL}/api/customers/${VENDOR_USER_ID}/recordings/${id}`, {
 						auth: {
 							username: VENDOR_ID,
-							password: APP_ID,
+							password: API_KEY,
 						},
 					})
 					.then(({ data }) => {
@@ -191,8 +187,7 @@ const App = () => {
 						if (newRecordings[contactId]) newRecordings[contactId].push(data);
 						else newRecordings[contactId] = [data];
 						setRecordings(newRecordings);
-					})
-					.catch((err) => console.log({ err }));
+					});
 			});
 		}
 	}, [stormLoaded, recordings]);
@@ -225,6 +220,9 @@ const App = () => {
 		if (!skip) {
 			const updatedContacts = contactList.filter((contact) => contact.contactId !== contactId);
 			setContacts(updatedContacts);
+		} else {
+			const updatedSkipped = new Set([...skipped, contactId]);
+			setSkipped([...updatedSkipped]);
 		}
 		window.Storm.removeContact({ contactId, hangup: skip, resume: skip });
 	};
@@ -239,11 +237,7 @@ const App = () => {
 
 	const handleStart = async () => {
 		const filteredContacts = contactList.filter((contact) => selected.includes(contact.contactId));
-		try {
-			window.Storm.startCampaign({ contacts: filteredContacts });
-		} catch (error) {
-			console.error(error);
-		}
+		window.Storm.startCampaign({ contacts: filteredContacts });
 	};
 
 	const handleSelected = (param) => {
@@ -282,6 +276,7 @@ const App = () => {
 								callNumber={callNumber}
 								handleSelected={handleSelected}
 								selected={selected}
+								skipped={skipped}
 							/>
 						)}
 					/>

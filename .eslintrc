@@ -13,7 +13,8 @@
 		"react-app/jest",
 		"airbnb",
 		"storm",
-		"prettier"
+		"prettier",
+		"prettier/react"
 	],
 	"parserOptions": {
 		"sourceType": "module"
