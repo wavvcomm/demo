@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from '@emotion/styled';
 import { Button, Checkbox, Dropdown, Label, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { store } from './store';
+import { TOGGLE_DRAWER } from './types';
 
-const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
+const Nav = ({ startCampaign }) => {
+	const { showDrawer: showingDrawer, unreadMessages: unreadCount, selected, dispatch } = useContext(store);
 	const [on, toggleOn] = useState(false);
+	const disableStart = !selected.length;
 
 	const accents = {
 		default: '#48B0D6',
@@ -48,14 +52,6 @@ const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
 					</Dropdown>
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Dropdown item text="DNC Actions" button>
-						<Dropdown.Menu>
-							<Dropdown.Item onClick={() => setDncAction('Remove')}>Remove</Dropdown.Item>
-							<Dropdown.Item onClick={() => setDncAction('Add')}>Add</Dropdown.Item>
-						</Dropdown.Menu>
-					</Dropdown>
-				</Menu.Item>
-				<Menu.Item fitted>
 					<Button onClick={() => window.Storm.openMessenger({ dock: true })}>
 						Open Messenger
 						{unreadCount ? <Label color="red" circular floating content={unreadCount} /> : null}
@@ -63,6 +59,9 @@ const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
 				</Menu.Item>
 				<Menu.Item fitted>
 					<Button primary disabled={disableStart} onClick={startCampaign} content="Start Campaign" />
+				</Menu.Item>
+				<Menu.Item fitted>
+					<Button color={showingDrawer ? 'grey' : null} icon="bug" onClick={() => dispatch({ type: TOGGLE_DRAWER })} />
 				</Menu.Item>
 			</Menu>
 		</NavBar>
