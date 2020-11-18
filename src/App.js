@@ -26,6 +26,7 @@ const App = () => {
 	const [contactList, setContacts] = useState(contacts);
 	const [selected, setSelected] = useState([]);
 	const [skipped, setSkipped] = useState([]);
+	const [dncList, setDncList] = useState([]);
 	const [unreadMessages, setUnreadMessages] = useState(0);
 	const [numberDialing, setNumberDialing] = useState(null);
 	const [unreadCounts, setUnreadCounts] = useState({});
@@ -67,8 +68,23 @@ const App = () => {
 		window.Storm.auth({ token });
 	};
 
+	const getDncList = () => {
+		axios
+			.get(`${SERVER_URL}/api/customers/${VENDOR_USER_ID}/dnc`, {
+				auth: {
+					username: VENDOR_ID,
+					password: API_KEY,
+				},
+			})
+			.then(({ data }) => {
+				const numbers = data.map((obj) => rawPhone(obj.number));
+				setDncList(numbers);
+			});
+	};
+
 	useEffect(() => {
 		authWavv();
+		getDncList();
 	}, []);
 
 	const getContactById = (id) => contactList.find((contact) => contact.contactId === id);
@@ -302,6 +318,8 @@ const App = () => {
 								recordings={recordings}
 								tags={tags}
 								setTags={setTags}
+								dncList={dncList}
+								setDncList={setDncList}
 							/>
 						)}
 					/>

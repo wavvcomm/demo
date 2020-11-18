@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import axios from 'axios';
-import { Image, Button, Feed, Header, Label, Grid, List, Menu, Segment } from 'semantic-ui-react';
+import { Image, Button, Feed, Header, Label, Grid, List, Menu, Segment, Popup } from 'semantic-ui-react';
 import { formatPhone, rawPhone } from './utils';
 import { SERVER_URL, VENDOR_USER_ID, VENDOR_ID, API_KEY, exampleMessages } from './constants';
 import CallDispositionModal from './CallDispositionModal';
@@ -22,6 +22,8 @@ const DetailView = ({
 	open,
 	tags,
 	setTags,
+	dncList,
+	setDncList,
 }) => {
 	const [activeMain, setActiveMain] = useState('notes');
 	const [activeSub, setActiveSub] = useState('messages');
@@ -64,7 +66,7 @@ const DetailView = ({
 				}
 			});
 		}
-	}, [stormLoaded]);
+	}, [stormLoaded, id]);
 
 	return (
 		<Container>
@@ -82,27 +84,63 @@ const DetailView = ({
 						<List>
 							<List.Item icon="marker" content={`${contact.address} ${contact.city}`} />
 							{contact.numbers.map((number) => {
+								const isDncNumber = dncList.includes(rawPhone(number));
 								return (
 									<Number key={number} dialing={formatPhone(numberDialing) === formatPhone(number)}>
-										{formatPhone(number)}
-										<Button
-											icon="phone"
-											size="mini"
-											style={{ margin: '3px 3px 3px 6px' }}
-											disabled={!enableClickToCall}
-											onClick={() => window.Storm.callPhone({ number })}
+										<span style={{ textDecoration: isDncNumber && 'line-through' }}>{formatPhone(number)}</span>
+										<Popup
+											content="Call Number"
+											position="bottom center"
+											trigger={
+												<Button
+													icon="phone"
+													size="mini"
+													style={{ margin: '3px 3px 3px 6px' }}
+													disabled={!enableClickToCall || isDncNumber}
+													onClick={() => window.Storm.callPhone({ number })}
+												/>
+											}
 										/>
-										<div style={{ position: 'relative' }}>
-											<Button
-												icon="comment alternate"
-												size="mini"
-												style={{ margin: 3 }}
-												onClick={() => window.Storm.openMessengerThread({ contact, number, dock: true })}
-											/>
-											{unreadCounts[number] ? (
-												<Label color="red" size="tiny" circular floating content={unreadCounts[number]} />
-											) : null}
-										</div>
+
+										<Popup
+											content="Message Number"
+											position="bottom center"
+											trigger={
+												<div style={{ position: 'relative' }}>
+													<Button
+														icon="comment alternate"
+														size="mini"
+														style={{ margin: 3 }}
+														disabled={isDncNumber}
+														onClick={() => window.Storm.openMessengerThread({ contact, number, dock: true })}
+													/>
+													{unreadCounts[number] ? (
+														<Label color="red" size="tiny" circular floating content={unreadCounts[number]} />
+													) : null}
+												</div>
+											}
+										/>
+
+										<Popup
+											content={isDncNumber ? 'Remove from DNC' : 'Do Not Call'}
+											position="bottom center"
+											trigger={
+												<Button
+													onClick={() => {
+														const stormMethod = isDncNumber ? 'removeDncNumber' : 'addDncNumber';
+														window.Storm[stormMethod]({ number });
+														let newDncList = [...dncList];
+														if (isDncNumber) newDncList = newDncList.filter((num) => num !== rawPhone(number));
+														else newDncList.push(rawPhone(number));
+														setDncList(newDncList);
+													}}
+													icon="exclamation triangle"
+													size="mini"
+													color={isDncNumber ? 'red' : null}
+													style={{ margin: 3 }}
+												/>
+											}
+										/>
 									</Number>
 								);
 							})}
