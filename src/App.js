@@ -1,51 +1,34 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react';
+/* eslint-disable */
+import React, { useState, useEffect, useContext } from 'react';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
-import { Container } from 'semantic-ui-react';
+import styled from '@emotion/styled';
 import { Route, Switch, useHistory } from 'react-router-dom';
-import {
-	API_KEY,
-	contacts,
-	VENDOR_USER_ID,
-	VENDOR_ID,
-	SERVER_URL,
-	exampleOutcomes,
-	exampleNotes,
-	exampleRecordings,
-} from './constants';
+import { API_KEY, VENDOR_USER_ID, VENDOR_ID, SERVER_URL } from './constants';
 import ListView from './ListView';
 import DetailView from './DetailView';
 import Nav from './Nav';
 import Toast from './Toast';
 import { rawPhone } from './utils';
+import DebugDrawer from './DebugDrawer';
+import { store } from './store';
+import {
+	ADD_NUMBER,
+	ADD_OUTCOME,
+	ADD_RECORDING,
+	REMOVE_CONTACT,
+	REMOVE_NUMBER,
+	SET_ENABLE_CLICK_TO_CALL,
+	SET_NUMBER_DIALING,
+	SET_STORM_LOADED,
+	SET_UNREAD_COUNTS,
+	SET_UNREAD_MESSAGES,
+	SET_DNC_LIST,
+} from './types';
 
 const App = () => {
-	const [stormLoaded, setStormLoaded] = useState(false);
-	const [openNote, setOpenNote] = useState(false);
-	const [contactList, setContacts] = useState(contacts);
-	const [selected, setSelected] = useState([]);
-	const [skipped, setSkipped] = useState([]);
-	const [dncList, setDncList] = useState([]);
-	const [unreadMessages, setUnreadMessages] = useState(0);
-	const [numberDialing, setNumberDialing] = useState(null);
-	const [unreadCounts, setUnreadCounts] = useState({});
+	const { stormLoaded, contactList, selected, showDrawer, recordings, outcomes, dispatch } = useContext(store);
 	const [messageReceivedToast, setMessageReceivedToast] = useState({});
-	const [enableClickToCall, setEnableClickToCall] = useState(true);
-	const [tags, setTags] = useState({
-		1: {
-			'Warm Lead': true,
-		},
-	});
-	const [notes, setNotes] = useState({
-		1: exampleNotes,
-	});
-	const [recordings, setRecordings] = useState({
-		1: exampleRecordings,
-	});
-	const [outcomes, setOutcomes] = useState({
-		1: exampleOutcomes,
-	});
 	const history = useHistory();
 
 	const loadSnippet = () =>
@@ -64,7 +47,7 @@ const App = () => {
 		const payload = { userId };
 		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
 		await loadSnippet();
-		setStormLoaded(true);
+		dispatch({ type: SET_STORM_LOADED, payload: true });
 		window.Storm.auth({ token });
 	};
 
@@ -78,7 +61,7 @@ const App = () => {
 			})
 			.then(({ data }) => {
 				const numbers = data.map((obj) => rawPhone(obj.number));
-				setDncList(numbers);
+				dispatch({ type: SET_DNC_LIST, payload: numbers });
 			});
 	};
 
@@ -138,17 +121,15 @@ const App = () => {
 			});
 
 			window.Storm.onUnreadCount(({ unreadCount, numberCounts }) => {
-				setUnreadMessages(unreadCount);
-				setUnreadCounts(numberCounts);
+				dispatch({ type: SET_UNREAD_MESSAGES, payload: unreadCount });
+				dispatch({ type: SET_UNREAD_COUNTS, payload: numberCounts });
 			});
 
 			window.Storm.onMessageReceived(({ number, body }) => {
 				const contact = getContactByPhone(number);
 				const header = `New Message from ${contact.name || number}`;
-				setMessageReceivedToast({
-					header,
-					message: body,
-				});
+				const toast = { header, message: body };
+				setMessageReceivedToast(toast);
 			});
 
 			window.Storm.onLinesChanged(({ lines }) => {
@@ -160,15 +141,15 @@ const App = () => {
 			});
 
 			window.Storm.onCallStarted(({ number }) => {
-				setNumberDialing(number);
+				dispatch({ type: SET_NUMBER_DIALING, payload: number });
 			});
 
 			window.Storm.onCampaignEnded(() => {
-				setNumberDialing(null);
+				dispatch({ type: SET_NUMBER_DIALING, payload: null });
 			});
 
 			window.Storm.onDialerIdle(({ idle }) => {
-				setEnableClickToCall(idle);
+				dispatch({ type: SET_ENABLE_CLICK_TO_CALL, payload: idle });
 			});
 		}
 	}, [stormLoaded]);
@@ -177,11 +158,7 @@ const App = () => {
 		if (stormLoaded) {
 			window.Storm.onCallEnded((outcome) => {
 				const { contactId } = outcome;
-				const newOutcomes = { ...outcomes };
-				outcome.date = Date.now();
-				if (newOutcomes[contactId]) newOutcomes[contactId].push(outcome);
-				else newOutcomes[contactId] = [outcome];
-				setOutcomes(newOutcomes);
+				dispatch({ type: ADD_OUTCOME, payload: { contactId, outcome } });
 			});
 		}
 	}, [stormLoaded, outcomes]);
@@ -197,49 +174,26 @@ const App = () => {
 							password: API_KEY,
 						},
 					})
-					.then(({ data }) => {
+					.then(({ data: recording }) => {
 						if (!contactId) contactId = getContactByPhone(number).id;
-						const newRecordings = { ...recordings };
-						if (newRecordings[contactId]) newRecordings[contactId].push(data);
-						else newRecordings[contactId] = [data];
-						setRecordings(newRecordings);
+						dispatch({ type: ADD_RECORDING, payload: { contactId, recording } });
 					});
 			});
 		}
 	}, [stormLoaded, recordings]);
 
 	const removeNumber = ({ contactId, number }) => {
-		const updatedContacts = contactList.map((contact) => {
-			if (contact.contactId === contactId) {
-				const filteredNumbers = contact.numbers.filter((num) => num !== number);
-				return { ...contact, numbers: filteredNumbers };
-			}
-			return contact;
-		});
-		setContacts(updatedContacts);
+		dispatch({ type: REMOVE_NUMBER, payload: { contactId, number } });
 		window.Storm.removePhone({ contactId, number });
 	};
 
 	const addNumber = ({ contactId, number }) => {
-		const updatedContacts = contactList.map((contact) => {
-			if (contact.contactId === contactId) {
-				const newNumbers = [...contact.numbers, number];
-				return { ...contact, numbers: newNumbers };
-			}
-			return contact;
-		});
-		setContacts(updatedContacts);
+		dispatch({ type: ADD_NUMBER, payload: { contactId, number } });
 		window.Storm.addPhone({ contactId, number });
 	};
 
 	const deleteContact = ({ contactId, skip = false }) => {
-		if (!skip) {
-			const updatedContacts = contactList.filter((contact) => contact.contactId !== contactId);
-			setContacts(updatedContacts);
-		} else {
-			const updatedSkipped = new Set([...skipped, contactId]);
-			setSkipped([...updatedSkipped]);
-		}
+		dispatch({ type: REMOVE_CONTACT, payload: { contactId, skip } });
 		window.Storm.removeContact({ contactId, hangup: skip, resume: skip });
 	};
 
@@ -256,26 +210,12 @@ const App = () => {
 		window.Storm.startCampaign({ contacts: filteredContacts });
 	};
 
-	const handleSelected = (param) => {
-		let newSelected = [...selected];
-		if (param === 'all') {
-			if (newSelected.length === contactList.length) newSelected = [];
-			else newSelected = contactList.map((contact) => contact.contactId);
-		} else if (newSelected.includes(param)) {
-			newSelected = newSelected.filter((item) => item !== param);
-		} else {
-			newSelected.push(param);
-		}
-
-		setSelected(newSelected);
-	};
-
 	return (
 		<div>
-			<Nav disableStart={!selected.length} startCampaign={handleStart} unreadCount={unreadMessages} />
+			<Nav startCampaign={handleStart} />
 			<div id="storm-dialer-bar" />
 			<div id="storm-dialer-mini" />
-			<Container style={{ marginTop: 20 }}>
+			<Container showingDrawer={showDrawer}>
 				<Switch>
 					<Route
 						exact
@@ -283,51 +223,34 @@ const App = () => {
 						render={(props) => (
 							<ListView
 								{...props}
-								contacts={contactList}
-								unreadCounts={unreadCounts}
 								removeContact={deleteContact}
 								removeNumber={removeNumber}
 								addNumber={addNumber}
 								textNumber={textNumber}
 								callNumber={callNumber}
-								handleSelected={handleSelected}
-								selected={selected}
-								skipped={skipped}
 							/>
 						)}
 					/>
 					<Route
 						exact
 						path="/detail/:id"
-						component={(props) => (
-							<DetailView
-								{...props}
-								contactList={contactList}
-								setContacts={setContacts}
-								getContactById={getContactById}
-								stormLoaded={stormLoaded}
-								open={openNote}
-								setOpen={setOpenNote}
-								numberDialing={numberDialing}
-								notes={notes}
-								setNotes={setNotes}
-								outcomes={outcomes}
-								setOutcomes={setOutcomes}
-								unreadCounts={unreadCounts}
-								enableClickToCall={enableClickToCall}
-								recordings={recordings}
-								tags={tags}
-								setTags={setTags}
-								dncList={dncList}
-								setDncList={setDncList}
-							/>
-						)}
+						component={(props) => <DetailView {...props} getContactById={getContactById} />}
 					/>
 				</Switch>
+				<DebugDrawer showDrawer={showDrawer} />
 			</Container>
 			<Toast {...messageReceivedToast} onHide={() => setMessageReceivedToast({})} delay={5000} />
 		</div>
 	);
 };
+
+const Container = styled.div(({ showingDrawer }) => ({
+	display: 'grid',
+	padding: '0 20px',
+	margin: '20px auto 0',
+	gridTemplateColumns: '1fr auto',
+	columnGap: showingDrawer ? 20 : null,
+	maxWidth: 1500,
+}));
 
 export default App;
