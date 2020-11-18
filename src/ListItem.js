@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 import { Table, Checkbox, Modal, Input, Button, Dropdown, Label, Popup } from 'semantic-ui-react';
 import { formatPhone } from './utils';
+import { store } from './store';
+import { SET_SELECTED } from './types';
 
 const MessageCount = ({ count }) => (
 	<Popup
@@ -17,18 +19,8 @@ const MessageCount = ({ count }) => (
 	/>
 );
 
-const ListItem = ({
-	contact,
-	unreadCounts,
-	removeContact,
-	removeNumber,
-	addNumber,
-	textNumber,
-	callNumber,
-	handleSelected,
-	selected,
-	skipped,
-}) => {
+const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber, callNumber }) => {
+	const { unreadCounts, skipped, selected, dispatch } = useContext(store);
 	const [newNumber, setNewNumber] = useState('');
 	const [open, setOpen] = useState(false);
 	const reset = () => {
@@ -39,9 +31,12 @@ const ListItem = ({
 	const isSkipped = skipped.includes(contactId);
 
 	return (
-		<Table.Row key={contactId} negative={isSkipped}>
+		<Table.Row negative={isSkipped}>
 			<Table.Cell collapsing>
-				<Checkbox checked={selected.includes(contactId)} onClick={() => handleSelected(contactId)} />
+				<Checkbox
+					checked={selected.includes(contactId)}
+					onClick={() => dispatch({ type: SET_SELECTED, payload: contactId })}
+				/>
 			</Table.Cell>
 			<Table.Cell collapsing textAlign="center">
 				<Popup
@@ -90,7 +85,13 @@ const ListItem = ({
 					onClose={() => setOpen(false)}
 					onOpen={() => setOpen(true)}
 					open={open}
-					trigger={<Popup content="Add Number" position="bottom center" trigger={<Button icon="plus square" />} />}
+					trigger={
+						<Popup
+							content="Add Number"
+							position="bottom center"
+							trigger={<Button onClick={() => setOpen(true)} icon="plus square" />}
+						/>
+					}
 					size="mini"
 				>
 					<Modal.Header>Add Number</Modal.Header>
