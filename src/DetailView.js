@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import axios from 'axios';
 import { Image, Button, Feed, Header, Label, Grid, List, Menu, Segment } from 'semantic-ui-react';
 import { formatPhone, rawPhone } from './utils';
-import { SERVER_API, VENDOR_USER_ID, VENDOR_ID, APP_ID, exampleMessages } from './constants';
+import { SERVER_URL, VENDOR_USER_ID, VENDOR_ID, API_KEY, exampleMessages } from './constants';
 import CallDispositionModal from './CallDispositionModal';
 import { store } from './store';
 import { SET_OPEN_NOTE } from './types';
@@ -31,14 +31,14 @@ const DetailView = ({ match, getContactById }) => {
 
 	const getMessages = (token) => {
 		axios
-			.get(`${SERVER_API}/api/customers/${VENDOR_USER_ID}/messages`, {
+			.get(`${SERVER_URL}/api/customers/${VENDOR_USER_ID}/messages`, {
 				params: {
 					limit: 15,
 					token,
 				},
 				auth: {
 					username: VENDOR_ID,
-					password: APP_ID,
+					password: API_KEY,
 				},
 			})
 			.then(({ data }) => {

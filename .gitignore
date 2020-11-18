@@ -51,3 +51,4 @@ Thumbs.db
 # Cypress Ignore Files
 cypress/videos/*
 
+constants.json
