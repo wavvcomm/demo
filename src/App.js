@@ -25,6 +25,7 @@ const App = () => {
 	const [openNote, setOpenNote] = useState(false);
 	const [contactList, setContacts] = useState(contacts);
 	const [selected, setSelected] = useState([]);
+	const [skipped, setSkipped] = useState([]);
 	const [dncAction, setDncAction] = useState('');
 	const [dncNumber, setDncNumber] = useState('');
 	const [unreadMessages, setUnreadMessages] = useState(0);
@@ -221,6 +222,9 @@ const App = () => {
 		if (!skip) {
 			const updatedContacts = contactList.filter((contact) => contact.contactId !== contactId);
 			setContacts(updatedContacts);
+		} else {
+			const updatedSkipped = new Set([...skipped, contactId]);
+			setSkipped([...updatedSkipped]);
 		}
 		window.Storm.removeContact({ contactId, hangup: skip, resume: skip });
 	};
@@ -284,6 +288,7 @@ const App = () => {
 								callNumber={callNumber}
 								handleSelected={handleSelected}
 								selected={selected}
+								skipped={skipped}
 							/>
 						)}
 					/>

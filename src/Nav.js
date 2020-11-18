@@ -1,80 +1,67 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
-import { Button, Dropdown, Label, Menu } from 'semantic-ui-react';
+import { Button, Checkbox, Dropdown, Label, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
 const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
+	const [on, toggleOn] = useState(false);
+
+	const accents = {
+		default: '#48B0D6',
+		red: '#BF6350',
+		green: '#4F945B',
+		blue: '#076BC2',
+		yellow: '#FDD454',
+		purple: '#A67EC5',
+	};
+
+	const handleTheme = () => {
+		const lightTheme = !on; // state hasn't changed yet, so we want the inverse
+		window.Storm.setTheme({ theme: lightTheme ? 'light' : 'dark' });
+		toggleOn(!on);
+	};
+
 	return (
 		<NavBar>
 			<Link to="/" style={{ color: 'inherit' }}>
 				CRM Demo
 			</Link>
 			<Menu secondary size="tiny" style={{ zIndex: 1000, marginTop: 0 }}>
-				<Menu.Item>
-					<Dropdown text="Set WAVV Theme" button>
+				<Menu.Item fitted>
+					<ToggleContainer>
+						<div>WAVV Theme</div>
+						<Checkbox toggle checked={on} onChange={handleTheme} />
+					</ToggleContainer>
+				</Menu.Item>
+				<Menu.Item fitted>
+					<Dropdown item text="WAVV Primary Color" button>
 						<Dropdown.Menu>
-							<Dropdown.Item>
-								<Dropdown text="Light">
-									<Dropdown.Menu>
-										<Dropdown.Header>Accents</Dropdown.Header>
-										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'light', primaryColor: '#48B0D6' })}>
-											Standard
-										</Dropdown.Item>
-										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'light', primaryColor: '#ff0000' })}>
-											Red
-										</Dropdown.Item>
-										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'light', primaryColor: '#ffff00' })}>
-											Yellow
-										</Dropdown.Item>
-										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'light', primaryColor: '#33cc33' })}>
-											Green
-										</Dropdown.Item>
-										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'light', primaryColor: '#0000ff' })}>
-											Blue
-										</Dropdown.Item>
-									</Dropdown.Menu>
-								</Dropdown>
-							</Dropdown.Item>
-							<Dropdown.Item>
-								<Dropdown text="Dark">
-									<Dropdown.Menu>
-										<Dropdown.Header>Accents</Dropdown.Header>
-										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'dark', primaryColor: '#48B0D6' })}>
-											Standard
-										</Dropdown.Item>
-										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'dark', primaryColor: '#ff0000' })}>
-											Red
-										</Dropdown.Item>
-										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'dark', primaryColor: '#ffff00' })}>
-											Yellow
-										</Dropdown.Item>
-										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'dark', primaryColor: '#33cc33' })}>
-											Green
-										</Dropdown.Item>
-										<Dropdown.Item onClick={() => window.Storm.setTheme({ theme: 'dark', primaryColor: '#0000ff' })}>
-											Blue
-										</Dropdown.Item>
-									</Dropdown.Menu>
-								</Dropdown>
-							</Dropdown.Item>
+							{Object.keys(accents).map((name) => {
+								const primaryColor = accents[name];
+								return (
+									<Dropdown.Item key={name} onClick={() => window.Storm.setTheme({ primaryColor })}>
+										<ColorItem color={primaryColor} />
+									</Dropdown.Item>
+								);
+							})}
 						</Dropdown.Menu>
 					</Dropdown>
 				</Menu.Item>
-				<Menu.Item>
-					<Dropdown text="DNC Actions" button>
+				<Menu.Item fitted>
+					<Dropdown item text="DNC Actions" button>
 						<Dropdown.Menu>
 							<Dropdown.Item onClick={() => setDncAction('Remove')}>Remove</Dropdown.Item>
 							<Dropdown.Item onClick={() => setDncAction('Add')}>Add</Dropdown.Item>
 						</Dropdown.Menu>
 					</Dropdown>
 				</Menu.Item>
-				<Menu.Item>
+				<Menu.Item fitted>
 					<Button onClick={() => window.Storm.openMessenger({ dock: true })}>
 						Open Messenger
 						{unreadCount ? <Label color="red" circular floating content={unreadCount} /> : null}
 					</Button>
 				</Menu.Item>
-				<Menu.Item>
+				<Menu.Item fitted>
 					<Button primary disabled={disableStart} onClick={startCampaign} content="Start Campaign" />
 				</Menu.Item>
 			</Menu>
@@ -90,6 +77,19 @@ const NavBar = styled.div({
 	backgroundColor: '#EAEAEA',
 	fontSize: 30,
 	padding: '15px 20px',
+});
+
+const ColorItem = styled.div(({ color }) => ({
+	backgroundColor: color,
+	width: 'auto',
+	height: 15,
+}));
+
+const ToggleContainer = styled.div({
+	display: 'grid',
+	alignItems: 'center',
+	gridTemplateColumns: 'auto auto',
+	columnGap: 5,
 });
 
 export default Nav;

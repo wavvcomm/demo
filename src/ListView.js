@@ -12,6 +12,7 @@ const ListView = ({
 	callNumber,
 	handleSelected,
 	selected,
+	skipped,
 }) => {
 	return (
 		<Table celled>
@@ -41,6 +42,7 @@ const ListView = ({
 						callNumber={callNumber}
 						handleSelected={handleSelected}
 						selected={selected}
+						skipped={skipped}
 					/>
 				))}
 			</Table.Body>
