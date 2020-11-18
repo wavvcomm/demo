@@ -11,5 +11,6 @@ describe('Test numbers', () => {
 		home.addNewNumberToTableRow(0, Numbers.voicemail.number);
 		home.getTableRow(0).contains(Numbers.voicemail.formated).parent().find('.phone.icon').click();
 		dialer.clickStartButton();
+		// dialer.clickDialButton();
 	});
 });
