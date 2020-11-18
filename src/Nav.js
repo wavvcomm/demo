@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import { Button, Checkbox, Dropdown, Label, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 
-const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
+const Nav = ({ showingDrawer, onDebugClick, disableStart, startCampaign, unreadCount }) => {
 	const [on, toggleOn] = useState(false);
 
 	const accents = {
@@ -48,14 +48,6 @@ const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
 					</Dropdown>
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Dropdown item text="DNC Actions" button>
-						<Dropdown.Menu>
-							<Dropdown.Item onClick={() => setDncAction('Remove')}>Remove</Dropdown.Item>
-							<Dropdown.Item onClick={() => setDncAction('Add')}>Add</Dropdown.Item>
-						</Dropdown.Menu>
-					</Dropdown>
-				</Menu.Item>
-				<Menu.Item fitted>
 					<Button onClick={() => window.Storm.openMessenger({ dock: true })}>
 						Open Messenger
 						{unreadCount ? <Label color="red" circular floating content={unreadCount} /> : null}
@@ -63,6 +55,9 @@ const Nav = ({ setDncAction, disableStart, startCampaign, unreadCount }) => {
 				</Menu.Item>
 				<Menu.Item fitted>
 					<Button primary disabled={disableStart} onClick={startCampaign} content="Start Campaign" />
+				</Menu.Item>
+				<Menu.Item fitted>
+					<Button color={showingDrawer ? 'grey' : null} icon="bug" onClick={onDebugClick} />
 				</Menu.Item>
 			</Menu>
 		</NavBar>

@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
-import { Container, Button, Modal, Input } from 'semantic-ui-react';
+import styled from '@emotion/styled';
+import { Button, Modal, Input } from 'semantic-ui-react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import {
 	APP_ID,
@@ -20,6 +21,7 @@ import DetailView from './DetailView';
 import Nav from './Nav';
 import Toast from './Toast';
 import { rawPhone } from './utils';
+import DebugDrawer from './DebugDrawer';
 
 const App = () => {
 	const [stormLoaded, setStormLoaded] = useState(false);
@@ -34,6 +36,7 @@ const App = () => {
 	const [unreadCounts, setUnreadCounts] = useState({});
 	const [messageReceivedToast, setMessageReceivedToast] = useState({});
 	const [enableClickToCall, setEnableClickToCall] = useState(true);
+	const [showDrawer, setShowDrawer] = useState(false);
 	const [tags, setTags] = useState({
 		1: {
 			'Warm Lead': true,
@@ -269,10 +272,12 @@ const App = () => {
 				startCampaign={handleStart}
 				setDncAction={setDncAction}
 				unreadCount={unreadMessages}
+				showingDrawer={showDrawer}
+				onDebugClick={() => setShowDrawer(!showDrawer)}
 			/>
 			<div id="storm-dialer-bar" />
 			<div id="storm-dialer-mini" />
-			<Container style={{ marginTop: 20 }}>
+			<Container showingDrawer={showDrawer}>
 				<Switch>
 					<Route
 						exact
@@ -319,6 +324,7 @@ const App = () => {
 						)}
 					/>
 				</Switch>
+				<DebugDrawer showDrawer={showDrawer} />
 				<Modal onClose={() => setDncAction('')} open={!!dncAction} size="mini">
 					<Modal.Header>{`DNC List: ${dncAction} Number`}</Modal.Header>
 					<Modal.Content>
@@ -350,5 +356,14 @@ const App = () => {
 		</div>
 	);
 };
+
+const Container = styled.div(({ showingDrawer }) => ({
+	display: 'grid',
+	padding: '0 20px',
+	margin: '20px auto 0',
+	gridTemplateColumns: '1fr auto',
+	columnGap: showingDrawer ? 20 : null,
+	maxWidth: 1500,
+}));
 
 export default App;
