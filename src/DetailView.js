@@ -1,28 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from '@emotion/styled';
 import axios from 'axios';
 import { Image, Button, Feed, Header, Label, Grid, List, Menu, Segment } from 'semantic-ui-react';
 import { formatPhone, rawPhone } from './utils';
-import { SERVER_API, VENDOR_USER_ID, VENDOR_ID, APP_ID, exampleMessages } from './constants';
+import { SERVER_URL, VENDOR_USER_ID, VENDOR_ID, API_KEY, exampleMessages } from './constants';
 import CallDispositionModal from './CallDispositionModal';
+import { store } from './store';
+import { SET_OPEN_NOTE } from './types';
 
-const DetailView = ({
-	notes,
-	recordings,
-	outcomes,
-	match,
-	unreadCounts,
-	getContactById,
-	stormLoaded,
-	setOpen,
-	numberDialing,
-	enableClickToCall,
-	setNotes,
-	open,
-	tags,
-	setTags,
-}) => {
+const DetailView = ({ match, getContactById }) => {
+	const {
+		notes,
+		recordings,
+		outcomes,
+		unreadCounts,
+		stormLoaded,
+		tags,
+		enableClickToCall,
+		numberDialing,
+		dispatch,
+	} = useContext(store);
 	const [activeMain, setActiveMain] = useState('notes');
 	const [activeSub, setActiveSub] = useState('messages');
 	const [messages, setMessages] = useState(exampleMessages);
@@ -33,14 +31,14 @@ const DetailView = ({
 
 	const getMessages = (token) => {
 		axios
-			.get(`${SERVER_API}/api/customers/${VENDOR_USER_ID}/messages`, {
+			.get(`${SERVER_URL}/api/customers/${VENDOR_USER_ID}/messages`, {
 				params: {
 					limit: 15,
 					token,
 				},
 				auth: {
 					username: VENDOR_ID,
-					password: APP_ID,
+					password: API_KEY,
 				},
 			})
 			.then(({ data }) => {
@@ -49,8 +47,7 @@ const DetailView = ({
 				});
 				if (contactMessages.length > 0) setMessages(contactMessages);
 				// setNextPageToken(data.nextPageToken);
-			})
-			.catch((err) => console.log({ err }));
+			});
 	};
 
 	useEffect(() => {
@@ -60,9 +57,7 @@ const DetailView = ({
 	useEffect(() => {
 		if (stormLoaded) {
 			window.Storm.onWaitingForContinue(({ waiting }) => {
-				if (waiting) {
-					setOpen(true);
-				}
+				if (waiting) dispatch({ type: SET_OPEN_NOTE, payload: true });
 			});
 		}
 	}, [stormLoaded]);
@@ -223,17 +218,7 @@ const DetailView = ({
 					</Grid.Column>
 				</Grid>
 			</MainContainer>
-			<CallDispositionModal
-				tags={tags}
-				contactId={id}
-				setTags={setTags}
-				note={note}
-				setNote={setNote}
-				open={open}
-				setOpen={setOpen}
-				notes={notes}
-				setNotes={setNotes}
-			/>
+			<CallDispositionModal contactId={id} note={note} setNote={setNote} />
 		</Container>
 	);
 };

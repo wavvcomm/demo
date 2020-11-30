@@ -52,3 +52,4 @@ Thumbs.db
 cypress/videos/*
 cypress/screenshots/
 
+constants.json

@@ -1,20 +1,23 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Modal, Form, TextArea, Button } from 'semantic-ui-react';
+import { store } from './store';
+import { SET_NOTES, SET_OPEN_NOTE, SET_TAGS } from './types';
 
-const CallDispositonModal = ({ tags, contactId: id, setTags, note, setNote, open, setOpen, notes, setNotes }) => {
+const CallDispositonModal = ({ contactId: id, note, setNote }) => {
+	const { openNote, tags, notes, dispatch } = useContext(store);
 	const handleTags = ({ target }) => {
 		const newTags = { ...tags };
 		if (!newTags[id]) newTags[id] = {};
 		newTags[id][target.name] = target.checked;
-		setTags(newTags);
+		dispatch({ type: SET_TAGS, payload: newTags });
 	};
 
 	return (
 		<Modal
 			onClose={() => {
-				setOpen(false);
+				dispatch({ type: SET_OPEN_NOTE, payload: false });
 			}}
-			open={open}
+			open={openNote}
 			size="mini"
 		>
 			<Modal.Header>Call Disposition</Modal.Header>
@@ -58,7 +61,7 @@ const CallDispositonModal = ({ tags, contactId: id, setTags, note, setNote, open
 			<Modal.Actions>
 				<Button
 					onClick={() => {
-						setOpen(false);
+						dispatch({ type: SET_OPEN_NOTE, payload: false });
 						window.Storm.continue();
 					}}
 				>
@@ -69,8 +72,8 @@ const CallDispositonModal = ({ tags, contactId: id, setTags, note, setNote, open
 						const newNotes = { ...notes };
 						if (newNotes[id]) newNotes[id].push({ note, date: Date.now() });
 						else newNotes[id] = [{ note, date: Date.now() }];
-						setNotes(newNotes);
-						setOpen(false);
+						dispatch({ type: SET_NOTES, payload: newNotes });
+						dispatch({ type: SET_OPEN_NOTE, payload: false });
 						window.Storm.continue();
 					}}
 					positive
