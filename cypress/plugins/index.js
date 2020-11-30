@@ -23,12 +23,12 @@ module.exports = (on, config) => {
 			// launchOptions.args.push(
 			// 	'-disable-features=CrossSiteDocumentBlockingIfIsolating,CrossSiteDocumentBlockingAlways,IsolateOrigins,site-per-process'
 			// );
-			launchOptions.args.push('--allow-file-access-from-files');
-			launchOptions.args.push('--disable-translate');
-			launchOptions.args.push('--mute-audio');
-			launchOptions.args.push('--use-fake-ui-for-media-stream');
-			launchOptions.args.push('--use-fake-device-for-media-stream');
-			launchOptions.args.push('--use-file-for-fake-audio-capture=cypress/fixtures/hello.m4a');
+			// launchOptions.args.push('--allow-file-access-from-files');
+			// launchOptions.args.push('--disable-translate');
+			// launchOptions.args.push('--mute-audio');
+			// launchOptions.args.push('--use-fake-ui-for-media-stream');
+			// launchOptions.args.push('--use-fake-device-for-media-stream');
+			// launchOptions.args.push('--use-file-for-fake-audio-capture=cypress/fixtures/hello.m4a');
 			// launchOptions.args.push('--ignore-ssl-errors=yes');
 			// launchOptions.args.push('--ignore-certificate-errors');
 

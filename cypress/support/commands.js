@@ -23,20 +23,6 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
-Cypress.Commands.add('getIframeBody', (theIframe) => {
-	// get the iframe > document > body
-	// and retry until the body element is not empty
-	return (
-		cy
-			.get(theIframe)
-
-			// .should('not.be.empty')
-			// wraps "body" DOM element to allow
-			// chaining more Cypress commands, like ".find(...)"
-			// https://on.cypress.io/wrap
-			.then(cy.wrap)
-	);
-});
 
 Cypress.Commands.add('iframe', { prevSubject: 'element' }, ($iframe, callback = () => {}) => {
 	// For more info on targeting inside iframes refer to this GitHub issue:
