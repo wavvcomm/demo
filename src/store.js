@@ -16,6 +16,7 @@ import {
 	REMOVE_NUMBER,
 	ADD_OUTCOME,
 	ADD_RECORDING,
+	ADD_DEBUG_LOG,
 } from './types';
 
 const initialState = {
@@ -45,6 +46,7 @@ const initialState = {
 	outcomes: {
 		1: exampleOutcomes,
 	},
+	logs: [],
 };
 const store = createContext(initialState);
 const { Provider } = store;
@@ -141,6 +143,10 @@ const StateProvider = ({ children }) => {
 				if (recordings[contactId]) newRecordings[contactId].push(recording);
 				else newRecordings[contactId] = [recording];
 				return { ...state, recordings: newRecordings };
+			}
+			case ADD_DEBUG_LOG: {
+				const logs = [...state.logs, payload];
+				return { ...state, logs };
 			}
 			default:
 				return state;
