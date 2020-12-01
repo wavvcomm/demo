@@ -5,6 +5,7 @@ import ListItem from './ListItem';
 import Toast from './Toast';
 import { store } from './store';
 import { SET_SELECTED } from './types';
+import { validPhone } from './utils';
 
 const ListView = ({ removeContact, removeNumber, addNumber, textNumber, callNumber, addContact }) => {
 	const { contactList, dispatch } = useContext(store);
@@ -64,11 +65,12 @@ const ListView = ({ removeContact, removeNumber, addNumber, textNumber, callNumb
 						</Table.HeaderCell>
 						<Table.HeaderCell>
 							<Button
+								disabled={!contactToAdd?.name || !contactToAdd?.number}
 								primary
 								size="small"
 								onClick={() => {
 									const { name, address, city, number } = contactToAdd;
-									if (name && number) {
+									if (validPhone(number)) {
 										setContact({});
 										addContact({
 											contactId: uuid(),
@@ -79,7 +81,7 @@ const ListView = ({ removeContact, removeNumber, addNumber, textNumber, callNumb
 										});
 									} else {
 										setMessageReceivedToast({
-											message: 'Must include a Name and Number to add a contact',
+											message: 'Must provide a valid phone number',
 											error: true,
 										});
 									}
