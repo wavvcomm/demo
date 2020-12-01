@@ -18,6 +18,7 @@ import {
 	ADD_RECORDING,
 	ADD_CONTACT,
 	SET_DNC_LIST,
+	ADD_DEBUG_LOG,
 } from './types';
 
 const initialState = {
@@ -48,6 +49,7 @@ const initialState = {
 	outcomes: {
 		1: exampleOutcomes,
 	},
+	logs: [],
 };
 const store = createContext(initialState);
 const { Provider } = store;
@@ -154,6 +156,10 @@ const StateProvider = ({ children }) => {
 			}
 			case SET_DNC_LIST: {
 				return { ...state, dncList: payload };
+			}
+			case ADD_DEBUG_LOG: {
+				const logs = [...state.logs, payload];
+				return { ...state, logs };
 			}
 			default:
 				return state;

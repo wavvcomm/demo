@@ -15,3 +15,4 @@ export const ADD_OUTCOME = 'ADD_OUTCOME';
 export const ADD_RECORDING = 'ADD_RECORDING';
 export const SET_DNC_LIST = 'SET_DNC_LIST';
 export const ADD_CONTACT = 'ADD_CONTACT';
+export const ADD_DEBUG_LOG = 'ADD_DEBUG_LOG';
