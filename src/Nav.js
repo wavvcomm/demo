@@ -6,7 +6,7 @@ import { store } from './store';
 import { TOGGLE_DRAWER } from './types';
 
 const Nav = ({ startCampaign }) => {
-	const { showDrawer: showingDrawer, unreadMessages: unreadCount, selected, dispatch } = useContext(store);
+	const { showDrawer: showingDrawer, unreadMessages: unreadCount, selected, dispatch, stormLoaded } = useContext(store);
 	const [on, toggleOn] = useState(false);
 	const disableStart = !selected.length;
 
@@ -34,11 +34,11 @@ const Nav = ({ startCampaign }) => {
 				<Menu.Item fitted>
 					<ToggleContainer>
 						<div>WAVV Theme</div>
-						<Checkbox toggle checked={on} onChange={handleTheme} />
+						<Checkbox disabled={!stormLoaded} toggle checked={on} onChange={handleTheme} />
 					</ToggleContainer>
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Dropdown item text="WAVV Primary Color" button>
+					<Dropdown item text="WAVV Primary Color" button disabled={!stormLoaded}>
 						<Dropdown.Menu>
 							{Object.keys(accents).map((name) => {
 								const primaryColor = accents[name];
@@ -52,13 +52,13 @@ const Nav = ({ startCampaign }) => {
 					</Dropdown>
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Button onClick={() => window.Storm.openMessenger({ dock: true })}>
+					<Button disabled={!stormLoaded} onClick={() => window.Storm.openMessenger({ dock: true })}>
 						Open Messenger
 						{unreadCount ? <Label color="red" circular floating content={unreadCount} /> : null}
 					</Button>
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Button primary disabled={disableStart} onClick={startCampaign} content="Start Campaign" />
+					<Button primary disabled={disableStart || !stormLoaded} onClick={startCampaign} content="Start Campaign" />
 				</Menu.Item>
 				<Menu.Item fitted>
 					<Button color={showingDrawer ? 'grey' : null} icon="bug" onClick={() => dispatch({ type: TOGGLE_DRAWER })} />

@@ -93,7 +93,7 @@ const DetailView = ({ match, getContactById }) => {
 													icon="phone"
 													size="mini"
 													style={{ margin: '3px 3px 3px 6px' }}
-													disabled={!enableClickToCall || isDncNumber}
+													disabled={!enableClickToCall || isDncNumber || !stormLoaded}
 													onClick={() => window.Storm.callPhone({ number })}
 												/>
 											}
@@ -108,7 +108,7 @@ const DetailView = ({ match, getContactById }) => {
 														icon="comment alternate"
 														size="mini"
 														style={{ margin: 3 }}
-														disabled={isDncNumber}
+														disabled={isDncNumber || !stormLoaded}
 														onClick={() => window.Storm.openMessengerThread({ contact, number, dock: true })}
 													/>
 													{unreadCounts[number] ? (
@@ -131,6 +131,7 @@ const DetailView = ({ match, getContactById }) => {
 														else newDncList.push(rawPhone(number));
 														dispatch({ type: SET_DNC_LIST, payload: newDncList });
 													}}
+													disabled={!stormLoaded}
 													icon="exclamation triangle"
 													size="mini"
 													color={isDncNumber ? 'red' : null}

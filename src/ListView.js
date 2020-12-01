@@ -2,15 +2,21 @@ import React, { useContext, useState } from 'react';
 import { Table, Checkbox, Button, Input } from 'semantic-ui-react';
 import { v4 as uuid } from 'uuid';
 import ListItem from './ListItem';
-import Toast from './Toast';
 import { store } from './store';
 import { SET_SELECTED } from './types';
 import { validPhone } from './utils';
 
-const ListView = ({ removeContact, removeNumber, addNumber, textNumber, callNumber, addContact }) => {
+const ListView = ({
+	removeContact,
+	removeNumber,
+	addNumber,
+	textNumber,
+	callNumber,
+	addContact,
+	setMessageReceivedToast,
+}) => {
 	const { contactList, dispatch } = useContext(store);
 	const [contactToAdd, setContact] = useState({});
-	const [messageReceivedToast, setMessageReceivedToast] = useState({});
 
 	const handler = (event) => {
 		const newContact = { ...contactToAdd };
@@ -93,7 +99,6 @@ const ListView = ({ removeContact, removeNumber, addNumber, textNumber, callNumb
 					</Table.Row>
 				</Table.Footer>
 			</Table>
-			<Toast {...messageReceivedToast} onHide={() => setMessageReceivedToast({})} delay={3000} />
 		</>
 	);
 };
