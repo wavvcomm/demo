@@ -5,8 +5,8 @@
 
 # Node artifact files
 node_modules/
-dist/
 build/
+dist/
 
 # Compiled Java class files
 *.class
