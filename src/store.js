@@ -16,13 +16,14 @@ import {
 	REMOVE_NUMBER,
 	ADD_OUTCOME,
 	ADD_RECORDING,
+	ADD_CONTACT,
 	SET_DNC_LIST,
 } from './types';
 
 const initialState = {
 	stormLoaded: false,
 	openNote: false,
-	contactList: contacts,
+	contactList: JSON.parse(localStorage.getItem('contacts')) || contacts,
 	selected: [],
 	skipped: [],
 	dncAction: '',
@@ -64,7 +65,6 @@ const StateProvider = ({ children }) => {
 			case SET_SELECTED: {
 				const { selected, contactList } = state;
 				let newSelected = [...selected];
-
 				if (payload === 'all') {
 					if (selected.length === contactList.length) newSelected = [];
 					else newSelected = contactList.map((contact) => contact.contactId);
@@ -96,10 +96,16 @@ const StateProvider = ({ children }) => {
 			case SET_NOTES: {
 				return { ...state, notes: payload };
 			}
+			case ADD_CONTACT: {
+				const updatedContacts = [...state.contactList, payload];
+				localStorage.setItem('contacts', JSON.stringify(updatedContacts));
+				return { ...state, contactList: updatedContacts };
+			}
 			case REMOVE_CONTACT: {
 				const { contactId, skip } = payload;
 				if (!skip) {
 					const updatedContacts = state.contactList.filter((contact) => contact.contactId !== contactId);
+					localStorage.setItem('contacts', JSON.stringify(updatedContacts));
 					return { ...state, contactList: updatedContacts };
 				}
 				const updatedSkipped = new Set([...state.skipped, contactId]);
@@ -114,6 +120,7 @@ const StateProvider = ({ children }) => {
 					}
 					return contact;
 				});
+				localStorage.setItem('contacts', JSON.stringify(updatedContacts));
 				return { ...state, contactList: updatedContacts };
 			}
 			case REMOVE_NUMBER: {
@@ -125,6 +132,7 @@ const StateProvider = ({ children }) => {
 					}
 					return contact;
 				});
+				localStorage.setItem('contacts', JSON.stringify(updatedContacts));
 				return { ...state, contactList: updatedContacts };
 			}
 			case ADD_OUTCOME: {

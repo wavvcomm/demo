@@ -55,8 +55,8 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 					{name}
 				</Link>
 			</Table.Cell>
-			<Table.Cell>{address}</Table.Cell>
-			<Table.Cell>{city}</Table.Cell>
+			<Table.Cell>{address || ''}</Table.Cell>
+			<Table.Cell>{city || ''}</Table.Cell>
 			<Table.Cell>
 				{numbers.map((number) => {
 					const isDncNumber = dncList.includes(rawPhone(number));

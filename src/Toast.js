@@ -4,7 +4,7 @@ import { keyframes } from '@emotion/core';
 import styled from '@emotion/styled';
 import { Message } from 'semantic-ui-react';
 
-const Toast = ({ header, message, delay, onHide }) => {
+const Toast = ({ header, message, delay, onHide, error }) => {
 	const [show, setShow] = useState(false);
 	const timeoutRef = useRef(null);
 
@@ -24,7 +24,7 @@ const Toast = ({ header, message, delay, onHide }) => {
 	return (
 		show && (
 			<ToastContainer duration={delay / 1000}>
-				<Message onDismiss={null} info header={header} content={message} />
+				<Message onDismiss={null} info={!error} error={error} header={header} content={message} />
 			</ToastContainer>
 		)
 	);

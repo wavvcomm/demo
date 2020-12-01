@@ -16,6 +16,7 @@ import {
 	ADD_NUMBER,
 	ADD_OUTCOME,
 	ADD_RECORDING,
+	ADD_CONTACT,
 	REMOVE_CONTACT,
 	REMOVE_NUMBER,
 	SET_ENABLE_CLICK_TO_CALL,
@@ -210,6 +211,10 @@ const App = () => {
 		window.Storm.startCampaign({ contacts: filteredContacts });
 	};
 
+	const addContact = (contact) => {
+		dispatch({ type: ADD_CONTACT, payload: contact });
+	};
+
 	return (
 		<div>
 			<Nav startCampaign={handleStart} />
@@ -223,6 +228,7 @@ const App = () => {
 						render={(props) => (
 							<ListView
 								{...props}
+								addContact={addContact}
 								removeContact={deleteContact}
 								removeNumber={removeNumber}
 								addNumber={addNumber}

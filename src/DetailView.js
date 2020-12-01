@@ -70,14 +70,16 @@ const DetailView = ({ match, getContactById }) => {
 					<Grid.Column width={3}>
 						<Image
 							src={
-								contact.avatarUrl || 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png'
+								contact?.avatarUrl || 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png'
 							}
 						/>
 					</Grid.Column>
 					<Grid.Column width={10}>
 						<Header as="h3">{contact.name}</Header>
 						<List>
-							<List.Item icon="marker" content={`${contact.address} ${contact.city}`} />
+							{contact.address && contact.city && (
+								<List.Item icon="marker" content={`${contact.address} ${contact.city}`} />
+							)}
 							{contact.numbers.map((number) => {
 								const isDncNumber = dncList.includes(rawPhone(number));
 								return (
