@@ -50,5 +50,7 @@ Thumbs.db
 
 # Cypress Ignore Files
 cypress/videos/*
+cypress/fixtures/*
 
 constants.json
+/build
