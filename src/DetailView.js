@@ -71,12 +71,15 @@ const DetailView = ({ match, getContactById }) => {
 							src={
 								contact.avatarUrl || 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png'
 							}
+							className="profilePicture"
 						/>
 					</Grid.Column>
 					<Grid.Column width={10}>
-						<Header as="h3">{contact.name}</Header>
+						<Header as="h3" className="contactName">
+							{contact.name}
+						</Header>
 						<List>
-							<List.Item icon="marker" content={`${contact.address} ${contact.city}`} />
+							<List.Item icon="marker" className="contactAddress" content={`${contact.address} ${contact.city}`} />
 							{contact.numbers.map((number) => {
 								return (
 									<Number key={number} dialing={formatPhone(numberDialing) === formatPhone(number)}>
