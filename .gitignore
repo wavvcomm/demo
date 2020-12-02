@@ -5,6 +5,7 @@
 
 # Node artifact files
 node_modules/
+build/
 dist/
 
 # Compiled Java class files
@@ -52,5 +53,6 @@ Thumbs.db
 cypress/videos/*
 cypress/screenshots/
 cypress-private.json
+cypress/fixtures/*
 
 constants.json

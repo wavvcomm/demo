@@ -13,3 +13,4 @@ export const ADD_NUMBER = 'ADD_NUMBER';
 export const REMOVE_NUMBER = 'REMOVE_NUMBER';
 export const ADD_OUTCOME = 'ADD_OUTCOME';
 export const ADD_RECORDING = 'ADD_RECORDING';
+export const ADD_DEBUG_LOG = 'ADD_DEBUG_LOG';

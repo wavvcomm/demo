@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { ADD_DEBUG_LOG } from './types';
 
 export const rawPhone = (phone, long = false) => {
 	phone = _.trim(phone).replace(/[^0-9]/g, '');
@@ -8,4 +9,8 @@ export const rawPhone = (phone, long = false) => {
 
 export const formatPhone = (phone) => {
 	return rawPhone(phone).replace(/^(.{3})(.{3})(.{4})/, '($1) $2-$3');
+};
+
+export const debugLogger = ({ name, dispatch }) => {
+	dispatch({ type: ADD_DEBUG_LOG, payload: name });
 };
