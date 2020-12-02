@@ -25,10 +25,13 @@ import {
 	SET_UNREAD_COUNTS,
 	SET_UNREAD_MESSAGES,
 	SET_DNC_LIST,
+	ADD_UPDATE_CREDENTIALS,
 } from './types';
 
 const App = () => {
-	const { stormLoaded, contactList, selected, showDrawer, recordings, outcomes, dispatch } = useContext(store);
+	const { stormLoaded, contactList, selected, showDrawer, recordings, outcomes, dispatch, credentials } = useContext(
+		store
+	);
 	const [messageReceivedToast, setMessageReceivedToast] = useState({});
 	const history = useHistory();
 
@@ -65,6 +68,11 @@ const App = () => {
 				const numbers = data.map((obj) => rawPhone(obj.number));
 				dispatch({ type: SET_DNC_LIST, payload: numbers });
 			});
+	};
+
+	const handleCredentials = (id) => {
+		const creds = credentials.find((cred) => cred.id === id);
+		dispatch({ type: ADD_UPDATE_CREDENTIALS, payload: { ...creds, active: true } });
 	};
 
 	useEffect(() => {
@@ -236,8 +244,8 @@ const App = () => {
 	return (
 		<div>
 			<Nav startCampaign={handleStart} />
-			<div id="storm-dialer-bar" />
-			<div id="storm-dialer-mini" />
+			{stormLoaded && <div id="storm-dialer-bar" />}
+			{stormLoaded && <div id="storm-dialer-mini" />}
 			<Container showingDrawer={showDrawer}>
 				<Switch>
 					<Route
@@ -261,7 +269,7 @@ const App = () => {
 						component={(props) => <DetailView {...props} getContactById={getContactById} />}
 					/>
 				</Switch>
-				<DebugDrawer showDrawer={showDrawer} />
+				<DebugDrawer showDrawer={showDrawer} handleCheckbox={handleCredentials} />
 			</Container>
 			<Toast {...messageReceivedToast} onHide={() => setMessageReceivedToast({})} delay={5000} />
 		</div>
