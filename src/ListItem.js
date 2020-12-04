@@ -9,7 +9,7 @@ import { SET_SELECTED } from './types';
 const MessageCount = ({ count, disabled }) => (
 	<Popup
 		content="Message Number"
-		position="bottom center"
+		position="top center"
 		trigger={
 			<MessageButton>
 				<Button size="mini" icon="comment alternate" disabled={disabled} />
