@@ -1,4 +1,5 @@
 import React, { createContext, useReducer } from 'react';
+import _ from 'lodash';
 import { contacts, exampleNotes, exampleOutcomes, exampleRecordings } from './constants';
 import {
 	SET_STORM_LOADED,
@@ -16,13 +17,19 @@ import {
 	REMOVE_NUMBER,
 	ADD_OUTCOME,
 	ADD_RECORDING,
+	ADD_CONTACT,
+	SET_DNC_LIST,
 	ADD_DEBUG_LOG,
+	ADD_UPDATE_CREDENTIALS,
+	REMOVE_CREDENTIALS,
+	UPDATE_WAVV_CONNECTION,
+	TOGGLE_CREDENTIALS,
 } from './types';
 
 const initialState = {
 	stormLoaded: false,
 	openNote: false,
-	contactList: contacts,
+	contactList: JSON.parse(localStorage.getItem('contacts')) || contacts,
 	selected: [],
 	skipped: [],
 	dncAction: '',
@@ -32,6 +39,8 @@ const initialState = {
 	unreadCounts: {},
 	enableClickToCall: true,
 	showDrawer: false,
+	showCreds: false,
+	dncList: [],
 	tags: {
 		1: {
 			'Warm Lead': true,
@@ -47,6 +56,7 @@ const initialState = {
 		1: exampleOutcomes,
 	},
 	logs: [],
+	credentials: JSON.parse(localStorage.getItem('creds')) || [],
 };
 const store = createContext(initialState);
 const { Provider } = store;
@@ -64,7 +74,6 @@ const StateProvider = ({ children }) => {
 			case SET_SELECTED: {
 				const { selected, contactList } = state;
 				let newSelected = [...selected];
-
 				if (payload === 'all') {
 					if (selected.length === contactList.length) newSelected = [];
 					else newSelected = contactList.map((contact) => contact.contactId);
@@ -90,16 +99,25 @@ const StateProvider = ({ children }) => {
 			case TOGGLE_DRAWER: {
 				return { ...state, showDrawer: !state.showDrawer };
 			}
+			case TOGGLE_CREDENTIALS: {
+				return { ...state, showCreds: !state.showCreds };
+			}
 			case SET_TAGS: {
 				return { ...state, tags: payload };
 			}
 			case SET_NOTES: {
 				return { ...state, notes: payload };
 			}
+			case ADD_CONTACT: {
+				const updatedContacts = [...state.contactList, payload];
+				localStorage.setItem('contacts', JSON.stringify(updatedContacts));
+				return { ...state, contactList: updatedContacts };
+			}
 			case REMOVE_CONTACT: {
 				const { contactId, skip } = payload;
 				if (!skip) {
 					const updatedContacts = state.contactList.filter((contact) => contact.contactId !== contactId);
+					localStorage.setItem('contacts', JSON.stringify(updatedContacts));
 					return { ...state, contactList: updatedContacts };
 				}
 				const updatedSkipped = new Set([...state.skipped, contactId]);
@@ -114,6 +132,7 @@ const StateProvider = ({ children }) => {
 					}
 					return contact;
 				});
+				localStorage.setItem('contacts', JSON.stringify(updatedContacts));
 				return { ...state, contactList: updatedContacts };
 			}
 			case REMOVE_NUMBER: {
@@ -125,6 +144,7 @@ const StateProvider = ({ children }) => {
 					}
 					return contact;
 				});
+				localStorage.setItem('contacts', JSON.stringify(updatedContacts));
 				return { ...state, contactList: updatedContacts };
 			}
 			case ADD_OUTCOME: {
@@ -144,9 +164,39 @@ const StateProvider = ({ children }) => {
 				else newRecordings[contactId] = [recording];
 				return { ...state, recordings: newRecordings };
 			}
+			case SET_DNC_LIST: {
+				return { ...state, dncList: payload };
+			}
 			case ADD_DEBUG_LOG: {
 				const logs = [...state.logs, payload];
 				return { ...state, logs };
+			}
+			case ADD_UPDATE_CREDENTIALS: {
+				const newState = { ...state };
+				if (payload.active)
+					newState.credentials.map((cred) => {
+						if (cred.id !== payload.id) {
+							cred.active = false;
+						}
+						return cred;
+					});
+				const existingIndex = _.findIndex(newState.credentials, { id: payload.id });
+				if (existingIndex >= 0) {
+					newState.credentials[existingIndex] = payload;
+				} else {
+					newState.credentials = [...newState.credentials, payload];
+				}
+				localStorage.setItem('creds', JSON.stringify(newState.credentials));
+				return newState;
+			}
+			case REMOVE_CREDENTIALS: {
+				const credentials = state.credentials.filter((cred) => cred.id !== payload);
+				localStorage.setItem('creds', JSON.stringify(credentials));
+				return { ...state, credentials };
+			}
+			case UPDATE_WAVV_CONNECTION: {
+				// TODO
+				return { ...state };
 			}
 			default:
 				return state;

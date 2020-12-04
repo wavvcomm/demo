@@ -2,12 +2,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from '@emotion/styled';
 import axios from 'axios';
-import { Image, Button, Feed, Header, Label, Grid, List, Menu, Segment } from 'semantic-ui-react';
+import { Image, Button, Feed, Header, Label, Grid, List, Menu, Segment, Popup } from 'semantic-ui-react';
 import { formatPhone, rawPhone } from './utils';
-import { SERVER_URL, VENDOR_USER_ID, VENDOR_ID, API_KEY, exampleMessages } from './constants';
+import { exampleMessages } from './constants';
 import CallDispositionModal from './CallDispositionModal';
 import { store } from './store';
-import { SET_OPEN_NOTE } from './types';
+import { SET_OPEN_NOTE, SET_DNC_LIST } from './types';
 
 const DetailView = ({ match, getContactById }) => {
 	const {
@@ -20,6 +20,8 @@ const DetailView = ({ match, getContactById }) => {
 		enableClickToCall,
 		numberDialing,
 		dispatch,
+		dncList,
+		credentials,
 	} = useContext(store);
 	const [activeMain, setActiveMain] = useState('notes');
 	const [activeSub, setActiveSub] = useState('messages');
@@ -29,16 +31,16 @@ const DetailView = ({ match, getContactById }) => {
 	const { id } = match.params;
 	const contact = getContactById(id);
 
-	const getMessages = (token) => {
+	const getMessages = (creds) => {
+		const { server, userId, vendorId, apiKey } = creds;
 		axios
-			.get(`${SERVER_URL}/api/customers/${VENDOR_USER_ID}/messages`, {
+			.get(`https://${server}.stormapp.com/api/customers/${userId}/messages`, {
 				params: {
 					limit: 15,
-					token,
 				},
 				auth: {
-					username: VENDOR_ID,
-					password: API_KEY,
+					username: vendorId,
+					password: apiKey,
 				},
 			})
 			.then(({ data }) => {
@@ -46,12 +48,15 @@ const DetailView = ({ match, getContactById }) => {
 					return contact.numbers.find((number) => rawPhone(number) === rawPhone(message.number));
 				});
 				if (contactMessages.length > 0) setMessages(contactMessages);
-				// setNextPageToken(data.nextPageToken);
+				// TODO: setNextPageToken(data.nextPageToken);
 			});
 	};
 
 	useEffect(() => {
-		getMessages();
+		if (stormLoaded) {
+			const creds = credentials.find((cred) => cred.active);
+			getMessages(creds);
+		}
 	}, []);
 
 	useEffect(() => {
@@ -60,7 +65,16 @@ const DetailView = ({ match, getContactById }) => {
 				if (waiting) dispatch({ type: SET_OPEN_NOTE, payload: true });
 			});
 		}
-	}, [stormLoaded]);
+	}, [stormLoaded, id]);
+
+	const handleDnc = (isDncNumber, number) => {
+		const stormMethod = isDncNumber ? 'removeDncNumber' : 'addDncNumber';
+		window.Storm[stormMethod]({ number });
+		let newDncList = [...dncList];
+		if (isDncNumber) newDncList = newDncList.filter((num) => num !== rawPhone(number));
+		else newDncList.push(rawPhone(number));
+		dispatch({ type: SET_DNC_LIST, payload: newDncList });
+	};
 
 	return (
 		<Container>
@@ -69,36 +83,68 @@ const DetailView = ({ match, getContactById }) => {
 					<Grid.Column width={3}>
 						<Image
 							src={
-								contact.avatarUrl || 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png'
+								contact?.avatarUrl || 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png'
 							}
 						/>
 					</Grid.Column>
 					<Grid.Column width={10}>
 						<Header as="h3">{contact.name}</Header>
 						<List>
-							<List.Item icon="marker" content={`${contact.address} ${contact.city}`} />
+							{contact.address && contact.city && (
+								<List.Item icon="marker" content={`${contact.address} ${contact.city}`} />
+							)}
 							{contact.numbers.map((number) => {
+								const isDncNumber = dncList.includes(rawPhone(number));
 								return (
 									<Number key={number} dialing={formatPhone(numberDialing) === formatPhone(number)}>
-										{formatPhone(number)}
-										<Button
-											icon="phone"
-											size="mini"
-											style={{ margin: '3px 3px 3px 6px' }}
-											disabled={!enableClickToCall}
-											onClick={() => window.Storm.callPhone({ number })}
+										<span style={{ textDecoration: isDncNumber && 'line-through' }}>{formatPhone(number)}</span>
+										<Popup
+											content="Call Number"
+											position="bottom center"
+											trigger={
+												<Button
+													icon="phone"
+													size="mini"
+													style={{ margin: '3px 3px 3px 6px' }}
+													disabled={!enableClickToCall || isDncNumber || !stormLoaded}
+													onClick={() => window.Storm.callPhone({ number })}
+												/>
+											}
 										/>
-										<div style={{ position: 'relative' }}>
-											<Button
-												icon="comment alternate"
-												size="mini"
-												style={{ margin: 3 }}
-												onClick={() => window.Storm.openMessengerThread({ contact, number, dock: true })}
-											/>
-											{unreadCounts[number] ? (
-												<Label color="red" size="tiny" circular floating content={unreadCounts[number]} />
-											) : null}
-										</div>
+
+										<Popup
+											content="Message Number"
+											position="bottom center"
+											trigger={
+												<div style={{ position: 'relative' }}>
+													<Button
+														icon="comment alternate"
+														size="mini"
+														style={{ margin: 3 }}
+														disabled={isDncNumber || !stormLoaded}
+														onClick={() => window.Storm.openMessengerThread({ contact, number, dock: true })}
+													/>
+													{unreadCounts[number] ? (
+														<Label color="red" size="tiny" circular floating content={unreadCounts[number]} />
+													) : null}
+												</div>
+											}
+										/>
+
+										<Popup
+											content={isDncNumber ? 'Remove from DNC' : 'Do Not Call'}
+											position="bottom center"
+											trigger={
+												<Button
+													onClick={() => handleDnc(isDncNumber, number)}
+													disabled={!stormLoaded}
+													icon="exclamation triangle"
+													size="mini"
+													color={isDncNumber ? 'red' : null}
+													style={{ margin: 3 }}
+												/>
+											}
+										/>
 									</Number>
 								);
 							})}
