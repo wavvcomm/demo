@@ -245,8 +245,8 @@ const App = () => {
 	return (
 		<div>
 			<Nav startCampaign={handleStart} />
-			{stormLoaded && <div id="storm-dialer-bar" />}
-			{stormLoaded && <div id="storm-dialer-mini" />}
+			<div id="storm-dialer-bar" />
+			<div id="storm-dialer-mini" />
 			<Container showingDrawer={showDrawer}>
 				<Switch>
 					<Route
