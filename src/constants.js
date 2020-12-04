@@ -1,5 +1,3 @@
-export { VENDOR_ID, API_KEY, VENDOR_USER_ID, SERVER_URL } from './constants.json';
-
 export const contacts = [
 	{
 		contactId: '1',

@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import axios from 'axios';
 import { Image, Button, Feed, Header, Label, Grid, List, Menu, Segment, Popup } from 'semantic-ui-react';
 import { formatPhone, rawPhone } from './utils';
-import { SERVER_URL, VENDOR_USER_ID, VENDOR_ID, API_KEY, exampleMessages } from './constants';
+import { exampleMessages } from './constants';
 import CallDispositionModal from './CallDispositionModal';
 import { store } from './store';
 import { SET_OPEN_NOTE, SET_DNC_LIST } from './types';
@@ -21,6 +21,7 @@ const DetailView = ({ match, getContactById }) => {
 		numberDialing,
 		dispatch,
 		dncList,
+		credentials,
 	} = useContext(store);
 	const [activeMain, setActiveMain] = useState('notes');
 	const [activeSub, setActiveSub] = useState('messages');
@@ -30,16 +31,16 @@ const DetailView = ({ match, getContactById }) => {
 	const { id } = match.params;
 	const contact = getContactById(id);
 
-	const getMessages = (token) => {
+	const getMessages = (creds) => {
+		const { server, userId, vendorId, apiKey } = creds;
 		axios
-			.get(`${SERVER_URL}/api/customers/${VENDOR_USER_ID}/messages`, {
+			.get(`https://${server}.stormapp.com/api/customers/${userId}/messages`, {
 				params: {
 					limit: 15,
-					token,
 				},
 				auth: {
-					username: VENDOR_ID,
-					password: API_KEY,
+					username: vendorId,
+					password: apiKey,
 				},
 			})
 			.then(({ data }) => {
@@ -47,12 +48,15 @@ const DetailView = ({ match, getContactById }) => {
 					return contact.numbers.find((number) => rawPhone(number) === rawPhone(message.number));
 				});
 				if (contactMessages.length > 0) setMessages(contactMessages);
-				// setNextPageToken(data.nextPageToken);
+				// TODO: setNextPageToken(data.nextPageToken);
 			});
 	};
 
 	useEffect(() => {
-		getMessages();
+		if (stormLoaded) {
+			const creds = credentials.find((cred) => cred.active);
+			getMessages(creds);
+		}
 	}, []);
 
 	useEffect(() => {
