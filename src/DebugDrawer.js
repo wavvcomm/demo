@@ -10,9 +10,9 @@ const DebugDrawer = ({ showDrawer }) => {
 	return showDrawer ? (
 		<Container>
 			<Segment>
+				<Header as="h5">WAVV Log</Header>
 				{logs.length ? (
 					<>
-						<Header as="h5">WAVV Log</Header>
 						{logs.map((log) => {
 							const key = uuid();
 							return <div key={key}>{log}</div>;

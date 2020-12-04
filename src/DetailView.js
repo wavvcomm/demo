@@ -67,6 +67,15 @@ const DetailView = ({ match, getContactById }) => {
 		}
 	}, [stormLoaded, id]);
 
+	const handleDnc = (isDncNumber, number) => {
+		const stormMethod = isDncNumber ? 'removeDncNumber' : 'addDncNumber';
+		window.Storm[stormMethod]({ number });
+		let newDncList = [...dncList];
+		if (isDncNumber) newDncList = newDncList.filter((num) => num !== rawPhone(number));
+		else newDncList.push(rawPhone(number));
+		dispatch({ type: SET_DNC_LIST, payload: newDncList });
+	};
+
 	return (
 		<Container>
 			<HeaderContainer>
@@ -127,14 +136,7 @@ const DetailView = ({ match, getContactById }) => {
 											position="bottom center"
 											trigger={
 												<Button
-													onClick={() => {
-														const stormMethod = isDncNumber ? 'removeDncNumber' : 'addDncNumber';
-														window.Storm[stormMethod]({ number });
-														let newDncList = [...dncList];
-														if (isDncNumber) newDncList = newDncList.filter((num) => num !== rawPhone(number));
-														else newDncList.push(rawPhone(number));
-														dispatch({ type: SET_DNC_LIST, payload: newDncList });
-													}}
+													onClick={() => handleDnc(isDncNumber, number)}
 													disabled={!stormLoaded}
 													icon="exclamation triangle"
 													size="mini"

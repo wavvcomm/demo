@@ -78,6 +78,19 @@ const DebugDrawer = ({ auth }) => {
 		}
 	};
 
+	const handleEdit = (cred) => {
+		const { id, userId, vendorId, apiKey, active, server } = cred;
+		setNewCredentials({ id, userId, vendorId, apiKey, server, active });
+		setShowForm(true);
+	};
+
+	const handleReconnect = () => {
+		const creds = credentials.find((cred) => cred.id === reconnectId);
+		dispatch({ type: ADD_UPDATE_CREDENTIALS, payload: { ...creds, active: true } });
+		setOpen(false);
+		window.location.reload();
+	};
+
 	return (
 		<>
 			<Modal size="mini" open={showCreds}>
@@ -155,11 +168,7 @@ const DebugDrawer = ({ auth }) => {
 														icon="pencil"
 														size="mini"
 														style={{ marginLeft: 8 }}
-														onClick={() => {
-															const { id, userId, vendorId, apiKey, active, server } = cred;
-															setNewCredentials({ id, userId, vendorId, apiKey, server, active });
-															setShowForm(true);
-														}}
+														onClick={() => handleEdit(cred)}
 													/>
 												}
 											/>
@@ -223,16 +232,7 @@ const DebugDrawer = ({ auth }) => {
 					>
 						No
 					</Button>
-					<Button
-						basic
-						color="red"
-						onClick={() => {
-							const creds = credentials.find((cred) => cred.id === reconnectId);
-							dispatch({ type: ADD_UPDATE_CREDENTIALS, payload: { ...creds, active: true } });
-							setOpen(false);
-							window.location.reload();
-						}}
-					>
+					<Button basic color="red" onClick={handleReconnect}>
 						Yes
 					</Button>
 				</Modal.Actions>
