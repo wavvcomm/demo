@@ -25,7 +25,6 @@ import {
 	SET_UNREAD_COUNTS,
 	SET_UNREAD_MESSAGES,
 	SET_DNC_LIST,
-	ADD_UPDATE_CREDENTIALS,
 	TOGGLE_CREDENTIALS,
 } from './types';
 
@@ -97,11 +96,6 @@ const App = () => {
 		debugLogger({ name: 'auth', dispatch });
 		getDncList(creds);
 		getRecordings(creds);
-	};
-
-	const handleCredentials = (id) => {
-		const creds = credentials.find((cred) => cred.id === id);
-		dispatch({ type: ADD_UPDATE_CREDENTIALS, payload: { ...creds, active: true } });
 	};
 
 	useEffect(() => {
@@ -276,8 +270,8 @@ const App = () => {
 						component={(props) => <DetailView {...props} getContactById={getContactById} />}
 					/>
 				</Switch>
-				<DebugDrawer showDrawer={showDrawer} handleCheckbox={handleCredentials} />
-				<CredentialModal handleCheckbox={handleCredentials} auth={authWavv} />
+				<DebugDrawer showDrawer={showDrawer} />
+				<CredentialModal auth={authWavv} />
 			</Container>
 			<Toast {...messageReceivedToast} onHide={() => setMessageReceivedToast({})} delay={5000} />
 		</div>
