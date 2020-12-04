@@ -3,10 +3,17 @@ import styled from '@emotion/styled';
 import { Button, Checkbox, Dropdown, Label, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { store } from './store';
-import { TOGGLE_DRAWER } from './types';
+import { TOGGLE_DRAWER, TOGGLE_CREDENTIALS } from './types';
 
 const Nav = ({ startCampaign }) => {
-	const { showDrawer: showingDrawer, unreadMessages: unreadCount, selected, dispatch, stormLoaded } = useContext(store);
+	const {
+		showDrawer: showingDrawer,
+		showCreds: showingCreds,
+		unreadMessages: unreadCount,
+		selected,
+		dispatch,
+		stormLoaded,
+	} = useContext(store);
 	const [on, toggleOn] = useState(false);
 	const disableStart = !selected.length;
 
@@ -62,6 +69,13 @@ const Nav = ({ startCampaign }) => {
 				</Menu.Item>
 				<Menu.Item fitted>
 					<Button color={showingDrawer ? 'grey' : null} icon="bug" onClick={() => dispatch({ type: TOGGLE_DRAWER })} />
+				</Menu.Item>
+				<Menu.Item fitted>
+					<Button
+						color={showingCreds ? 'grey' : null}
+						icon={showingCreds ? 'unlock' : 'lock'}
+						onClick={() => dispatch({ type: TOGGLE_CREDENTIALS })}
+					/>
 				</Menu.Item>
 			</Menu>
 		</NavBar>

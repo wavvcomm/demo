@@ -23,6 +23,7 @@ import {
 	ADD_UPDATE_CREDENTIALS,
 	REMOVE_CREDENTIALS,
 	UPDATE_WAVV_CONNECTION,
+	TOGGLE_CREDENTIALS,
 } from './types';
 
 const initialState = {
@@ -37,7 +38,8 @@ const initialState = {
 	numberDialing: null,
 	unreadCounts: {},
 	enableClickToCall: true,
-	showDrawer: true,
+	showDrawer: false,
+	showCreds: false,
 	dncList: [],
 	tags: {
 		1: {
@@ -96,6 +98,9 @@ const StateProvider = ({ children }) => {
 			}
 			case TOGGLE_DRAWER: {
 				return { ...state, showDrawer: !state.showDrawer };
+			}
+			case TOGGLE_CREDENTIALS: {
+				return { ...state, showCreds: !state.showCreds };
 			}
 			case SET_TAGS: {
 				return { ...state, tags: payload };
