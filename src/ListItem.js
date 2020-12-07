@@ -2,17 +2,17 @@ import React, { useContext, useState } from 'react';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 import { Table, Checkbox, Modal, Input, Button, Dropdown, Label, Popup } from 'semantic-ui-react';
-import { formatPhone } from './utils';
+import { formatPhone, rawPhone, validPhone } from './utils';
 import { store } from './store';
 import { SET_SELECTED } from './types';
 
-const MessageCount = ({ count }) => (
+const MessageCount = ({ count, disabled }) => (
 	<Popup
 		content="Message Number"
-		position="bottom center"
+		position="top center"
 		trigger={
 			<MessageButton>
-				<Button size="mini" icon="comment alternate" />
+				<Button size="mini" icon="comment alternate" disabled={disabled} />
 				{count ? <Label color="red" size="tiny" circular floating content={count} /> : null}
 			</MessageButton>
 		}
@@ -20,8 +20,9 @@ const MessageCount = ({ count }) => (
 );
 
 const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber, callNumber }) => {
-	const { unreadCounts, skipped, selected, dispatch } = useContext(store);
+	const { unreadCounts, skipped, selected, dispatch, dncList, stormLoaded } = useContext(store);
 	const [newNumber, setNewNumber] = useState('');
+	const [newNumberError, setNewNumberError] = useState(false);
 	const [open, setOpen] = useState(false);
 	const reset = () => {
 		setOpen(false);
@@ -42,12 +43,21 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 				<Popup
 					content="Remove Lead"
 					position="bottom center"
-					trigger={<Button onClick={() => removeContact({ contactId })} icon="trash" size="small" />}
+					trigger={
+						<Button disabled={!stormLoaded} onClick={() => removeContact({ contactId })} icon="trash" size="small" />
+					}
 				/>
 				<Popup
 					content="Skip Lead"
 					position="bottom center"
-					trigger={<Button onClick={() => removeContact({ contactId, skip: true })} icon="ban" size="small" />}
+					trigger={
+						<Button
+							disabled={!stormLoaded}
+							onClick={() => removeContact({ contactId, skip: true })}
+							icon="ban"
+							size="small"
+						/>
+					}
 				/>
 			</Table.Cell>
 			<Table.Cell>
@@ -55,30 +65,62 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 					{name}
 				</Link>
 			</Table.Cell>
-			<Table.Cell>{address}</Table.Cell>
-			<Table.Cell>{city}</Table.Cell>
+			<Table.Cell>{address || ''}</Table.Cell>
+			<Table.Cell>{city || ''}</Table.Cell>
 			<Table.Cell>
-				{numbers.map((number) => (
-					<Number key={number}>
-						<span className="leadPhoneNumber">{formatPhone(number)}</span>
-						<Popup
-							content="Remove Number"
-							position="bottom center"
-							trigger={<Button icon="close" size="mini" onClick={() => removeNumber({ contactId, number })} />}
-						/>
-						<Dropdown trigger={<MessageCount count={unreadCounts[number]} />} icon={null}>
-							<Dropdown.Menu>
-								<Dropdown.Item onClick={() => textNumber({ contact, number, dock: false })}>Modal</Dropdown.Item>
-								<Dropdown.Item onClick={() => textNumber({ contact, number, dock: true })}>Dock</Dropdown.Item>
-							</Dropdown.Menu>
-						</Dropdown>
-						<Popup
-							content="Call Number"
-							position="bottom center"
-							trigger={<Button icon="phone" size="mini" onClick={() => callNumber({ contactId, number })} />}
-						/>
-					</Number>
-				))}
+				{numbers.map((number) => {
+					const isDncNumber = dncList.includes(rawPhone(number));
+					return (
+						<Number key={number}>
+							{isDncNumber ? (
+								<Popup
+									content="On DNC List"
+									position="bottom center"
+									trigger={
+										<span className="leadPhoneNumber" style={{ textDecoration: 'line-through' }}>
+											{formatPhone(number)}
+										</span>
+									}
+								/>
+							) : (
+								<span className="leadPhoneNumber">{formatPhone(number)}</span>
+							)}
+							<Popup
+								content="Remove Number"
+								position="bottom center"
+								trigger={
+									<Button
+										disabled={!stormLoaded}
+										icon="close"
+										size="mini"
+										onClick={() => removeNumber({ contactId, number })}
+									/>
+								}
+							/>
+							<Dropdown
+								trigger={<MessageCount disabled={isDncNumber || !stormLoaded} count={unreadCounts[number]} />}
+								icon={null}
+							>
+								<Dropdown.Menu>
+									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: false })}>Modal</Dropdown.Item>
+									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: true })}>Dock</Dropdown.Item>
+								</Dropdown.Menu>
+							</Dropdown>
+							<Popup
+								content="Call Number"
+								position="bottom center"
+								trigger={
+									<Button
+										icon="phone"
+										size="mini"
+										disabled={isDncNumber || !stormLoaded}
+										onClick={() => callNumber({ contactId, number })}
+									/>
+								}
+							/>
+						</Number>
+					);
+				})}
 			</Table.Cell>
 			<Table.Cell collapsing textAlign="center">
 				<Modal
@@ -89,21 +131,40 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 						<Popup
 							content="Add Number"
 							position="bottom center"
-							trigger={<Button onClick={() => setOpen(true)} icon="plus square" />}
+							trigger={<Button disabled={!stormLoaded} onClick={() => setOpen(true)} icon="plus square" />}
 						/>
 					}
 					size="mini"
 				>
 					<Modal.Header>Add Number</Modal.Header>
 					<Modal.Content>
-						<Input value={newNumber} onChange={({ target }) => setNewNumber(target.value)} placeholder="Number" />
+						<InputContainer>
+							<Input
+								value={newNumber}
+								error={newNumberError}
+								onChange={({ target }) => {
+									setNewNumber(target.value);
+									if (validPhone(target.value)) setNewNumberError(false);
+								}}
+								placeholder="Number"
+							/>
+							{newNumberError && (
+								<Label basic color="red" pointing>
+									Invalid phone number
+								</Label>
+							)}
+						</InputContainer>
 					</Modal.Content>
 					<Modal.Actions>
 						<Button onClick={reset}>Cancel</Button>
 						<Button
 							onClick={() => {
-								addNumber({ contactId, number: newNumber });
-								reset();
+								if (validPhone(newNumber)) {
+									addNumber({ contactId, number: newNumber });
+									reset();
+								} else {
+									setNewNumberError(true);
+								}
 							}}
 							positive
 						>
@@ -126,6 +187,12 @@ const Number = styled.div({
 const MessageButton = styled.div({
 	position: 'relative',
 	zIndex: 0,
+});
+
+const InputContainer = styled.div({
+	display: 'flex',
+	flexDirection: 'column',
+	width: '60%',
 });
 
 export default ListItem;

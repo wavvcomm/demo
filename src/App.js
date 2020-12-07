@@ -4,18 +4,19 @@ import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import styled from '@emotion/styled';
 import { Route, Switch, useHistory } from 'react-router-dom';
-import { API_KEY, VENDOR_USER_ID, VENDOR_ID, SERVER_URL } from './constants';
 import ListView from './ListView';
 import DetailView from './DetailView';
 import Nav from './Nav';
 import Toast from './Toast';
 import { debugLogger, rawPhone } from './utils';
 import DebugDrawer from './DebugDrawer';
+import CredentialModal from './CredentialModal';
 import { store } from './store';
 import {
 	ADD_NUMBER,
 	ADD_OUTCOME,
 	ADD_RECORDING,
+	ADD_CONTACT,
 	REMOVE_CONTACT,
 	REMOVE_NUMBER,
 	SET_ENABLE_CLICK_TO_CALL,
@@ -23,45 +24,90 @@ import {
 	SET_STORM_LOADED,
 	SET_UNREAD_COUNTS,
 	SET_UNREAD_MESSAGES,
+	SET_DNC_LIST,
+	TOGGLE_CREDENTIALS,
 } from './types';
 
 const App = () => {
-	const { stormLoaded, contactList, selected, showDrawer, recordings, outcomes, dispatch } = useContext(store);
+	const { stormLoaded, contactList, selected, showDrawer, showCreds, outcomes, dispatch, credentials } = useContext(
+		store
+	);
 	const [messageReceivedToast, setMessageReceivedToast] = useState({});
 	const history = useHistory();
 
-	const loadSnippet = () =>
+	const loadSnippet = (server) =>
 		new Promise((resolve, reject) => {
 			const script = document.createElement('script');
-			script.src = `${SERVER_URL}/storm.js`;
+			script.src = `https://${server}.stormapp.com/storm.js`;
 			script.onload = () => resolve();
 			script.onerror = (err) => reject(err);
 			document.body.appendChild(script);
 		});
-
-	const authWavv = async () => {
-		const issuer = VENDOR_ID;
-		const signature = API_KEY;
-		const userId = VENDOR_USER_ID;
-		const payload = { userId };
-		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
-		await loadSnippet();
-		dispatch({ type: SET_STORM_LOADED, payload: true });
-		window.Storm.auth({ token });
-		debugLogger({ name: 'auth', dispatch });
-	};
-
-	useEffect(() => {
-		authWavv();
-	}, []);
-
-	const getContactById = (id) => contactList.find((contact) => contact.contactId === id);
 
 	const getContactByPhone = (number) =>
 		contactList.find((contact) => {
 			const rawNumbers = contact.numbers.map((num) => rawPhone(num));
 			return rawNumbers.includes(rawPhone(number));
 		});
+
+	const getDncList = (creds) => {
+		const { userId, vendorId, apiKey, server } = creds;
+		axios
+			.get(`https://${server}.stormapp.com/api/customers/${userId}/dnc`, {
+				auth: {
+					username: vendorId,
+					password: apiKey,
+				},
+			})
+			.then(({ data }) => {
+				const numbers = data.map((obj) => rawPhone(obj.number));
+				dispatch({ type: SET_DNC_LIST, payload: numbers });
+			});
+	};
+
+	const getRecordings = (creds) => {
+		const { userId, vendorId, apiKey, server } = creds;
+
+		window.Storm.onCallRecorded(({ recordingId: id, contactId, number }) => {
+			debugLogger({ name: 'onCallRecorded', dispatch });
+			axios
+				.get(`https://${server}.stormapp.com/api/customers/${userId}/recordings/${id}`, {
+					auth: {
+						username: vendorId,
+						password: apiKey,
+					},
+				})
+				.then(({ data: recording }) => {
+					if (!contactId) contactId = getContactByPhone(number).id;
+					dispatch({ type: ADD_RECORDING, payload: { contactId, recording } });
+				});
+		});
+	};
+
+	const authWavv = async (creds) => {
+		const { vendorId, apiKey, userId, server } = creds;
+		const issuer = vendorId;
+		const signature = apiKey;
+		const payload = { userId };
+		const token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
+		await loadSnippet(server);
+		dispatch({ type: SET_STORM_LOADED, payload: true });
+		window.Storm.auth({ token });
+		debugLogger({ name: 'auth', dispatch });
+		getDncList(creds);
+		getRecordings(creds);
+	};
+
+	useEffect(() => {
+		const creds = credentials.find((cred) => cred.active);
+		if (creds) {
+			authWavv(creds);
+		} else if (!showCreds) {
+			dispatch({ type: TOGGLE_CREDENTIALS });
+		}
+	}, []);
+
+	const getContactById = (id) => contactList.find((contact) => contact.contactId === id);
 
 	const getContactsBySearchTerms = (search) => {
 		const formattedSearch = search.toLowerCase();
@@ -158,26 +204,6 @@ const App = () => {
 		}
 	}, [stormLoaded, outcomes]);
 
-	useEffect(() => {
-		if (stormLoaded) {
-			window.Storm.onCallRecorded(({ recordingId: id, contactId, number }) => {
-				debugLogger({ name: 'onCallRecorded', dispatch });
-				// TODO: make dynamic url for PROD
-				axios
-					.get(`${SERVER_URL}/api/customers/${VENDOR_USER_ID}/recordings/${id}`, {
-						auth: {
-							username: VENDOR_ID,
-							password: API_KEY,
-						},
-					})
-					.then(({ data: recording }) => {
-						if (!contactId) contactId = getContactByPhone(number).id;
-						dispatch({ type: ADD_RECORDING, payload: { contactId, recording } });
-					});
-			});
-		}
-	}, [stormLoaded, recordings]);
-
 	const removeNumber = ({ contactId, number }) => {
 		dispatch({ type: REMOVE_NUMBER, payload: { contactId, number } });
 		window.Storm.removePhone({ contactId, number });
@@ -212,6 +238,10 @@ const App = () => {
 		debugLogger({ name: 'startCampaign', dispatch });
 	};
 
+	const addContact = (contact) => {
+		dispatch({ type: ADD_CONTACT, payload: contact });
+	};
+
 	return (
 		<div>
 			<Nav startCampaign={handleStart} />
@@ -225,6 +255,7 @@ const App = () => {
 						render={(props) => (
 							<ListView
 								{...props}
+								addContact={addContact}
 								removeContact={deleteContact}
 								removeNumber={removeNumber}
 								addNumber={addNumber}
@@ -240,6 +271,7 @@ const App = () => {
 					/>
 				</Switch>
 				<DebugDrawer showDrawer={showDrawer} />
+				<CredentialModal auth={authWavv} />
 			</Container>
 			<Toast {...messageReceivedToast} onHide={() => setMessageReceivedToast({})} delay={5000} />
 		</div>
