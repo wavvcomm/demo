@@ -5,6 +5,9 @@ const dialWithPhoneInput = 'input[name="dial-with-phone"]';
 const computerAudioInput = 'input[name="dial-with-webrtc"]';
 const doneButton = '#web-rtc-prompt-dialog-right-button';
 const closeSettingsButton = '#close-settings';
+const phoneNumberInput = '#phone-number';
+const dialingModeInput = '#dialing-mode';
+const callerIDPhoneNumber = '#caller-id-phone-number';
 
 class DialerSettingsModal {
 	ifAudioTypeModalIsVisible(modeDialOrComputer = 'dial', remember = true) {
@@ -36,6 +39,26 @@ class DialerSettingsModal {
 
 	closeSettingsModal() {
 		cy.iframe(stormFrameApp).find(closeSettingsButton).click();
+	}
+
+	getPhoneNumber() {
+		return cy.iframe(stormFrameApp).find(phoneNumberInput);
+	}
+
+	getCallerIDNumber() {
+		return cy.iframe(stormFrameApp).find(callerIDPhoneNumber);
+	}
+
+	getDialingMode() {
+		return cy.iframe(stormFrameApp).find(dialingModeInput);
+	}
+
+	getDialingModeOptions() {
+		return cy
+			.iframe(stormFrameApp)
+			.find(dialingModeInput)
+			.parent()
+			.find('div[class*="OptionsContainer"] div[class*="-Option"]');
 	}
 }
 

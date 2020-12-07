@@ -18,12 +18,11 @@ import './commands';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
-// import DialerSettingsModal from '../integration/views/modals/DialerSettingsModal';
-// import HomePage from '../integration/views/home/HomePage';
-// before(() => {
-// 	const dialer = new DialerSettingsModal();
-// 	const home = new HomePage();
-// 	home.visit();
-// 	dialer.openSettingsModal();
-// 	dialer.closeSettingsModal();
-// });
+
+beforeEach(() => {
+	cy.clearCookies();
+});
+
+afterEach(() => {
+	cy.screenshot();
+});

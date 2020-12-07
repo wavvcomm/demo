@@ -9,6 +9,7 @@ const vmDropButton = '#vm-drop';
 const lineOne = '#line-1';
 const hangupButton = '#hangup-button';
 const callDispositionModal = '.callDispositionModal';
+const dialerPhoneNumber = '#line-1 > div:nth-child(1) > div';
 
 class DialerBar {
 	dialerBarIsLoaded() {
@@ -26,9 +27,9 @@ class DialerBar {
 	}
 
 	clickDialButton() {
-		cy.get(dialerBarFrame).iframe(() => {
-			cy.get(dialButton, { timeout: 10 * 1000 }).click();
-		});
+		cy.iframe(dialerBarFrame)
+			.find(dialButton, { timeout: 10 * 1000 })
+			.click();
 	}
 
 	isPhoneRinging() {
@@ -37,7 +38,7 @@ class DialerBar {
 			.should(
 				'have.css',
 				'background',
-				'rgba(0, 0, 0, 0) url("https://stage1.stormapp.com/cbeb8285789ec9f27ec978e7e2d5c309/static/media/multiline_ringing.1da76ffb.gif") no-repeat scroll -2px 2px / 36px padding-box border-box'
+				'rgba(0, 0, 0, 0) url("https://stage1.stormapp.com/cbeb8285789ec9f27ec978e7e2d5c309/static/media/multiline_icons.8d88a795.svg") no-repeat scroll 0px -270px / auto padding-box border-box'
 			);
 	}
 
@@ -57,6 +58,10 @@ class DialerBar {
 
 	getCallDispositionModal() {
 		return cy.get(callDispositionModal, { timeout: 400 * 1000 });
+	}
+
+	getDialerPhoneNumber() {
+		return cy.iframe(dialerBarFrame).find(dialerPhoneNumber);
 	}
 }
 export default DialerBar;
