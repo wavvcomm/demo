@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Modal, Form, Button, Item, Popup, Message, Radio, Header } from 'semantic-ui-react';
 import { v4 as uuid } from 'uuid';
 import { store } from './store';
@@ -18,6 +19,7 @@ const CredentialModal = ({ auth }) => {
 		active: false,
 	});
 	const [reconnectId, setReconnectId] = useState('');
+	const history = useHistory();
 
 	const handleCheckbox = (id) => {
 		if (stormLoaded) {
@@ -88,6 +90,7 @@ const CredentialModal = ({ auth }) => {
 		const creds = credentials.find((cred) => cred.id === reconnectId);
 		dispatch({ type: ADD_UPDATE_CREDENTIALS, payload: { ...creds, active: true } });
 		setOpen(false);
+		history.push('/');
 		window.location.reload();
 	};
 
@@ -150,46 +153,50 @@ const CredentialModal = ({ auth }) => {
 						</Form>
 					) : (
 						<>
-							{credentials.map((cred) => (
-								<Item.Group key={cred.id}>
-									<Item>
-										<Item.Content verticalAlign="middle" as="h4">
-											<Radio
-												checked={cred.active}
-												onClick={() => handleCheckbox(cred.id)}
-												style={{ marginRight: 8, paddingTop: 3 }}
-											/>
-											{cred.server.toUpperCase()}
-											<Popup
-												content="Edit"
-												position="bottom center"
-												trigger={
-													<Button
-														icon="pencil"
-														size="mini"
-														style={{ marginLeft: 8 }}
-														onClick={() => handleEdit(cred)}
-													/>
-												}
-											/>
-											<Popup
-												content="Delete"
-												position="bottom center"
-												trigger={
-													<Button
-														icon="trash"
-														size="mini"
-														style={{ marginLeft: 8 }}
-														onClick={() => {
-															dispatch({ type: REMOVE_CREDENTIALS, payload: cred.id });
-														}}
-													/>
-												}
-											/>
-										</Item.Content>
-									</Item>
-								</Item.Group>
-							))}
+							{credentials.map((cred) => {
+								const isToken = !!cred.token;
+								return (
+									<Item.Group key={cred.id}>
+										<Item>
+											<Item.Content verticalAlign="middle" as="h4">
+												<Radio
+													checked={cred.active}
+													onClick={() => handleCheckbox(cred.id)}
+													style={{ marginRight: 8, paddingTop: 3 }}
+												/>
+												{cred.server.toUpperCase()} {isToken ? '(token)' : ''}
+												<Popup
+													content="Edit"
+													position="bottom center"
+													trigger={
+														<Button
+															icon="pencil"
+															size="mini"
+															disabled={isToken}
+															style={{ marginLeft: 8 }}
+															onClick={() => handleEdit(cred)}
+														/>
+													}
+												/>
+												<Popup
+													content="Delete"
+													position="bottom center"
+													trigger={
+														<Button
+															icon="trash"
+															size="mini"
+															style={{ marginLeft: 8 }}
+															onClick={() => {
+																dispatch({ type: REMOVE_CREDENTIALS, payload: cred.id });
+															}}
+														/>
+													}
+												/>
+											</Item.Content>
+										</Item>
+									</Item.Group>
+								);
+							})}
 							<Button
 								size="mini"
 								onClick={() => {

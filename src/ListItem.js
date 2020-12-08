@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 import { Table, Checkbox, Modal, Input, Button, Dropdown, Label, Popup } from 'semantic-ui-react';
-import { formatPhone, rawPhone, validPhone } from './utils';
+import { formatPhone, validPhone } from './utils';
 import { store } from './store';
 import { SET_SELECTED } from './types';
 
@@ -20,7 +20,7 @@ const MessageCount = ({ count, disabled }) => (
 );
 
 const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber, callNumber }) => {
-	const { unreadCounts, skipped, selected, dispatch, dncList, stormLoaded } = useContext(store);
+	const { unreadCounts, skipped, selected, dispatch, stormLoaded } = useContext(store);
 	const [newNumber, setNewNumber] = useState('');
 	const [newNumberError, setNewNumberError] = useState(false);
 	const [open, setOpen] = useState(false);
@@ -69,22 +69,10 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 			<Table.Cell>{city || ''}</Table.Cell>
 			<Table.Cell>
 				{numbers.map((number) => {
-					const isDncNumber = dncList.includes(rawPhone(number));
 					return (
 						<Number key={number}>
-							{isDncNumber ? (
-								<Popup
-									content="On DNC List"
-									position="bottom center"
-									trigger={
-										<span className="leadPhoneNumber" style={{ textDecoration: 'line-through' }}>
-											{formatPhone(number)}
-										</span>
-									}
-								/>
-							) : (
-								<span className="leadPhoneNumber">{formatPhone(number)}</span>
-							)}
+							{formatPhone(number)}
+
 							<Popup
 								content="Remove Number"
 								position="bottom center"
@@ -97,10 +85,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 									/>
 								}
 							/>
-							<Dropdown
-								trigger={<MessageCount disabled={isDncNumber || !stormLoaded} count={unreadCounts[number]} />}
-								icon={null}
-							>
+							<Dropdown trigger={<MessageCount disabled={!stormLoaded} count={unreadCounts[number]} />} icon={null}>
 								<Dropdown.Menu>
 									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: false })}>Modal</Dropdown.Item>
 									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: true })}>Dock</Dropdown.Item>
@@ -113,7 +98,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 									<Button
 										icon="phone"
 										size="mini"
-										disabled={isDncNumber || !stormLoaded}
+										disabled={!stormLoaded}
 										onClick={() => callNumber({ contactId, number })}
 									/>
 								}
