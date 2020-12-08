@@ -1,6 +1,6 @@
 import React, { createContext, useReducer } from 'react';
 import _ from 'lodash';
-import { contacts, exampleNotes, exampleOutcomes, exampleRecordings } from './constants';
+import { contacts, exampleNotes, exampleOutcomes } from './constants';
 import {
 	SET_STORM_LOADED,
 	SET_OPEN_NOTE,
@@ -16,13 +16,10 @@ import {
 	ADD_NUMBER,
 	REMOVE_NUMBER,
 	ADD_OUTCOME,
-	ADD_RECORDING,
 	ADD_CONTACT,
-	SET_DNC_LIST,
 	ADD_DEBUG_LOG,
 	ADD_UPDATE_CREDENTIALS,
 	REMOVE_CREDENTIALS,
-	UPDATE_WAVV_CONNECTION,
 	TOGGLE_CREDENTIALS,
 } from './types';
 
@@ -40,7 +37,6 @@ const initialState = {
 	enableClickToCall: true,
 	showDrawer: false,
 	showCreds: false,
-	dncList: [],
 	tags: {
 		1: {
 			'Warm Lead': true,
@@ -48,9 +44,6 @@ const initialState = {
 	},
 	notes: {
 		1: exampleNotes,
-	},
-	recordings: {
-		1: exampleRecordings,
 	},
 	outcomes: {
 		1: exampleOutcomes,
@@ -156,23 +149,13 @@ const StateProvider = ({ children }) => {
 				else newOutcomes[contactId] = [outcome];
 				return { ...state, outcomes: newOutcomes };
 			}
-			case ADD_RECORDING: {
-				const { contactId, recording } = payload;
-				const { recordings } = state;
-				const newRecordings = { ...recordings };
-				if (recordings[contactId]) newRecordings[contactId].push(recording);
-				else newRecordings[contactId] = [recording];
-				return { ...state, recordings: newRecordings };
-			}
-			case SET_DNC_LIST: {
-				return { ...state, dncList: payload };
-			}
 			case ADD_DEBUG_LOG: {
 				const logs = [...state.logs, payload];
 				return { ...state, logs };
 			}
 			case ADD_UPDATE_CREDENTIALS: {
 				const newState = { ...state };
+				if (payload.token) newState.credentials = newState.credentials.filter((cred) => !cred.token);
 				if (payload.active)
 					newState.credentials.map((cred) => {
 						if (cred.id !== payload.id) {
@@ -184,7 +167,7 @@ const StateProvider = ({ children }) => {
 				if (existingIndex >= 0) {
 					newState.credentials[existingIndex] = payload;
 				} else {
-					newState.credentials = [...newState.credentials, payload];
+					newState.credentials = [payload, ...newState.credentials];
 				}
 				localStorage.setItem('creds', JSON.stringify(newState.credentials));
 				return newState;
@@ -193,10 +176,6 @@ const StateProvider = ({ children }) => {
 				const credentials = state.credentials.filter((cred) => cred.id !== payload);
 				localStorage.setItem('creds', JSON.stringify(credentials));
 				return { ...state, credentials };
-			}
-			case UPDATE_WAVV_CONNECTION: {
-				// TODO
-				return { ...state };
 			}
 			default:
 				return state;
