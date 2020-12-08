@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { Modal, Form, TextArea, Button } from 'semantic-ui-react';
+import { continueCampaign } from '@wavv/dialer';
 import { store } from './store';
 import { SET_NOTES, SET_OPEN_NOTE, SET_TAGS } from './types';
 
@@ -62,7 +63,7 @@ const CallDispositonModal = ({ contactId: id, note, setNote }) => {
 				<Button
 					onClick={() => {
 						dispatch({ type: SET_OPEN_NOTE, payload: false });
-						window.Storm.continue();
+						continueCampaign();
 					}}
 				>
 					Cancel
@@ -74,7 +75,7 @@ const CallDispositonModal = ({ contactId: id, note, setNote }) => {
 						else newNotes[id] = [{ note, date: Date.now() }];
 						dispatch({ type: SET_NOTES, payload: newNotes });
 						dispatch({ type: SET_OPEN_NOTE, payload: false });
-						window.Storm.continue();
+						continueCampaign();
 					}}
 					positive
 				>

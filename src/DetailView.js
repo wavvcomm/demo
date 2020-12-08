@@ -3,6 +3,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import styled from '@emotion/styled';
 import axios from 'axios';
 import { Image, Button, Feed, Header, Label, Grid, List, Menu, Segment, Popup } from 'semantic-ui-react';
+import { callPhone, addDncNumber, removeDncNumber, addWaitingForContinueListener } from '@wavv/dialer';
+import { openMessengerThread } from '@wavv/messenger';
 import { formatPhone, rawPhone } from './utils';
 import { exampleMessages } from './constants';
 import CallDispositionModal from './CallDispositionModal';
@@ -60,16 +62,17 @@ const DetailView = ({ match, getContactById }) => {
 	}, []);
 
 	useEffect(() => {
-		if (stormLoaded) {
-			window.Storm.onWaitingForContinue(({ waiting }) => {
-				if (waiting) dispatch({ type: SET_OPEN_NOTE, payload: true });
-			});
-		}
-	}, [stormLoaded, id]);
+		const waitingForContinueListener = addWaitingForContinueListener(({ waiting }) => {
+			if (waiting) dispatch({ type: SET_OPEN_NOTE, payload: true });
+		});
+		return () => {
+			waitingForContinueListener.remove();
+		};
+	}, [id]);
 
 	const handleDnc = (isDncNumber, number) => {
-		const stormMethod = isDncNumber ? 'removeDncNumber' : 'addDncNumber';
-		window.Storm[stormMethod]({ number });
+		if (isDncNumber) removeDncNumber({ number });
+		else addDncNumber({ number });
 		let newDncList = [...dncList];
 		if (isDncNumber) newDncList = newDncList.filter((num) => num !== rawPhone(number));
 		else newDncList.push(rawPhone(number));
@@ -107,7 +110,7 @@ const DetailView = ({ match, getContactById }) => {
 													size="mini"
 													style={{ margin: '3px 3px 3px 6px' }}
 													disabled={!enableClickToCall || isDncNumber || !stormLoaded}
-													onClick={() => window.Storm.callPhone({ number })}
+													onClick={() => callPhone({ number })}
 												/>
 											}
 										/>
@@ -122,7 +125,7 @@ const DetailView = ({ match, getContactById }) => {
 														size="mini"
 														style={{ margin: 3 }}
 														disabled={isDncNumber || !stormLoaded}
-														onClick={() => window.Storm.openMessengerThread({ contact, number, dock: true })}
+														onClick={() => openMessengerThread({ contact, number, dock: true })}
 													/>
 													{unreadCounts[number] ? (
 														<Label color="red" size="tiny" circular floating content={unreadCounts[number]} />

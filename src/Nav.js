@@ -2,6 +2,8 @@ import React, { useContext, useState } from 'react';
 import styled from '@emotion/styled';
 import { Button, Checkbox, Dropdown, Label, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { setTheme } from '@wavv/core';
+import { openMessenger } from '@wavv/messenger';
 import { store } from './store';
 import { TOGGLE_DRAWER, TOGGLE_CREDENTIALS } from './types';
 
@@ -28,7 +30,7 @@ const Nav = ({ startCampaign }) => {
 
 	const handleTheme = () => {
 		const lightTheme = !on; // state hasn't changed yet, so we want the inverse
-		window.Storm.setTheme({ theme: lightTheme ? 'light' : 'dark' });
+		setTheme({ theme: lightTheme ? 'light' : 'dark' });
 		toggleOn(!on);
 	};
 
@@ -50,7 +52,7 @@ const Nav = ({ startCampaign }) => {
 							{Object.keys(accents).map((name) => {
 								const primaryColor = accents[name];
 								return (
-									<Dropdown.Item key={name} onClick={() => window.Storm.setTheme({ primaryColor })}>
+									<Dropdown.Item key={name} onClick={() => setTheme({ primaryColor })}>
 										<ColorItem color={primaryColor} />
 									</Dropdown.Item>
 								);
@@ -59,7 +61,7 @@ const Nav = ({ startCampaign }) => {
 					</Dropdown>
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Button disabled={!stormLoaded} onClick={() => window.Storm.openMessenger({ dock: true })}>
+					<Button disabled={!stormLoaded} onClick={() => openMessenger({ dock: true })}>
 						Open Messenger
 						{unreadCount ? <Label color="red" circular floating content={unreadCount} /> : null}
 					</Button>
