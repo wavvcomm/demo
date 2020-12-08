@@ -44,7 +44,12 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 					content="Remove Lead"
 					position="bottom center"
 					trigger={
-						<Button disabled={!stormLoaded} onClick={() => removeContact({ contactId })} icon="trash" size="small" />
+						<Button
+							disabled={!stormLoaded}
+							onClick={() => removeContact({ contactId })}
+							icon="trash"
+							size="small"
+						/>
 					}
 				/>
 				<Popup
@@ -70,7 +75,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 			<Table.Cell>
 				{numbers.map((number) => {
 					return (
-						<Number key={number}>
+						<Number className="leadPhoneNumber" key={number}>
 							{formatPhone(number)}
 
 							<Popup
@@ -85,10 +90,17 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 									/>
 								}
 							/>
-							<Dropdown trigger={<MessageCount disabled={!stormLoaded} count={unreadCounts[number]} />} icon={null}>
+							<Dropdown
+								trigger={<MessageCount disabled={!stormLoaded} count={unreadCounts[number]} />}
+								icon={null}
+							>
 								<Dropdown.Menu>
-									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: false })}>Modal</Dropdown.Item>
-									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: true })}>Dock</Dropdown.Item>
+									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: false })}>
+										Modal
+									</Dropdown.Item>
+									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: true })}>
+										Dock
+									</Dropdown.Item>
 								</Dropdown.Menu>
 							</Dropdown>
 							<Popup
@@ -116,7 +128,9 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 						<Popup
 							content="Add Number"
 							position="bottom center"
-							trigger={<Button disabled={!stormLoaded} onClick={() => setOpen(true)} icon="plus square" />}
+							trigger={
+								<Button disabled={!stormLoaded} onClick={() => setOpen(true)} icon="plus square" />
+							}
 						/>
 					}
 					size="mini"
