@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid';
 import { store } from './store';
 import { ADD_UPDATE_CREDENTIALS, REMOVE_CREDENTIALS, TOGGLE_CREDENTIALS } from './types';
 
-const DebugDrawer = ({ auth }) => {
+const CredentialModal = ({ auth }) => {
 	const [open, setOpen] = useState(false);
 	const { credentials, dispatch, showCreds, stormLoaded } = useContext(store);
 	const [showForm, setShowForm] = useState(!credentials.length);
@@ -241,4 +241,4 @@ const DebugDrawer = ({ auth }) => {
 	);
 };
 
-export default DebugDrawer;
+export default CredentialModal;
