@@ -66,27 +66,6 @@ export const contacts = [
 	},
 ];
 
-export const exampleMessages = [
-	{
-		id: 'b809f77f-ea6d-45f1-9608-b123b71c2f4b',
-		body: 'Ut enim ad minim veniam, quis nostrud exercitation.',
-		status: 'RECEIVED',
-	},
-	{ id: 'c809f742-a234d-45f1-9608-b123b71c2f4b', body: 'quis nostrud exercitation.', status: 'DELIVERED' },
-	{
-		id: 'c809f742-a234d-45f1-9608-b1223456df4b',
-		body:
-			'nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation.',
-		status: 'RECEIVED',
-	},
-	{
-		id: 'bgs4f77f-ea6d-45f1-9608-b123b71c2f4b',
-		body:
-			'Ad minim veniam, quis nostrud exercitation. nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation. Ut enim ad minim veniam. nostrud exercitation. Ut enim ad minim veniam, quis nostrud exercitation. Ut enim ad minim veniam.',
-		status: 'DELIVERED',
-	},
-];
-
 export const exampleNotes = [
 	{
 		note:
@@ -99,14 +78,6 @@ export const exampleNotes = [
 			'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
 		date: '2019-05-14T06:00:00Z',
 		number: '2029659970',
-	},
-];
-
-export const exampleRecordings = [
-	{
-		id: '0234982f-6339-4a9d-8f79-efb6e83d228f',
-		date: '2019-02-19T06:00:00Z',
-		url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg',
 	},
 ];
 
