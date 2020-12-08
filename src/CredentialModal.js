@@ -93,7 +93,7 @@ const DebugDrawer = ({ auth }) => {
 
 	return (
 		<>
-			<Modal size="mini" open={showCreds}>
+			<Modal className="credentialsModal" size="mini" open={showCreds}>
 				<Modal.Header>WAVV Credentials</Modal.Header>
 				<Modal.Content>
 					{showForm ? (

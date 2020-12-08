@@ -16,13 +16,24 @@
 // Import commands.js using ES2015 syntax:
 import './commands';
 
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
+before(() => {
+	cy.clearLocalStorage();
+});
 
 beforeEach(() => {
-	cy.clearCookies();
+	const credentials = [
+		{
+			active: true,
+			apiKey: Cypress.env('API_KEY'),
+			id: '2ab8fb42-88e0-4f44-b033-bb757cc09aac',
+			server: Cypress.env('SERVER'),
+			userId: Cypress.env('VENDOR_USER_ID'),
+			vendorId: Cypress.env('VENDOR_ID'),
+		},
+	];
+	cy.setLocalStorage('creds', JSON.stringify(credentials));
 });
 
 afterEach(() => {
-	cy.screenshot();
+	cy.stopAllCalls();
 });

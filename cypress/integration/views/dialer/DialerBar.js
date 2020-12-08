@@ -34,20 +34,22 @@ class DialerBar {
 
 	isPhoneRinging() {
 		cy.iframe(dialerBarFrame)
-			.find(lineOne)
+			.find(lineOne, { timeout: 10 * 1000 })
 			.should(
 				'have.css',
 				'background',
-				'rgba(0, 0, 0, 0) url("https://stage1.stormapp.com/cbeb8285789ec9f27ec978e7e2d5c309/static/media/multiline_icons.8d88a795.svg") no-repeat scroll 0px -270px / auto padding-box border-box'
+				'rgba(0, 0, 0, 0) url("https://stage1.stormapp.com/0647ff2206aacb28933b0cf1722dc04d/static/media/multiline_ringing.1da76ffb.gif") no-repeat scroll -2px 2px / 36px padding-box border-box'
 			);
 	}
 
 	clickHangupButton() {
-		cy.iframe(dialerBarFrame).find(hangupButton).click();
+		cy.iframe(dialerBarFrame)
+			.find(hangupButton, { timeout: 10 * 1000 })
+			.click();
 	}
 
 	getHangUpButton() {
-		return cy.iframe(dialerBarFrame).find(hangupButton);
+		return cy.iframe(dialerBarFrame).find(hangupButton, { timeout: 10 * 1000 });
 	}
 
 	clickDropVoicemail() {
@@ -62,6 +64,16 @@ class DialerBar {
 
 	getDialerPhoneNumber() {
 		return cy.iframe(dialerBarFrame).find(dialerPhoneNumber);
+	}
+
+	isPhoneAnswered() {
+		cy.iframe(dialerBarFrame)
+			.find(lineOne, { timeout: 15 * 1000 })
+			.should(
+				'have.css',
+				'background',
+				'rgba(0, 0, 0, 0) url("https://stage1.stormapp.com/0647ff2206aacb28933b0cf1722dc04d/static/media/multiline_ringing.1da76ffb.gif") no-repeat scroll -2px 2px / 36px padding-box border-box'
+			);
 	}
 }
 export default DialerBar;

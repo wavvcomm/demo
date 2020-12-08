@@ -25,6 +25,8 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 import 'cypress-iframe';
+import 'cypress-localstorage-commands';
+import axios from 'axios';
 
 // Cypress.Commands.add('iframe', { prevSubject: 'element' }, ($iframe, callback = () => {}) => {
 // 	// For more info on targeting inside iframes refer to this GitHub issue:
@@ -37,3 +39,14 @@ import 'cypress-iframe';
 // 		.then((iframe) => cy.wrap(iframe.contents().find('body')))
 // 		.within({}, callback);
 // });
+
+Cypress.Commands.add('stopAllCalls', () => {
+	const deleteUrl = `${Cypress.env('SERVER_URL')}/api/customers/${Cypress.env('VENDOR_USER_ID')}/calls`;
+	cy.log('sending stop all calls endpoint');
+	axios.delete(deleteUrl, {
+		auth: {
+			username: Cypress.env('VENDOR_ID'),
+			password: Cypress.env('API_KEY'),
+		},
+	});
+});
