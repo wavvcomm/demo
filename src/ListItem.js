@@ -99,7 +99,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 										icon="phone"
 										size="mini"
 										disabled={!stormLoaded}
-										onClick={() => callNumber({ contactId, number })}
+										onClick={() => callNumber({ contact, number })}
 									/>
 								}
 							/>

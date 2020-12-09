@@ -226,7 +226,9 @@ const App = () => {
 		debugLogger({ name: 'openMessengerThread', dispatch });
 	};
 
-	const callNumber = (ops) => {
+	const callNumber = ({ contact, number }) => {
+		const { contactId, name, address, city } = contact;
+		const ops = { contactId, name, address, city, number };
 		callPhone(ops);
 		debugLogger({ name: 'callPhone', dispatch });
 	};
