@@ -40,9 +40,65 @@ import axios from 'axios';
 // 		.within({}, callback);
 // });
 
-Cypress.Commands.add('stopAllCalls', () => {
-	const deleteUrl = `${Cypress.env('SERVER_URL')}/api/customers/${Cypress.env('VENDOR_USER_ID')}/calls`;
+Cypress.Commands.add('getNewTestUser', () => {
+	const apiUrl = `${Cypress.env('SERVER_URL')}/api/testing`;
+	cy.log('getting new test user');
+
+	cy.wrap(
+		axios.post(
+			apiUrl,
+
+			{
+				email: 'testing@wavv.com',
+				firstName: 'tester',
+				lastName: 'lastName',
+				address1: '1411 W 1250 S',
+				address2: 'Suite 300',
+				city: 'Orem',
+				state: 'UT',
+				zip: '84058',
+				subscriptions: {
+					multi: true,
+					sms: true,
+				},
+				free: false,
+				showTos: false,
+			},
+			{
+				auth: {
+					username: Cypress.env('VENDOR_ID'),
+					password: Cypress.env('API_KEY'),
+				},
+			}
+		)
+	);
+});
+
+Cypress.Commands.add('stopAllCalls', (user) => {
+	const deleteUrl = `${Cypress.env('SERVER_URL')}/api/testing/${user}/calls`;
 	cy.log('sending stop all calls endpoint');
+	axios.delete(deleteUrl, {
+		auth: {
+			username: Cypress.env('VENDOR_ID'),
+			password: Cypress.env('API_KEY'),
+		},
+	});
+});
+
+Cypress.Commands.add('deleteTestUser', (user) => {
+	const deleteUrl = `${Cypress.env('SERVER_URL')}/api/testing/${user}`;
+	cy.log('deleting test user');
+	axios.delete(deleteUrl, {
+		auth: {
+			username: Cypress.env('VENDOR_ID'),
+			password: Cypress.env('API_KEY'),
+		},
+	});
+});
+
+Cypress.Commands.add('deleteAllTestUsers', () => {
+	const deleteUrl = `${Cypress.env('SERVER_URL')}/api/testing/${Cypress.env('VENDOR_USER_ID')}`;
+	cy.log('deleting all test users');
 	axios.delete(deleteUrl, {
 		auth: {
 			username: Cypress.env('VENDOR_ID'),

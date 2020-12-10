@@ -55,7 +55,7 @@ class DialerBar {
 	clickDropVoicemail() {
 		cy.iframe(dialerBarFrame)
 			.find(vmDropButton, { timeout: 20 * 1000 })
-			.click();
+			.click({ force: true });
 	}
 
 	getCallDispositionModal() {

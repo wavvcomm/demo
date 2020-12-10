@@ -21,19 +21,27 @@ before(() => {
 });
 
 beforeEach(() => {
-	const credentials = [
-		{
-			active: true,
-			apiKey: Cypress.env('API_KEY'),
-			id: '2ab8fb42-88e0-4f44-b033-bb757cc09aac',
-			server: Cypress.env('SERVER'),
-			userId: Cypress.env('VENDOR_USER_ID'),
-			vendorId: Cypress.env('VENDOR_ID'),
-		},
-	];
-	cy.setLocalStorage('creds', JSON.stringify(credentials));
+	cy.getNewTestUser().then((response) => {
+		cy.setLocalStorage('testUser', JSON.stringify(response));
+		const credentials = [
+			{
+				active: true,
+				apiKey: Cypress.env('API_KEY'),
+				id: '2ab8fb42-88e0-4f44-b033-bb757cc09aac',
+				server: Cypress.env('SERVER'),
+				userId: response.data.id,
+				vendorId: Cypress.env('VENDOR_ID'),
+			},
+		];
+		cy.log('new user - ', response.data.id);
+		cy.setLocalStorage('creds', JSON.stringify(credentials));
+	});
 });
 
-afterEach(() => {
-	cy.stopAllCalls();
+after(() => {
+	// cy.getLocalStorage('testUser').then((response) => {
+	// 	cy.deleteTestUser(JSON.parse(response).data.id);
+	// cy.stopAllCalls();
+	// });
+	cy.deleteAllTestUsers();
 });

@@ -11,7 +11,7 @@ const callerIDPhoneNumber = '#caller-id-phone-number';
 
 class DialerSettingsModal {
 	ifAudioTypeModalIsVisible(modeDialOrComputer = 'dial', remember = true) {
-		cy.get(stormFrameApp).then(($modal) => {
+		cy.iframe(stormFrameApp).then(($modal) => {
 			if ($modal.find(dialWithPhoneInput).length > 0) {
 				this.setDefaultAudioMode(modeDialOrComputer, remember);
 			}
@@ -19,17 +19,15 @@ class DialerSettingsModal {
 	}
 
 	setDefaultAudioMode(modeDialOrComputer = 'dial', remember = true) {
-		cy.get(stormFrameApp).iframe(() => {
-			if (modeDialOrComputer === 'dial') {
-				cy.get(dialWithPhoneInput).click();
-			} else if (modeDialOrComputer === 'computer') {
-				cy.get(computerAudioInput).click();
-			}
-			if (remember) {
-				cy.get('label').contains('Remember this choice').click();
-			}
-			cy.get(doneButton).click();
-		});
+		if (modeDialOrComputer === 'dial') {
+			cy.iframe(stormFrameApp).find(dialWithPhoneInput).click();
+		} else if (modeDialOrComputer === 'computer') {
+			cy.iframe(stormFrameApp).find(computerAudioInput).click();
+		}
+		if (remember) {
+			cy.iframe(stormFrameApp).find('label').contains('Remember this choice').click();
+		}
+		cy.iframe(stormFrameApp).find(doneButton).click();
 	}
 
 	openSettingsModal() {
