@@ -20,7 +20,7 @@ const MessageCount = ({ count, disabled }) => (
 );
 
 const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber, callNumber }) => {
-	const { unreadCounts, skipped, selected, dispatch, stormLoaded } = useContext(store);
+	const { unreadCounts, skipped, selected, dispatch, authed } = useContext(store);
 	const [newNumber, setNewNumber] = useState('');
 	const [newNumberError, setNewNumberError] = useState(false);
 	const [open, setOpen] = useState(false);
@@ -43,16 +43,14 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 				<Popup
 					content="Remove Lead"
 					position="bottom center"
-					trigger={
-						<Button disabled={!stormLoaded} onClick={() => removeContact({ contactId })} icon="trash" size="small" />
-					}
+					trigger={<Button disabled={!authed} onClick={() => removeContact({ contactId })} icon="trash" size="small" />}
 				/>
 				<Popup
 					content="Skip Lead"
 					position="bottom center"
 					trigger={
 						<Button
-							disabled={!stormLoaded}
+							disabled={!authed}
 							onClick={() => removeContact({ contactId, skip: true })}
 							icon="ban"
 							size="small"
@@ -78,14 +76,14 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 								position="bottom center"
 								trigger={
 									<Button
-										disabled={!stormLoaded}
+										disabled={!authed}
 										icon="close"
 										size="mini"
 										onClick={() => removeNumber({ contactId, number })}
 									/>
 								}
 							/>
-							<Dropdown trigger={<MessageCount disabled={!stormLoaded} count={unreadCounts[number]} />} icon={null}>
+							<Dropdown trigger={<MessageCount disabled={!authed} count={unreadCounts[number]} />} icon={null}>
 								<Dropdown.Menu>
 									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: false })}>Modal</Dropdown.Item>
 									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: true })}>Dock</Dropdown.Item>
@@ -98,7 +96,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 									<Button
 										icon="phone"
 										size="mini"
-										disabled={!stormLoaded}
+										disabled={!authed}
 										onClick={() => callNumber({ contactId, number })}
 									/>
 								}
@@ -116,7 +114,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 						<Popup
 							content="Add Number"
 							position="bottom center"
-							trigger={<Button disabled={!stormLoaded} onClick={() => setOpen(true)} icon="plus square" />}
+							trigger={<Button disabled={!authed} onClick={() => setOpen(true)} icon="plus square" />}
 						/>
 					}
 					size="mini"

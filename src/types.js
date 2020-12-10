@@ -1,4 +1,5 @@
-export const SET_STORM_LOADED = 'SET_STORM_LOADED';
+export const SET_AUTHED = 'SET_AUTHED';
+export const SET_SCRIPT_LOADED = 'SET_SCRIPT_LOADED';
 export const SET_OPEN_NOTE = 'SET_OPEN_NOTE';
 export const SET_SELECTED = 'SET_SELECTED';
 export const SET_UNREAD_MESSAGES = 'SET_UNREAD_MESSAGES';
