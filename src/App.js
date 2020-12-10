@@ -285,6 +285,7 @@ const Container = styled.div(({ showingDrawer }) => ({
 	margin: '20px auto 0',
 	gridTemplateColumns: '1fr auto',
 	columnGap: showingDrawer ? 20 : null,
+	alignItems: 'start',
 	maxWidth: 1500,
 }));
 
