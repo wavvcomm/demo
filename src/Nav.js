@@ -2,10 +2,11 @@ import React, { useContext, useState } from 'react';
 import styled from '@emotion/styled';
 import { Button, Checkbox, Dropdown, Label, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import { setTheme } from '@wavv/core';
+import { setTheme, constants } from '@wavv/core';
 import { openMessenger } from '@wavv/messenger';
 import { store } from './store';
 import { TOGGLE_DRAWER, TOGGLE_CREDENTIALS } from './types';
+import { debugLogger } from './utils';
 
 const Nav = ({ startCampaign }) => {
 	const {
@@ -29,8 +30,10 @@ const Nav = ({ startCampaign }) => {
 	};
 
 	const handleTheme = () => {
+		const { LIGHT, DARK } = constants.themes;
 		const lightTheme = !on; // state hasn't changed yet, so we want the inverse
-		setTheme({ theme: lightTheme ? 'light' : 'dark' });
+		setTheme({ theme: lightTheme ? LIGHT : DARK });
+		debugLogger({ name: 'setTheme', dispatch });
 		toggleOn(!on);
 	};
 
