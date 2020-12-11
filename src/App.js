@@ -33,7 +33,7 @@ const useQuery = () => {
 };
 
 const App = () => {
-	const { authed, contactList, selected, showDrawer, showCreds, outcomes, dispatch, credentials } = useContext(store);
+	const { authed, contactList, selected, showDrawer, showCreds, dispatch, credentials } = useContext(store);
 	const [messageReceivedToast, setMessageReceivedToast] = useState({});
 	const history = useHistory();
 	const query = useQuery();
@@ -193,18 +193,14 @@ const App = () => {
 				debugLogger({ name: 'onDialerIdle', dispatch });
 				dispatch({ type: SET_ENABLE_CLICK_TO_CALL, payload: idle });
 			});
-		}
-	}, [authed]);
 
-	useEffect(() => {
-		if (authed) {
 			window.Storm.onCallEnded((outcome) => {
 				debugLogger({ name: 'onCallEnded', dispatch });
 				const { contactId } = outcome;
 				dispatch({ type: ADD_OUTCOME, payload: { contactId, outcome } });
 			});
 		}
-	}, [authed, outcomes]);
+	}, [authed]);
 
 	const removeNumber = ({ contactId, number }) => {
 		dispatch({ type: REMOVE_NUMBER, payload: { contactId, number } });
