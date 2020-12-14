@@ -34,13 +34,16 @@ const DetailView = ({ match, getContactById }) => {
 							src={
 								contact?.avatarUrl || 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png'
 							}
+							className="profilePicture"
 						/>
 					</Grid.Column>
 					<Grid.Column width={10}>
-						<Header as="h3">{contact.name}</Header>
+						<Header as="h3" className="contactName">
+							{contact.name}
+						</Header>
 						<List>
 							{contact.address && contact.city && (
-								<List.Item icon="marker" content={`${contact.address} ${contact.city}`} />
+								<List.Item className="contactAddress" icon="marker" content={`${contact.address} ${contact.city}`} />
 							)}
 							{contact.numbers.map((number) => {
 								return (

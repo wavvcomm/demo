@@ -10,4 +10,12 @@ describe('Home Page', () => {
 		home.goToClientDetailsPage(0);
 		details.getCurrentUrl().should('contain', '/detail/');
 	});
+
+	it('shows client details information', () => {
+		home.visit();
+		home.goToClientDetailsPage(0);
+		details.getClientPicture().should('be.visible');
+		details.getClientAddress().should('be.visible');
+		details.getClientPicture().should('be.visible');
+	});
 });
