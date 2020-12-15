@@ -165,7 +165,7 @@ const App = () => {
 			window.Storm.onMessageReceived(({ number, body }) => {
 				debugLogger({ name: 'onMessageReceived', dispatch });
 				const contact = getContactByPhone(number);
-				const header = `New Message from ${contact.name || number}`;
+				const header = `New Message from ${contact?.name || number}`;
 				const toast = { header, message: body };
 				setMessageReceivedToast(toast);
 			});

@@ -61,7 +61,7 @@ const Nav = ({ startCampaign }) => {
 				<Menu.Item fitted>
 					<Button disabled={!authed} onClick={() => window.Storm.openMessenger({ dock: true })}>
 						Open Messenger
-						{unreadCount ? <Label color="red" circular floating content={unreadCount} /> : null}
+						{unreadCount > 0 ? <Label color="red" circular floating content={unreadCount} /> : null}
 					</Button>
 				</Menu.Item>
 				<Menu.Item fitted>
