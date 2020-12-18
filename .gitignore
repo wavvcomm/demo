@@ -51,6 +51,9 @@ Thumbs.db
 
 # Cypress Ignore Files
 cypress/videos/*
+cypress/screenshots/
+cypress-private.json
 cypress/fixtures/*
+cypress/parallel-weights.json
 
 constants.json

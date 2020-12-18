@@ -8,7 +8,9 @@ import { store } from './store';
 import { SET_OPEN_NOTE } from './types';
 
 const DetailView = ({ match, getContactById }) => {
-	const { notes, outcomes, unreadCounts, authed, tags, enableClickToCall, numberDialing, dispatch } = useContext(store);
+	const { notes, outcomes, unreadCounts, authed, tags, enableClickToCall, numberDialing, dispatch } = useContext(
+		store
+	);
 	const [activeMain, setActiveMain] = useState('notes');
 	const [note, setNote] = useState('');
 	const { id } = match.params;
@@ -30,15 +32,23 @@ const DetailView = ({ match, getContactById }) => {
 						<Image
 							size="medium"
 							src={
-								contact?.avatarUrl || 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png'
+								contact?.avatarUrl ||
+								'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png'
 							}
+							className="profilePicture"
 						/>
 					</Grid.Column>
 					<Grid.Column width={10}>
-						<Header as="h3">{contact.name}</Header>
+						<Header as="h3" className="contactName">
+							{contact.name}
+						</Header>
 						<List>
 							{contact.address && contact.city && (
-								<List.Item icon="marker" content={`${contact.address} ${contact.city}`} />
+								<List.Item
+									className="contactAddress"
+									icon="marker"
+									content={`${contact.address} ${contact.city}`}
+								/>
 							)}
 							{contact.numbers.map((number) => {
 								return (
@@ -68,10 +78,22 @@ const DetailView = ({ match, getContactById }) => {
 														size="mini"
 														style={{ margin: 3 }}
 														disabled={!authed}
-														onClick={() => window.Storm.openMessengerThread({ contact, number, dock: true })}
+														onClick={() =>
+															window.Storm.openMessengerThread({
+																contact,
+																number,
+																dock: true,
+															})
+														}
 													/>
 													{unreadCounts[number] ? (
-														<Label color="red" size="tiny" circular floating content={unreadCounts[number]} />
+														<Label
+															color="red"
+															size="tiny"
+															circular
+															floating
+															content={unreadCounts[number]}
+														/>
 													) : null}
 												</div>
 											}

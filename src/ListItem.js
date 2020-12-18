@@ -43,7 +43,14 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 				<Popup
 					content="Remove Lead"
 					position="bottom center"
-					trigger={<Button disabled={!authed} onClick={() => removeContact({ contactId })} icon="trash" size="small" />}
+					trigger={
+						<Button
+							disabled={!authed}
+							onClick={() => removeContact({ contactId })}
+							icon="trash"
+							size="small"
+						/>
+					}
 				/>
 				<Popup
 					content="Skip Lead"
@@ -68,7 +75,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 			<Table.Cell>
 				{numbers.map((number) => {
 					return (
-						<Number key={number}>
+						<Number className="leadPhoneNumber" key={number}>
 							{formatPhone(number)}
 
 							<Popup
@@ -83,10 +90,17 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 									/>
 								}
 							/>
-							<Dropdown trigger={<MessageCount disabled={!authed} count={unreadCounts[number]} />} icon={null}>
+							<Dropdown
+								trigger={<MessageCount disabled={!authed} count={unreadCounts[number]} />}
+								icon={null}
+							>
 								<Dropdown.Menu>
-									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: false })}>Modal</Dropdown.Item>
-									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: true })}>Dock</Dropdown.Item>
+									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: false })}>
+										Modal
+									</Dropdown.Item>
+									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: true })}>
+										Dock
+									</Dropdown.Item>
 								</Dropdown.Menu>
 							</Dropdown>
 							<Popup

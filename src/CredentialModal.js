@@ -99,7 +99,7 @@ const CredentialModal = ({ auth }) => {
 
 	return (
 		<>
-			<Modal size="mini" open={showCreds}>
+			<Modal className="credentialsModal" size="mini" open={showCreds}>
 				<Modal.Header>WAVV Credentials</Modal.Header>
 				<Modal.Content>
 					{showForm ? (
@@ -195,7 +195,10 @@ const CredentialModal = ({ auth }) => {
 															size="mini"
 															style={{ marginLeft: 8 }}
 															onClick={() => {
-																dispatch({ type: REMOVE_CREDENTIALS, payload: cred.id });
+																dispatch({
+																	type: REMOVE_CREDENTIALS,
+																	payload: cred.id,
+																});
 															}}
 														/>
 													}
