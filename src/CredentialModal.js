@@ -1,13 +1,14 @@
 import React, { useContext, useState } from 'react';
+import styled from '@emotion/styled';
 import { useHistory } from 'react-router-dom';
 import { Modal, Form, Button, Item, Popup, Message, Radio, Header } from 'semantic-ui-react';
 import { v4 as uuid } from 'uuid';
 import { store } from './store';
 import { ADD_UPDATE_CREDENTIALS, REMOVE_CREDENTIALS, TOGGLE_CREDENTIALS } from './types';
 
-const DebugDrawer = ({ auth }) => {
+const CredentialModal = ({ auth }) => {
 	const [open, setOpen] = useState(false);
-	const { credentials, dispatch, showCreds, stormLoaded } = useContext(store);
+	const { credentials, dispatch, showCreds, authed, scriptLoaded } = useContext(store);
 	const [showForm, setShowForm] = useState(!credentials.length);
 	const [formError, setFormError] = useState(false);
 	const [newCredentials, setNewCredentials] = useState({
@@ -22,12 +23,14 @@ const DebugDrawer = ({ auth }) => {
 	const history = useHistory();
 
 	const handleCheckbox = (id) => {
-		if (stormLoaded) {
+		const activeCreds = credentials.find((cred) => cred.active);
+		const newCreds = credentials.find((cred) => cred.id === id);
+
+		if (authed || (scriptLoaded && activeCreds?.server !== newCreds.server)) {
 			setOpen(true);
 			setReconnectId(id);
 		} else {
-			const creds = credentials.find((cred) => cred.id === id);
-			dispatch({ type: ADD_UPDATE_CREDENTIALS, payload: { ...creds, active: true } });
+			dispatch({ type: ADD_UPDATE_CREDENTIALS, payload: { ...newCreds, active: true } });
 		}
 	};
 
@@ -122,13 +125,18 @@ const DebugDrawer = ({ auth }) => {
 								label="ApiKey"
 								control="input"
 							/>
-							<Form.Field
-								name="server"
-								value={newCredentials.server}
-								onChange={handleCreds}
-								label="Server"
-								control="input"
-							/>
+							<ServerContainer>
+								<Form.Field
+									name="server"
+									value={newCredentials.server}
+									onChange={handleCreds}
+									placeholder="app"
+									label="Server"
+									control="input"
+									style={{ width: 100 }}
+								/>
+								<Domain>.wavv.com</Domain>
+							</ServerContainer>
 							<Form.Group>
 								{!!credentials.length && (
 									<Form.Field
@@ -187,7 +195,10 @@ const DebugDrawer = ({ auth }) => {
 															size="mini"
 															style={{ marginLeft: 8 }}
 															onClick={() => {
-																dispatch({ type: REMOVE_CREDENTIALS, payload: cred.id });
+																dispatch({
+																	type: REMOVE_CREDENTIALS,
+																	payload: cred.id,
+																});
 															}}
 														/>
 													}
@@ -197,6 +208,7 @@ const DebugDrawer = ({ auth }) => {
 									</Item.Group>
 								);
 							})}
+							{(!scriptLoaded || !authed) && <Error>Error: Not connected to WAVV</Error>}
 							<Button
 								size="mini"
 								onClick={() => {
@@ -209,9 +221,9 @@ const DebugDrawer = ({ auth }) => {
 					)}
 				</Modal.Content>
 				<Modal.Actions>
-					{stormLoaded && <Button onClick={() => dispatch({ type: TOGGLE_CREDENTIALS })}>Cancel</Button>}
-					<Button onClick={handleConnect} primary disabled={stormLoaded}>
-						{stormLoaded ? 'Connected' : 'Connect'}
+					{authed && <Button onClick={() => dispatch({ type: TOGGLE_CREDENTIALS })}>Cancel</Button>}
+					<Button onClick={handleConnect} primary disabled={authed}>
+						{authed ? 'Connected' : 'Connect'}
 					</Button>
 				</Modal.Actions>
 			</Modal>
@@ -248,4 +260,10 @@ const DebugDrawer = ({ auth }) => {
 	);
 };
 
-export default DebugDrawer;
+const ServerContainer = styled.div({ display: 'flex', alignItems: 'flex-end', marginBottom: 5 });
+
+const Domain = styled.div({ fontSize: 16, paddingBottom: 14 });
+
+const Error = styled.div({ color: 'red', marginBottom: 5 });
+
+export default CredentialModal;

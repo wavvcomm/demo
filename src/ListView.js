@@ -15,7 +15,7 @@ const ListView = ({
 	addContact,
 	setMessageReceivedToast,
 }) => {
-	const { contactList, dispatch } = useContext(store);
+	const { contactList, dispatch, selected } = useContext(store);
 	const [contactToAdd, setContact] = useState({});
 
 	const handler = (event) => {
@@ -30,7 +30,10 @@ const ListView = ({
 				<Table.Header>
 					<Table.Row>
 						<Table.HeaderCell>
-							<Checkbox onClick={() => dispatch({ type: SET_SELECTED, payload: 'all' })} />
+							<Checkbox
+								checked={selected.length === contactList.length}
+								onClick={() => dispatch({ type: SET_SELECTED, payload: 'all' })}
+							/>
 						</Table.HeaderCell>
 						<Table.HeaderCell>Remove/Skip</Table.HeaderCell>
 						<Table.HeaderCell>Name</Table.HeaderCell>

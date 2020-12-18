@@ -20,11 +20,12 @@ import {
 	REMOVE_NUMBER,
 	SET_ENABLE_CLICK_TO_CALL,
 	SET_NUMBER_DIALING,
-	SET_STORM_LOADED,
+	SET_AUTHED,
 	SET_UNREAD_COUNTS,
 	SET_UNREAD_MESSAGES,
 	TOGGLE_CREDENTIALS,
 	ADD_UPDATE_CREDENTIALS,
+	SET_SCRIPT_LOADED,
 } from './types';
 
 const useQuery = () => {
@@ -32,9 +33,7 @@ const useQuery = () => {
 };
 
 const App = () => {
-	const { stormLoaded, contactList, selected, showDrawer, showCreds, outcomes, dispatch, credentials } = useContext(
-		store
-	);
+	const { authed, contactList, selected, showDrawer, showCreds, dispatch, credentials } = useContext(store);
 	const [messageReceivedToast, setMessageReceivedToast] = useState({});
 	const history = useHistory();
 	const query = useQuery();
@@ -54,7 +53,7 @@ const App = () => {
 			return rawNumbers.includes(rawPhone(number));
 		});
 
-	const authWavv = async (creds) => {
+	const authWavv = (creds) => {
 		const { vendorId, apiKey, userId, server, token: tok } = creds;
 		let token;
 		if (tok) token = tok;
@@ -64,10 +63,33 @@ const App = () => {
 			const payload = { userId };
 			token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
 		}
-		await loadSnippet(server);
-		dispatch({ type: SET_STORM_LOADED, payload: true });
-		window.Storm.auth({ token });
-		debugLogger({ name: 'auth', dispatch });
+		loadSnippet(server)
+			.then(() => {
+				dispatch({ type: SET_SCRIPT_LOADED, payload: true });
+				debugLogger({ name: 'script loaded', dispatch });
+				window.Storm.auth({ token })
+					.then(() => {
+						setMessageReceivedToast({
+							message: 'WAVV authenticated',
+						});
+						dispatch({ type: SET_AUTHED, payload: true });
+						debugLogger({ name: 'auth', dispatch });
+					})
+					.catch(() => {
+						debugLogger({ name: 'auth failed', dispatch });
+						setMessageReceivedToast({
+							message: 'Error authenticating WAVV',
+							error: true,
+						});
+					});
+			})
+			.catch(() => {
+				debugLogger({ name: 'script failed', dispatch });
+				setMessageReceivedToast({
+					message: 'Error loading WAVV',
+					error: true,
+				});
+			});
 	};
 
 	useEffect(() => {
@@ -101,7 +123,7 @@ const App = () => {
 	};
 
 	useEffect(() => {
-		if (stormLoaded) {
+		if (authed) {
 			const params = {
 				fields: [
 					{ id: 'first_name', label: 'First Name' },
@@ -143,7 +165,7 @@ const App = () => {
 			window.Storm.onMessageReceived(({ number, body }) => {
 				debugLogger({ name: 'onMessageReceived', dispatch });
 				const contact = getContactByPhone(number);
-				const header = `New Message from ${contact.name || number}`;
+				const header = `New Message from ${contact?.name || number}`;
 				const toast = { header, message: body };
 				setMessageReceivedToast(toast);
 			});
@@ -171,18 +193,14 @@ const App = () => {
 				debugLogger({ name: 'onDialerIdle', dispatch });
 				dispatch({ type: SET_ENABLE_CLICK_TO_CALL, payload: idle });
 			});
-		}
-	}, [stormLoaded]);
 
-	useEffect(() => {
-		if (stormLoaded) {
 			window.Storm.onCallEnded((outcome) => {
 				debugLogger({ name: 'onCallEnded', dispatch });
 				const { contactId } = outcome;
 				dispatch({ type: ADD_OUTCOME, payload: { contactId, outcome } });
 			});
 		}
-	}, [stormLoaded, outcomes]);
+	}, [authed]);
 
 	const removeNumber = ({ contactId, number }) => {
 		dispatch({ type: REMOVE_NUMBER, payload: { contactId, number } });

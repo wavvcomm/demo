@@ -8,7 +8,7 @@ import { store } from './store';
 import { SET_OPEN_NOTE } from './types';
 
 const DetailView = ({ match, getContactById }) => {
-	const { notes, outcomes, unreadCounts, stormLoaded, tags, enableClickToCall, numberDialing, dispatch } = useContext(
+	const { notes, outcomes, unreadCounts, authed, tags, enableClickToCall, numberDialing, dispatch } = useContext(
 		store
 	);
 	const [activeMain, setActiveMain] = useState('notes');
@@ -17,12 +17,12 @@ const DetailView = ({ match, getContactById }) => {
 	const contact = getContactById(id);
 
 	useEffect(() => {
-		if (stormLoaded) {
+		if (authed) {
 			window.Storm.onWaitingForContinue(({ waiting }) => {
 				if (waiting) dispatch({ type: SET_OPEN_NOTE, payload: true });
 			});
 		}
-	}, [stormLoaded, id]);
+	}, [authed, id]);
 
 	return (
 		<Container>
@@ -32,7 +32,8 @@ const DetailView = ({ match, getContactById }) => {
 						<Image
 							size="medium"
 							src={
-								contact?.avatarUrl || 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png'
+								contact?.avatarUrl ||
+								'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png'
 							}
 							className="profilePicture"
 						/>
@@ -43,7 +44,11 @@ const DetailView = ({ match, getContactById }) => {
 						</Header>
 						<List>
 							{contact.address && contact.city && (
-								<List.Item className="contactAddress" icon="marker" content={`${contact.address} ${contact.city}`} />
+								<List.Item
+									className="contactAddress"
+									icon="marker"
+									content={`${contact.address} ${contact.city}`}
+								/>
 							)}
 							{contact.numbers.map((number) => {
 								return (
@@ -57,7 +62,7 @@ const DetailView = ({ match, getContactById }) => {
 													icon="phone"
 													size="mini"
 													style={{ margin: '3px 3px 3px 6px' }}
-													disabled={!enableClickToCall || !stormLoaded}
+													disabled={!enableClickToCall || !authed}
 													onClick={() => window.Storm.callPhone({ number })}
 												/>
 											}
@@ -72,11 +77,23 @@ const DetailView = ({ match, getContactById }) => {
 														icon="comment alternate"
 														size="mini"
 														style={{ margin: 3 }}
-														disabled={!stormLoaded}
-														onClick={() => window.Storm.openMessengerThread({ contact, number, dock: true })}
+														disabled={!authed}
+														onClick={() =>
+															window.Storm.openMessengerThread({
+																contact,
+																number,
+																dock: true,
+															})
+														}
 													/>
 													{unreadCounts[number] ? (
-														<Label color="red" size="tiny" circular floating content={unreadCounts[number]} />
+														<Label
+															color="red"
+															size="tiny"
+															circular
+															floating
+															content={unreadCounts[number]}
+														/>
 													) : null}
 												</div>
 											}
