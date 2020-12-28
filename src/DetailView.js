@@ -30,7 +30,7 @@ const DetailView = ({ match, getContactById }) => {
 				if (waiting) dispatch({ type: SET_OPEN_NOTE, payload: true });
 			});
 		}
-	}, [authed]);
+	}, [authed, id]);
 
 	return (
 		<Container>
