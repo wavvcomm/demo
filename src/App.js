@@ -26,6 +26,8 @@ import {
 	TOGGLE_CREDENTIALS,
 	ADD_UPDATE_CREDENTIALS,
 	SET_SCRIPT_LOADED,
+	SET_DNC_LIST,
+	UPDATE_DNC,
 } from './types';
 
 const useQuery = () => {
@@ -122,8 +124,26 @@ const App = () => {
 		return results;
 	};
 
+	const checkDncNumbers = () => {
+		const numbers = contactList.map((contact) => contact.numbers).flat();
+		window.Storm.checkDncNumbers({ numbers })
+			.then((dncNumbers) => {
+				debugLogger({ name: 'checkDncNumbers', dispatch });
+				dispatch({ type: SET_DNC_LIST, payload: dncNumbers });
+			})
+			.catch((err) => {
+				debugLogger({ name: 'checkDncNumbers failed', dispatch });
+				setMessageReceivedToast({
+					message: err,
+					error: true,
+				});
+			});
+	};
+
 	useEffect(() => {
 		if (authed) {
+			checkDncNumbers();
+
 			const params = {
 				fields: [
 					{ id: 'first_name', label: 'First Name' },
@@ -136,10 +156,23 @@ const App = () => {
 			debugLogger({ name: 'setMergeFields', dispatch });
 
 			window.Storm.onContactLink((contact) => {
-				debugLogger({ name: 'onContactLink', dispatch });
-				const { contactId, name } = contact;
-				const id = contactId || getContactByPhone(name).contactId;
-				if (id) history.push(`/detail/${id}`);
+				if (contact) {
+					debugLogger({ name: 'onContactLink', dispatch });
+					const { contactId, name } = contact;
+					const id = contactId || getContactByPhone(name)?.contactId;
+					if (id) history.push(`/detail/${id}`);
+					else
+						setMessageReceivedToast({
+							message: 'No matching contact id',
+							error: true,
+						});
+				} else {
+					debugLogger({ name: 'onContactLink failed', dispatch });
+					setMessageReceivedToast({
+						message: 'No matching contact',
+						error: true,
+					});
+				}
 			});
 
 			window.Storm.onContactSearch(({ search, contacts: returnedContacts, callback }) => {
@@ -198,6 +231,11 @@ const App = () => {
 				debugLogger({ name: 'onCallEnded', dispatch });
 				const { contactId } = outcome;
 				dispatch({ type: ADD_OUTCOME, payload: { contactId, outcome } });
+			});
+
+			window.Storm.onDncChanged((dnc) => {
+				debugLogger({ name: 'onDncChanged', dispatch });
+				dispatch({ type: UPDATE_DNC, payload: dnc });
 			});
 		}
 	}, [authed]);
