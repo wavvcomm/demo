@@ -2,15 +2,23 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from '@emotion/styled';
 import { Image, Button, Feed, Header, Label, Grid, List, Menu, Popup } from 'semantic-ui-react';
-import { formatPhone } from './utils';
+import { formatPhone, rawPhone } from './utils';
 import CallDispositionModal from './CallDispositionModal';
 import { store } from './store';
 import { SET_OPEN_NOTE } from './types';
 
 const DetailView = ({ match, getContactById }) => {
-	const { notes, outcomes, unreadCounts, authed, tags, enableClickToCall, numberDialing, dispatch } = useContext(
-		store
-	);
+	const {
+		notes,
+		outcomes,
+		unreadCounts,
+		authed,
+		tags,
+		enableClickToCall,
+		numberDialing,
+		dispatch,
+		dncList,
+	} = useContext(store);
 	const [activeMain, setActiveMain] = useState('notes');
 	const [note, setNote] = useState('');
 	const { id } = match.params;
@@ -22,7 +30,7 @@ const DetailView = ({ match, getContactById }) => {
 				if (waiting) dispatch({ type: SET_OPEN_NOTE, payload: true });
 			});
 		}
-	}, [authed, id]);
+	}, [authed]);
 
 	return (
 		<Container>
@@ -51,8 +59,14 @@ const DetailView = ({ match, getContactById }) => {
 								/>
 							)}
 							{contact.numbers.map((number) => {
+								const dncNumber = !!dncList[rawPhone(number)];
+								const removable = dncList[rawPhone(number)]?.removable;
 								return (
-									<Number key={number} dialing={formatPhone(numberDialing) === formatPhone(number)}>
+									<Number
+										key={number}
+										dialing={formatPhone(numberDialing) === formatPhone(number)}
+										dncNumber={dncNumber}
+									>
 										{formatPhone(number)}
 										<Popup
 											content="Call Number"
@@ -96,6 +110,25 @@ const DetailView = ({ match, getContactById }) => {
 														/>
 													) : null}
 												</div>
+											}
+										/>
+										<Popup
+											content={dncNumber ? 'Remove from Do Not Call' : 'Do Not Call'}
+											position="bottom center"
+											trigger={
+												<Button
+													onClick={() => {
+														const stormMethod = dncNumber
+															? 'removeDncNumber'
+															: 'addDncNumber';
+														window.Storm[stormMethod]({ number });
+													}}
+													disabled={dncNumber && !removable}
+													icon="exclamation triangle"
+													size="mini"
+													color={dncNumber ? 'red' : null}
+													style={{ margin: 3 }}
+												/>
 											}
 										/>
 									</Number>
@@ -191,14 +224,15 @@ const MainContainer = styled.div({
 	marginTop: 20,
 });
 
-const Number = styled.div(({ received }) => ({
+const Number = styled.div(({ dialing, dncNumber }) => ({
 	display: 'flex',
 	width: 'fit-content',
 	alignItems: 'center',
 	marginTop: 12,
 	paddingLeft: 4,
-	border: received && '1px solid #2185D0',
+	border: dialing && '1px solid #2185D0',
 	borderRadius: 5,
+	textDecoration: dncNumber && 'line-through',
 }));
 
 export default DetailView;
