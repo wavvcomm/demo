@@ -118,7 +118,8 @@ const App = () => {
 
 		const results = contactList.filter((contact) => {
 			const numbersString = contact.numbers.join(' ');
-			return contact.name.includes(formattedSearch) || numbersString.includes(formattedSearch);
+			const name = contact.name.toLowerCase();
+			return name.includes(formattedSearch) || numbersString.includes(formattedSearch);
 		});
 
 		return results;
