@@ -3,7 +3,6 @@ import _ from 'lodash';
 import { contacts, exampleNotes, exampleOutcomes } from './constants';
 import {
 	SET_AUTHED,
-	SET_SCRIPT_LOADED,
 	SET_OPEN_NOTE,
 	SET_SELECTED,
 	SET_UNREAD_MESSAGES,
@@ -62,9 +61,6 @@ const StateProvider = ({ children }) => {
 		switch (type) {
 			case SET_AUTHED: {
 				return { ...state, authed: payload };
-			}
-			case SET_SCRIPT_LOADED: {
-				return { ...state, scriptLoaded: payload };
 			}
 			case SET_OPEN_NOTE: {
 				return { ...state, openNote: payload };
