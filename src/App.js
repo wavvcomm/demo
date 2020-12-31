@@ -200,6 +200,7 @@ const App = () => {
 				debugLogger({ name: 'onDialerIdle', dispatch });
 				dispatch({ type: SET_ENABLE_CLICK_TO_CALL, payload: idle });
 			});
+
 			callEndedListener = addCallEndedListener((outcome) => {
 				debugLogger({ name: 'onCallEnded', dispatch });
 				const { contactId } = outcome;
