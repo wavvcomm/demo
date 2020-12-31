@@ -36,6 +36,7 @@
 		"react/jsx-one-expression-per-line": ["off"],
 		"react/jsx-filename-extension": ["off"],
 		"react-hooks/rules-of-hooks": "error",
-		"class-methods-use-this": "off"
+		"class-methods-use-this": "off",
+		"jest/valid-expect-in-promise": "off"
 	}
 }

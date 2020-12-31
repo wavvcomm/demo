@@ -24,6 +24,10 @@ class HomePage {
 		return cy.get(tableRows).eq(rowNum);
 	}
 
+	clickCallPhoneOnRow(rowNum, phoneRow = 0) {
+		cy.get(tableRows).eq(rowNum).find('td').eq(5).find('.phone.icon').eq(phoneRow).click();
+	}
+
 	openMessagingOnTableRow(rowNum = 0, phoneNum = 0, modalOrDock = 'Modal') {
 		cy.get(tableRows).eq(rowNum).find(rowMessagingIcon).eq(phoneNum).click();
 		cy.get(tableRows).eq(rowNum).contains(modalOrDock).click();

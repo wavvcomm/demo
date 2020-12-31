@@ -15,6 +15,7 @@ const CallDispositonModal = ({ contactId: id, note, setNote }) => {
 
 	return (
 		<Modal
+			className="callDispositionModal"
 			onClose={() => {
 				dispatch({ type: SET_OPEN_NOTE, payload: false });
 			}}

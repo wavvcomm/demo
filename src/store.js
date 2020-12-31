@@ -2,7 +2,8 @@ import React, { createContext, useReducer } from 'react';
 import _ from 'lodash';
 import { contacts, exampleNotes, exampleOutcomes } from './constants';
 import {
-	SET_STORM_LOADED,
+	SET_AUTHED,
+	SET_SCRIPT_LOADED,
 	SET_OPEN_NOTE,
 	SET_SELECTED,
 	SET_UNREAD_MESSAGES,
@@ -24,7 +25,8 @@ import {
 } from './types';
 
 const initialState = {
-	stormLoaded: false,
+	scriptLoaded: false,
+	authed: false,
 	openNote: false,
 	contactList: JSON.parse(localStorage.getItem('contacts')) || contacts,
 	selected: [],
@@ -58,8 +60,11 @@ const StateProvider = ({ children }) => {
 	const [storeState, dispatch] = useReducer((state, action) => {
 		const { type, payload } = action;
 		switch (type) {
-			case SET_STORM_LOADED: {
-				return { ...state, stormLoaded: payload };
+			case SET_AUTHED: {
+				return { ...state, authed: payload };
+			}
+			case SET_SCRIPT_LOADED: {
+				return { ...state, scriptLoaded: payload };
 			}
 			case SET_OPEN_NOTE: {
 				return { ...state, openNote: payload };

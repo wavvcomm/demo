@@ -41,7 +41,7 @@ import {
 	REMOVE_NUMBER,
 	SET_ENABLE_CLICK_TO_CALL,
 	SET_NUMBER_DIALING,
-	SET_STORM_LOADED,
+	SET_AUTHED,
 	SET_UNREAD_COUNTS,
 	SET_UNREAD_MESSAGES,
 	TOGGLE_CREDENTIALS,
@@ -53,7 +53,7 @@ const useQuery = () => {
 };
 
 const App = () => {
-	const { contactList, selected, showDrawer, showCreds, outcomes, dispatch, credentials } = useContext(store);
+	const { authed, contactList, selected, showDrawer, showCreds, outcomes, dispatch, credentials } = useContext(store);
 	const [messageReceivedToast, setMessageReceivedToast] = useState({});
 	const history = useHistory();
 	const query = useQuery();
@@ -74,9 +74,20 @@ const App = () => {
 			const payload = { userId };
 			token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
 		}
-		dispatch({ type: SET_STORM_LOADED, payload: true });
-		await initWavv({ token, server });
-		debugLogger({ name: 'init', dispatch });
+		try {
+			await initWavv({ token, server });
+			setMessageReceivedToast({
+				message: 'WAVV authenticated',
+			});
+			dispatch({ type: SET_AUTHED, payload: true });
+			debugLogger({ name: 'init', dispatch });
+		} catch (err) {
+			debugLogger({ name: 'auth failed', dispatch });
+			setMessageReceivedToast({
+				message: 'Error authenticating WAVV',
+				error: true,
+			});
+		}
 	};
 
 	useEffect(() => {
@@ -110,85 +121,95 @@ const App = () => {
 	};
 
 	useEffect(() => {
-		const params = {
-			fields: [
-				{ id: 'first_name', label: 'First Name' },
-				{ id: 'last_name', label: 'Last Name' },
-				{ id: 'email', label: 'Email' },
-			],
-		};
+		let contactLinkListener;
+		let contactSearchListener;
+		let unreadCountListener;
+		let messageReceivedListener;
+		let linesChangedListener;
+		let callStartedListener;
+		let campaignEndedListener;
+		let dialerIdleListener;
+		if (authed) {
+			const params = {
+				fields: [
+					{ id: 'first_name', label: 'First Name' },
+					{ id: 'last_name', label: 'Last Name' },
+					{ id: 'email', label: 'Email' },
+				],
+			};
 
-		setMergeFields(params);
-		debugLogger({ name: 'setMergeFields', dispatch });
+			setMergeFields(params);
+			debugLogger({ name: 'setMergeFields', dispatch });
 
-		const contactLinkListener = addContactLinkListener((contact) => {
-			debugLogger({ name: 'onContactLink', dispatch });
-			const { contactId, name } = contact;
-			const id = contactId || getContactByPhone(name).contactId;
-			if (id) history.push(`/detail/${id}`);
-		});
+			contactLinkListener = addContactLinkListener((contact) => {
+				debugLogger({ name: 'onContactLink', dispatch });
+				const { contactId, name } = contact;
+				const id = contactId || getContactByPhone(name).contactId;
+				if (id) history.push(`/detail/${id}`);
+			});
 
-		const contactSearchListener = addContactSearchListener(({ search, contacts: returnedContacts, callback }) => {
-			debugLogger({ name: 'onContactSearch', dispatch });
-			if (search) {
-				const results = getContactsBySearchTerms(search);
-				callback(results);
-			} else {
-				const results = returnedContacts.map((contact) => {
-					const { id, number } = contact;
-					return id ? getContactById(id) : getContactByPhone(number);
-				});
-				callback(results);
-			}
-		});
-
-		const unreadCountListener = addUnreadCountListener(({ unreadCount, numberCounts }) => {
-			debugLogger({ name: 'onUnreadCount', dispatch });
-			dispatch({ type: SET_UNREAD_MESSAGES, payload: unreadCount });
-			dispatch({ type: SET_UNREAD_COUNTS, payload: numberCounts });
-		});
-
-		const messageReceivedListener = addMessageReceivedListener(({ number, body }) => {
-			debugLogger({ name: 'onMessageReceived', dispatch });
-			const contact = getContactByPhone(number);
-			const header = `New Message from ${contact.name || number}`;
-			const toast = { header, message: body };
-			setMessageReceivedToast(toast);
-		});
-
-		const linesChangedListener = addLinesChangedListener(({ lines }) => {
-			debugLogger({ name: 'onLinesChanged', dispatch });
-			lines.forEach((call) => {
-				if (call.focused) {
-					if (call.contactId) history.push(`/detail/${call.contactId}`);
+			contactSearchListener = addContactSearchListener(({ search, contacts: returnedContacts, callback }) => {
+				debugLogger({ name: 'onContactSearch', dispatch });
+				if (search) {
+					const results = getContactsBySearchTerms(search);
+					callback(results);
+				} else {
+					const results = returnedContacts.map((contact) => {
+						const { id, number } = contact;
+						return id ? getContactById(id) : getContactByPhone(number);
+					});
+					callback(results);
 				}
 			});
-		});
 
-		const callStartedListener = addCallStartedListener(({ number }) => {
-			debugLogger({ name: 'onCallStarted', dispatch });
-			dispatch({ type: SET_NUMBER_DIALING, payload: number });
-		});
+			unreadCountListener = addUnreadCountListener(({ unreadCount, numberCounts }) => {
+				debugLogger({ name: 'onUnreadCount', dispatch });
+				dispatch({ type: SET_UNREAD_MESSAGES, payload: unreadCount });
+				dispatch({ type: SET_UNREAD_COUNTS, payload: numberCounts });
+			});
 
-		const campaignEndedListener = addCampaignEndedListener(() => {
-			debugLogger({ name: 'onCampaignEnded', dispatch });
-			dispatch({ type: SET_NUMBER_DIALING, payload: null });
-		});
+			messageReceivedListener = addMessageReceivedListener(({ number, body }) => {
+				debugLogger({ name: 'onMessageReceived', dispatch });
+				const contact = getContactByPhone(number);
+				const header = `New Message from ${contact?.name || number}`;
+				const toast = { header, message: body };
+				setMessageReceivedToast(toast);
+			});
 
-		const dialerIdleListener = addDialerIdleListener(({ idle }) => {
-			debugLogger({ name: 'onDialerIdle', dispatch });
-			dispatch({ type: SET_ENABLE_CLICK_TO_CALL, payload: idle });
-		});
+			linesChangedListener = addLinesChangedListener(({ lines }) => {
+				debugLogger({ name: 'onLinesChanged', dispatch });
+				lines.forEach((call) => {
+					if (call.focused) {
+						if (call.contactId) history.push(`/detail/${call.contactId}`);
+					}
+				});
+			});
+
+			callStartedListener = addCallStartedListener(({ number }) => {
+				debugLogger({ name: 'onCallStarted', dispatch });
+				dispatch({ type: SET_NUMBER_DIALING, payload: number });
+			});
+
+			campaignEndedListener = addCampaignEndedListener(() => {
+				debugLogger({ name: 'onCampaignEnded', dispatch });
+				dispatch({ type: SET_NUMBER_DIALING, payload: null });
+			});
+
+			dialerIdleListener = addDialerIdleListener(({ idle }) => {
+				debugLogger({ name: 'onDialerIdle', dispatch });
+				dispatch({ type: SET_ENABLE_CLICK_TO_CALL, payload: idle });
+			});
+		}
 
 		return () => {
-			contactLinkListener.remove();
-			contactSearchListener.remove();
-			unreadCountListener.remove();
-			messageReceivedListener.remove();
-			linesChangedListener.remove();
-			callStartedListener.remove();
-			campaignEndedListener.remove();
-			dialerIdleListener.remove();
+			if (contactLinkListener) contactLinkListener.remove();
+			if (contactSearchListener) contactSearchListener.remove();
+			if (unreadCountListener) unreadCountListener.remove();
+			if (messageReceivedListener) messageReceivedListener.remove();
+			if (linesChangedListener) linesChangedListener.remove();
+			if (callStartedListener) callStartedListener.remove();
+			if (campaignEndedListener) campaignEndedListener.remove();
+			if (dialerIdleListener) dialerIdleListener.remove();
 		};
 	}, []);
 

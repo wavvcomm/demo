@@ -10,7 +10,7 @@ import { store } from './store';
 import { SET_OPEN_NOTE } from './types';
 
 const DetailView = ({ match, getContactById }) => {
-	const { notes, outcomes, unreadCounts, stormLoaded, tags, enableClickToCall, numberDialing, dispatch } = useContext(
+	const { notes, outcomes, unreadCounts, authed, tags, enableClickToCall, numberDialing, dispatch } = useContext(
 		store
 	);
 	const [activeMain, setActiveMain] = useState('notes');
@@ -19,13 +19,16 @@ const DetailView = ({ match, getContactById }) => {
 	const contact = getContactById(id);
 
 	useEffect(() => {
-		const waitingForContinueListener = addWaitingForContinueListener(({ waiting }) => {
-			if (waiting) dispatch({ type: SET_OPEN_NOTE, payload: true });
-		});
+		let waitingForContinueListener;
+		if (authed) {
+			waitingForContinueListener = addWaitingForContinueListener(({ waiting }) => {
+				if (waiting) dispatch({ type: SET_OPEN_NOTE, payload: true });
+			});
+		}
 		return () => {
-			waitingForContinueListener.remove();
+			if (waitingForContinueListener) waitingForContinueListener.remove();
 		};
-	}, [id]);
+	}, [authed, id]);
 
 	return (
 		<Container>
@@ -35,15 +38,23 @@ const DetailView = ({ match, getContactById }) => {
 						<Image
 							size="medium"
 							src={
-								contact?.avatarUrl || 'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png'
+								contact?.avatarUrl ||
+								'https://res.cloudinary.com/stormapp/image/upload/v1567524915/avatar_uwqncn.png'
 							}
+							className="profilePicture"
 						/>
 					</Grid.Column>
 					<Grid.Column width={10}>
-						<Header as="h3">{contact.name}</Header>
+						<Header as="h3" className="contactName">
+							{contact.name}
+						</Header>
 						<List>
 							{contact.address && contact.city && (
-								<List.Item icon="marker" content={`${contact.address} ${contact.city}`} />
+								<List.Item
+									className="contactAddress"
+									icon="marker"
+									content={`${contact.address} ${contact.city}`}
+								/>
 							)}
 							{contact.numbers.map((number) => {
 								return (
@@ -57,7 +68,7 @@ const DetailView = ({ match, getContactById }) => {
 													icon="phone"
 													size="mini"
 													style={{ margin: '3px 3px 3px 6px' }}
-													disabled={!enableClickToCall || !stormLoaded}
+													disabled={!enableClickToCall || !authed}
 													onClick={() => callPhone({ number })}
 												/>
 											}
@@ -72,11 +83,19 @@ const DetailView = ({ match, getContactById }) => {
 														icon="comment alternate"
 														size="mini"
 														style={{ margin: 3 }}
-														disabled={!stormLoaded}
-														onClick={() => openMessengerThread({ contact, number, dock: true })}
+														disabled={!authed}
+														onClick={() =>
+															openMessengerThread({ contact, number, dock: true })
+														}
 													/>
 													{unreadCounts[number] ? (
-														<Label color="red" size="tiny" circular floating content={unreadCounts[number]} />
+														<Label
+															color="red"
+															size="tiny"
+															circular
+															floating
+															content={unreadCounts[number]}
+														/>
 													) : null}
 												</div>
 											}

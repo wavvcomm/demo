@@ -15,7 +15,7 @@ const Nav = ({ startCampaign }) => {
 		unreadMessages: unreadCount,
 		selected,
 		dispatch,
-		stormLoaded,
+		authed,
 	} = useContext(store);
 	const [on, toggleOn] = useState(false);
 	const disableStart = !selected.length;
@@ -46,11 +46,11 @@ const Nav = ({ startCampaign }) => {
 				<Menu.Item fitted>
 					<ToggleContainer>
 						<div>WAVV Theme</div>
-						<Checkbox disabled={!stormLoaded} toggle checked={on} onChange={handleTheme} />
+						<Checkbox disabled={!authed} toggle checked={on} onChange={handleTheme} />
 					</ToggleContainer>
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Dropdown item text="WAVV Primary Color" button disabled={!stormLoaded}>
+					<Dropdown item text="WAVV Primary Color" button disabled={!authed}>
 						<Dropdown.Menu>
 							{Object.keys(accents).map((name) => {
 								const primaryColor = accents[name];
@@ -64,13 +64,13 @@ const Nav = ({ startCampaign }) => {
 					</Dropdown>
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Button disabled={!stormLoaded} onClick={() => openMessenger({ dock: true })}>
+					<Button disabled={!authed} onClick={() => openMessenger({ dock: true })}>
 						Open Messenger
-						{unreadCount ? <Label color="red" circular floating content={unreadCount} /> : null}
+						{unreadCount > 0 ? <Label color="red" circular floating content={unreadCount} /> : null}
 					</Button>
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Button primary disabled={disableStart || !stormLoaded} onClick={startCampaign} content="Start Campaign" />
+					<Button primary disabled={disableStart || !authed} onClick={startCampaign} content="Start Campaign" />
 				</Menu.Item>
 				<Menu.Item fitted>
 					<Button color={showingDrawer ? 'grey' : null} icon="bug" onClick={() => dispatch({ type: TOGGLE_DRAWER })} />
