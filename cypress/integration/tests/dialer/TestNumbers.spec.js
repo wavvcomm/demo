@@ -22,7 +22,7 @@ describe('Campaign on test numbers', () => {
 	});
 
 	it('can see call was answered', () => {
-		home.clickCallPhoneOnRow(1, 0);
+		home.clickCallPhoneOnRow(2, 0);
 		dialer.clickStartButton();
 		dialer.isPhoneRinging();
 		dialer.isPhoneAnswered();

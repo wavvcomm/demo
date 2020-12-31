@@ -34,12 +34,15 @@ class DialerBar {
 
 	isPhoneRinging() {
 		cy.iframe(dialerBarFrame)
-			.find(lineOne, { timeout: 10 * 1000 })
+			.find(lineOne, { timeout: 15 * 1000 })
 			.should(
-				'have.css',
+				'not.have.css',
 				'background',
-				'rgba(0, 0, 0, 0) url("https://stage1.stormapp.com/0647ff2206aacb28933b0cf1722dc04d/static/media/multiline_ringing.1da76ffb.gif") no-repeat scroll -2px 2px / 36px padding-box border-box'
-			);
+				'rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box'
+			)
+			.then((backgroundText) => {
+				expect(backgroundText.css('background')).to.contain('multiline_ringing');
+			});
 	}
 
 	clickHangupButton() {
@@ -59,7 +62,7 @@ class DialerBar {
 	}
 
 	getCallDispositionModal() {
-		return cy.get(callDispositionModal, { timeout: 400 * 1000 });
+		return cy.get(callDispositionModal, { timeout: 100 * 1000 });
 	}
 
 	getDialerPhoneNumber() {
@@ -69,11 +72,10 @@ class DialerBar {
 	isPhoneAnswered() {
 		cy.iframe(dialerBarFrame)
 			.find(lineOne, { timeout: 15 * 1000 })
-			.should(
-				'have.css',
-				'background',
-				'rgba(0, 0, 0, 0) url("https://stage1.stormapp.com/0647ff2206aacb28933b0cf1722dc04d/static/media/multiline_ringing.1da76ffb.gif") no-repeat scroll -2px 2px / 36px padding-box border-box'
-			);
+			.should('have.css', 'border', '1px solid rgb(255, 255, 255)')
+			.then((backgroundText) => {
+				expect(backgroundText.css('background')).to.contain('multiline_icons');
+			});
 	}
 }
 export default DialerBar;
