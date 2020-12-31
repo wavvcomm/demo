@@ -53,7 +53,7 @@ const useQuery = () => {
 };
 
 const App = () => {
-	const { authed, contactList, selected, showDrawer, showCreds, outcomes, dispatch, credentials } = useContext(store);
+	const { authed, contactList, selected, showDrawer, showCreds, dispatch, credentials } = useContext(store);
 	const [messageReceivedToast, setMessageReceivedToast] = useState({});
 	const history = useHistory();
 	const query = useQuery();
@@ -129,6 +129,7 @@ const App = () => {
 		let callStartedListener;
 		let campaignEndedListener;
 		let dialerIdleListener;
+		let callEndedListener;
 		if (authed) {
 			const params = {
 				fields: [
@@ -199,6 +200,11 @@ const App = () => {
 				debugLogger({ name: 'onDialerIdle', dispatch });
 				dispatch({ type: SET_ENABLE_CLICK_TO_CALL, payload: idle });
 			});
+			callEndedListener = addCallEndedListener((outcome) => {
+				debugLogger({ name: 'onCallEnded', dispatch });
+				const { contactId } = outcome;
+				dispatch({ type: ADD_OUTCOME, payload: { contactId, outcome } });
+			});
 		}
 
 		return () => {
@@ -210,19 +216,9 @@ const App = () => {
 			if (callStartedListener) callStartedListener.remove();
 			if (campaignEndedListener) campaignEndedListener.remove();
 			if (dialerIdleListener) dialerIdleListener.remove();
+			if (callEndedListener) callEndedListener.remove();
 		};
 	}, []);
-
-	useEffect(() => {
-		const callEndedListener = addCallEndedListener((outcome) => {
-			debugLogger({ name: 'onCallEnded', dispatch });
-			const { contactId } = outcome;
-			dispatch({ type: ADD_OUTCOME, payload: { contactId, outcome } });
-		});
-		return () => {
-			callEndedListener.remove();
-		};
-	}, [outcomes]);
 
 	const removeNumber = ({ contactId, number }) => {
 		dispatch({ type: REMOVE_NUMBER, payload: { contactId, number } });
