@@ -19,16 +19,13 @@ const DetailView = ({ match, getContactById }) => {
 	const contact = getContactById(id);
 
 	useEffect(() => {
-		let waitingForContinueListener;
-		if (authed) {
-			waitingForContinueListener = addWaitingForContinueListener(({ waiting }) => {
-				if (waiting) dispatch({ type: SET_OPEN_NOTE, payload: true });
-			});
-		}
+		const waitingForContinueListener = addWaitingForContinueListener(({ waiting }) => {
+			if (waiting) dispatch({ type: SET_OPEN_NOTE, payload: true });
+		});
 		return () => {
-			if (waitingForContinueListener) waitingForContinueListener.remove();
+			waitingForContinueListener.remove();
 		};
-	}, [authed, id]);
+	}, []);
 
 	return (
 		<Container>
