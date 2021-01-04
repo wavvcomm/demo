@@ -53,7 +53,7 @@ const useQuery = () => {
 };
 
 const App = () => {
-	const { authed, contactList, selected, showDrawer, showCreds, dispatch, credentials } = useContext(store);
+	const { contactList, selected, showDrawer, showCreds, dispatch, credentials } = useContext(store);
 	const [messageReceivedToast, setMessageReceivedToast] = useState({});
 	const history = useHistory();
 	const query = useQuery();
@@ -121,103 +121,92 @@ const App = () => {
 	};
 
 	useEffect(() => {
-		let contactLinkListener;
-		let contactSearchListener;
-		let unreadCountListener;
-		let messageReceivedListener;
-		let linesChangedListener;
-		let callStartedListener;
-		let campaignEndedListener;
-		let dialerIdleListener;
-		let callEndedListener;
-		if (authed) {
-			const params = {
-				fields: [
-					{ id: 'first_name', label: 'First Name' },
-					{ id: 'last_name', label: 'Last Name' },
-					{ id: 'email', label: 'Email' },
-				],
-			};
+		const params = {
+			fields: [
+				{ id: 'first_name', label: 'First Name' },
+				{ id: 'last_name', label: 'Last Name' },
+				{ id: 'email', label: 'Email' },
+			],
+		};
 
-			setMergeFields(params);
-			debugLogger({ name: 'setMergeFields', dispatch });
+		setMergeFields(params);
+		debugLogger({ name: 'setMergeFields', dispatch });
 
-			contactLinkListener = addContactLinkListener((contact) => {
-				debugLogger({ name: 'onContactLink', dispatch });
-				const { contactId, name } = contact;
-				const id = contactId || getContactByPhone(name).contactId;
-				if (id) history.push(`/detail/${id}`);
-			});
+		const contactLinkListener = addContactLinkListener((contact) => {
+			debugLogger({ name: 'onContactLink', dispatch });
+			const { contactId, name } = contact;
+			const id = contactId || getContactByPhone(name).contactId;
+			if (id) history.push(`/detail/${id}`);
+		});
 
-			contactSearchListener = addContactSearchListener(({ search, contacts: returnedContacts, callback }) => {
-				debugLogger({ name: 'onContactSearch', dispatch });
-				if (search) {
-					const results = getContactsBySearchTerms(search);
-					callback(results);
-				} else {
-					const results = returnedContacts.map((contact) => {
-						const { id, number } = contact;
-						return id ? getContactById(id) : getContactByPhone(number);
-					});
-					callback(results);
+		const contactSearchListener = addContactSearchListener(({ search, contacts: returnedContacts, callback }) => {
+			debugLogger({ name: 'onContactSearch', dispatch });
+			if (search) {
+				const results = getContactsBySearchTerms(search);
+				callback(results);
+			} else {
+				const results = returnedContacts.map((contact) => {
+					const { id, number } = contact;
+					return id ? getContactById(id) : getContactByPhone(number);
+				});
+				callback(results);
+			}
+		});
+
+		const unreadCountListener = addUnreadCountListener(({ unreadCount, numberCounts }) => {
+			debugLogger({ name: 'onUnreadCount', dispatch });
+			dispatch({ type: SET_UNREAD_MESSAGES, payload: unreadCount });
+			dispatch({ type: SET_UNREAD_COUNTS, payload: numberCounts });
+		});
+
+		const messageReceivedListener = addMessageReceivedListener(({ number, body }) => {
+			debugLogger({ name: 'onMessageReceived', dispatch });
+			const contact = getContactByPhone(number);
+			const header = `New Message from ${contact?.name || number}`;
+			const toast = { header, message: body };
+			setMessageReceivedToast(toast);
+		});
+
+		const linesChangedListener = addLinesChangedListener(({ lines }) => {
+			debugLogger({ name: 'onLinesChanged', dispatch });
+			lines.forEach((call) => {
+				if (call.focused) {
+					if (call.contactId) history.push(`/detail/${call.contactId}`);
 				}
 			});
+		});
 
-			unreadCountListener = addUnreadCountListener(({ unreadCount, numberCounts }) => {
-				debugLogger({ name: 'onUnreadCount', dispatch });
-				dispatch({ type: SET_UNREAD_MESSAGES, payload: unreadCount });
-				dispatch({ type: SET_UNREAD_COUNTS, payload: numberCounts });
-			});
+		const callStartedListener = addCallStartedListener(({ number }) => {
+			debugLogger({ name: 'onCallStarted', dispatch });
+			dispatch({ type: SET_NUMBER_DIALING, payload: number });
+		});
 
-			messageReceivedListener = addMessageReceivedListener(({ number, body }) => {
-				debugLogger({ name: 'onMessageReceived', dispatch });
-				const contact = getContactByPhone(number);
-				const header = `New Message from ${contact?.name || number}`;
-				const toast = { header, message: body };
-				setMessageReceivedToast(toast);
-			});
+		const campaignEndedListener = addCampaignEndedListener(() => {
+			debugLogger({ name: 'onCampaignEnded', dispatch });
+			dispatch({ type: SET_NUMBER_DIALING, payload: null });
+		});
 
-			linesChangedListener = addLinesChangedListener(({ lines }) => {
-				debugLogger({ name: 'onLinesChanged', dispatch });
-				lines.forEach((call) => {
-					if (call.focused) {
-						if (call.contactId) history.push(`/detail/${call.contactId}`);
-					}
-				});
-			});
+		const dialerIdleListener = addDialerIdleListener(({ idle }) => {
+			debugLogger({ name: 'onDialerIdle', dispatch });
+			dispatch({ type: SET_ENABLE_CLICK_TO_CALL, payload: idle });
+		});
 
-			callStartedListener = addCallStartedListener(({ number }) => {
-				debugLogger({ name: 'onCallStarted', dispatch });
-				dispatch({ type: SET_NUMBER_DIALING, payload: number });
-			});
-
-			campaignEndedListener = addCampaignEndedListener(() => {
-				debugLogger({ name: 'onCampaignEnded', dispatch });
-				dispatch({ type: SET_NUMBER_DIALING, payload: null });
-			});
-
-			dialerIdleListener = addDialerIdleListener(({ idle }) => {
-				debugLogger({ name: 'onDialerIdle', dispatch });
-				dispatch({ type: SET_ENABLE_CLICK_TO_CALL, payload: idle });
-			});
-
-			callEndedListener = addCallEndedListener((outcome) => {
-				debugLogger({ name: 'onCallEnded', dispatch });
-				const { contactId } = outcome;
-				dispatch({ type: ADD_OUTCOME, payload: { contactId, outcome } });
-			});
-		}
+		const callEndedListener = addCallEndedListener((outcome) => {
+			debugLogger({ name: 'onCallEnded', dispatch });
+			const { contactId } = outcome;
+			dispatch({ type: ADD_OUTCOME, payload: { contactId, outcome } });
+		});
 
 		return () => {
-			if (contactLinkListener) contactLinkListener.remove();
-			if (contactSearchListener) contactSearchListener.remove();
-			if (unreadCountListener) unreadCountListener.remove();
-			if (messageReceivedListener) messageReceivedListener.remove();
-			if (linesChangedListener) linesChangedListener.remove();
-			if (callStartedListener) callStartedListener.remove();
-			if (campaignEndedListener) campaignEndedListener.remove();
-			if (dialerIdleListener) dialerIdleListener.remove();
-			if (callEndedListener) callEndedListener.remove();
+			contactLinkListener.remove();
+			contactSearchListener.remove();
+			unreadCountListener.remove();
+			messageReceivedListener.remove();
+			linesChangedListener.remove();
+			callStartedListener.remove();
+			campaignEndedListener.remove();
+			dialerIdleListener.remove();
+			callEndedListener.remove();
 		};
 	}, []);
 
