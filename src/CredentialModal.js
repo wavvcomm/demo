@@ -8,7 +8,7 @@ import { ADD_UPDATE_CREDENTIALS, REMOVE_CREDENTIALS, TOGGLE_CREDENTIALS } from '
 
 const CredentialModal = ({ auth }) => {
 	const [open, setOpen] = useState(false);
-	const { credentials, dispatch, showCreds, authed, scriptLoaded } = useContext(store);
+	const { credentials, dispatch, showCreds, authed } = useContext(store);
 	const [showForm, setShowForm] = useState(!credentials.length);
 	const [formError, setFormError] = useState(false);
 	const [newCredentials, setNewCredentials] = useState({
@@ -26,7 +26,7 @@ const CredentialModal = ({ auth }) => {
 		const activeCreds = credentials.find((cred) => cred.active);
 		const newCreds = credentials.find((cred) => cred.id === id);
 
-		if (authed || (scriptLoaded && activeCreds?.server !== newCreds.server)) {
+		if (authed || activeCreds?.server !== newCreds.server) {
 			setOpen(true);
 			setReconnectId(id);
 		} else {
@@ -208,7 +208,7 @@ const CredentialModal = ({ auth }) => {
 									</Item.Group>
 								);
 							})}
-							{(!scriptLoaded || !authed) && <Error>Error: Not connected to WAVV</Error>}
+							{!authed && <Error>Error: Not connected to WAVV</Error>}
 							<Button
 								size="mini"
 								onClick={() => {

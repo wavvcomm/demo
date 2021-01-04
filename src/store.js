@@ -24,7 +24,6 @@ import {
 } from './types';
 
 const initialState = {
-	scriptLoaded: false,
 	authed: false,
 	openNote: false,
 	contactList: JSON.parse(localStorage.getItem('contacts')) || contacts,
