@@ -243,20 +243,23 @@ const App = () => {
 
 	const removeNumber = ({ contactId, number }) => {
 		dispatch({ type: REMOVE_NUMBER, payload: { contactId, number } });
-		window.Storm.removePhone({ contactId, number });
-		debugLogger({ name: 'removePhone', dispatch });
+		window.Storm.removePhone({ contactId, number })
+			.then(() => debugLogger({ name: 'removePhone', dispatch }))
+			.catch(() => debugLogger({ name: 'removePhone failed', dispatch }));
 	};
 
 	const addNumber = ({ contactId, number }) => {
 		dispatch({ type: ADD_NUMBER, payload: { contactId, number } });
-		window.Storm.addPhone({ contactId, number });
-		debugLogger({ name: 'addPhone', dispatch });
+		window.Storm.addPhone({ contactId, number })
+			.then(() => debugLogger({ name: 'addPhone', dispatch }))
+			.catch(() => debugLogger({ name: 'addPhone failed', dispatch }));
 	};
 
 	const deleteContact = ({ contactId, skip = false }) => {
 		dispatch({ type: REMOVE_CONTACT, payload: { contactId, skip } });
-		window.Storm.removeContact({ contactId, hangup: skip, resume: skip });
-		debugLogger({ name: 'removeContact', dispatch });
+		window.Storm.removeContact({ contactId, hangup: skip, resume: skip })
+			.then(() => debugLogger({ name: 'removeContact', dispatch }))
+			.catch(() => debugLogger({ name: 'removeContact failed', dispatch }));
 	};
 
 	const textNumber = (params) => {
@@ -265,14 +268,16 @@ const App = () => {
 	};
 
 	const callNumber = (ops) => {
-		window.Storm.callPhone(ops);
-		debugLogger({ name: 'callPhone', dispatch });
+		window.Storm.callPhone(ops)
+			.then(() => debugLogger({ name: 'callPhone', dispatch }))
+			.catch(() => debugLogger({ name: 'callPhone failed', dispatch }));
 	};
 
 	const handleStart = async () => {
 		const filteredContacts = contactList.filter((contact) => selected.includes(contact.contactId));
-		window.Storm.startCampaign({ contacts: filteredContacts });
-		debugLogger({ name: 'startCampaign', dispatch });
+		window.Storm.startCampaign({ contacts: filteredContacts })
+			.then(() => debugLogger({ name: 'startCampaign', dispatch }))
+			.catch(() => debugLogger({ name: 'startCampaign failed', dispatch }));
 	};
 
 	const addContact = (contact) => {

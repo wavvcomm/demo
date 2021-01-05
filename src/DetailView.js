@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from '@emotion/styled';
 import { Image, Button, Feed, Header, Label, Grid, List, Menu, Popup } from 'semantic-ui-react';
-import { formatPhone, rawPhone } from './utils';
+import { formatPhone, rawPhone, debugLogger } from './utils';
 import CallDispositionModal from './CallDispositionModal';
 import { store } from './store';
 import { SET_OPEN_NOTE } from './types';
@@ -96,7 +96,7 @@ const DetailView = ({ match, getContactById }) => {
 															window.Storm.openMessengerThread({
 																contact,
 																number,
-																dock: true,
+																contactView: true,
 															})
 														}
 													/>
@@ -121,7 +121,11 @@ const DetailView = ({ match, getContactById }) => {
 														const stormMethod = dncNumber
 															? 'removeDncNumber'
 															: 'addDncNumber';
-														window.Storm[stormMethod]({ number });
+														window.Storm[stormMethod]({ number })
+															.then(() => debugLogger({ name: stormMethod, dispatch }))
+															.catch(() =>
+																debugLogger({ name: `${stormMethod} failed`, dispatch })
+															);
 													}}
 													disabled={dncNumber && !removable}
 													icon="exclamation triangle"
