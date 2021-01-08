@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import styled from '@emotion/styled';
 import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
-import { init as initWavv } from '@wavv/core';
+import { init as initWavv, addDncChangedListener, checkDncNumbers } from '@wavv/core';
 import {
 	addPhone,
 	removePhone,
@@ -46,6 +46,8 @@ import {
 	SET_UNREAD_MESSAGES,
 	TOGGLE_CREDENTIALS,
 	ADD_UPDATE_CREDENTIALS,
+	SET_DNC_LIST,
+	UPDATE_DNC,
 } from './types';
 
 const useQuery = () => {
@@ -114,13 +116,32 @@ const App = () => {
 
 		const results = contactList.filter((contact) => {
 			const numbersString = contact.numbers.join(' ');
-			return contact.name.includes(formattedSearch) || numbersString.includes(formattedSearch);
+			const name = contact.name.toLowerCase();
+			return name.includes(formattedSearch) || numbersString.includes(formattedSearch);
 		});
 
 		return results;
 	};
 
+	const checkNumbersOnDnc = () => {
+		const numbers = contactList.map((contact) => contact.numbers).flat();
+		checkDncNumbers({ numbers })
+			.then((dncNumbers) => {
+				debugLogger({ name: 'checkDncNumbers', dispatch });
+				dispatch({ type: SET_DNC_LIST, payload: dncNumbers });
+			})
+			.catch((err) => {
+				debugLogger({ name: 'checkDncNumbers failed', dispatch });
+				setMessageReceivedToast({
+					message: err,
+					error: true,
+				});
+			});
+	};
+
 	useEffect(() => {
+		checkNumbersOnDnc();
+
 		const params = {
 			fields: [
 				{ id: 'first_name', label: 'First Name' },
@@ -133,10 +154,23 @@ const App = () => {
 		debugLogger({ name: 'setMergeFields', dispatch });
 
 		const contactLinkListener = addContactLinkListener((contact) => {
-			debugLogger({ name: 'onContactLink', dispatch });
-			const { contactId, name } = contact;
-			const id = contactId || getContactByPhone(name).contactId;
-			if (id) history.push(`/detail/${id}`);
+			if (contact) {
+				debugLogger({ name: 'onContactLink', dispatch });
+				const { contactId, name } = contact;
+				const id = contactId || getContactByPhone(name)?.contactId;
+				if (id) history.push(`/detail/${id}`);
+				else
+					setMessageReceivedToast({
+						message: 'No matching contact id',
+						error: true,
+					});
+			} else {
+				debugLogger({ name: 'onContactLink failed', dispatch });
+				setMessageReceivedToast({
+					message: 'No matching contact',
+					error: true,
+				});
+			}
 		});
 
 		const contactSearchListener = addContactSearchListener(({ search, contacts: returnedContacts, callback }) => {
@@ -196,6 +230,10 @@ const App = () => {
 			const { contactId } = outcome;
 			dispatch({ type: ADD_OUTCOME, payload: { contactId, outcome } });
 		});
+		const dncChangedListener = addDncChangedListener((dnc) => {
+			debugLogger({ name: 'onDncChanged', dispatch });
+			dispatch({ type: UPDATE_DNC, payload: dnc });
+		});
 
 		return () => {
 			contactLinkListener.remove();
@@ -207,25 +245,29 @@ const App = () => {
 			campaignEndedListener.remove();
 			dialerIdleListener.remove();
 			callEndedListener.remove();
+			dncChangedListener.remove();
 		};
 	}, []);
 
 	const removeNumber = ({ contactId, number }) => {
 		dispatch({ type: REMOVE_NUMBER, payload: { contactId, number } });
-		removePhone({ contactId, number });
-		debugLogger({ name: 'removePhone', dispatch });
+		removePhone({ contactId, number })
+			.then(() => debugLogger({ name: 'removePhone', dispatch }))
+			.catch(() => debugLogger({ name: 'removePhone failed', dispatch }));
 	};
 
 	const addNumber = ({ contactId, number }) => {
 		dispatch({ type: ADD_NUMBER, payload: { contactId, number } });
-		addPhone({ contactId, number });
-		debugLogger({ name: 'addPhone', dispatch });
+		addPhone({ contactId, number })
+			.then(() => debugLogger({ name: 'addPhone', dispatch }))
+			.catch(() => debugLogger({ name: 'addPhone failed', dispatch }));
 	};
 
 	const deleteContact = ({ contactId, skip = false }) => {
 		dispatch({ type: REMOVE_CONTACT, payload: { contactId, skip } });
-		removeContact({ contactId, hangup: skip, resume: skip });
-		debugLogger({ name: 'removeContact', dispatch });
+		removeContact({ contactId, hangup: skip, resume: skip })
+			.then(() => debugLogger({ name: 'removeContact', dispatch }))
+			.catch(() => debugLogger({ name: 'removeContact failed', dispatch }));
 	};
 
 	const textNumber = (params) => {
@@ -236,14 +278,16 @@ const App = () => {
 	const callNumber = ({ contact, number }) => {
 		const { contactId, name, address, city } = contact;
 		const ops = { contactId, name, address, city, number };
-		callPhone(ops);
-		debugLogger({ name: 'callPhone', dispatch });
+		callPhone(ops)
+			.then(() => debugLogger({ name: 'callPhone', dispatch }))
+			.catch(() => debugLogger({ name: 'callPhone failed', dispatch }));
 	};
 
 	const handleStart = async () => {
 		const filteredContacts = contactList.filter((contact) => selected.includes(contact.contactId));
-		startCampaign({ contacts: filteredContacts });
-		debugLogger({ name: 'startCampaign', dispatch });
+		startCampaign({ contacts: filteredContacts })
+			.then(() => debugLogger({ name: 'startCampaign', dispatch }))
+			.catch(() => debugLogger({ name: 'startCampaign failed', dispatch }));
 	};
 
 	const addContact = (contact) => {

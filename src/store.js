@@ -12,6 +12,8 @@ import {
 	TOGGLE_DRAWER,
 	SET_TAGS,
 	SET_NOTES,
+	SET_DNC_LIST,
+	UPDATE_DNC,
 	REMOVE_CONTACT,
 	ADD_NUMBER,
 	REMOVE_NUMBER,
@@ -29,8 +31,6 @@ const initialState = {
 	contactList: JSON.parse(localStorage.getItem('contacts')) || contacts,
 	selected: [],
 	skipped: [],
-	dncAction: '',
-	dncNumber: '',
 	unreadMessages: 0,
 	numberDialing: null,
 	unreadCounts: {},
@@ -50,6 +50,7 @@ const initialState = {
 	},
 	logs: [],
 	credentials: JSON.parse(localStorage.getItem('creds')) || [],
+	dncList: {},
 };
 const store = createContext(initialState);
 const { Provider } = store;
@@ -100,6 +101,20 @@ const StateProvider = ({ children }) => {
 			}
 			case SET_NOTES: {
 				return { ...state, notes: payload };
+			}
+			case SET_DNC_LIST: {
+				return { ...state, dncList: payload };
+			}
+			case UPDATE_DNC: {
+				const newState = { ...state };
+				const { removed, number, type: dncType, removable } = payload;
+				if (removed) {
+					delete newState.dncList[number];
+					return newState;
+				}
+				const item = { type: dncType, removable };
+				newState.dncList[number] = item;
+				return newState;
 			}
 			case ADD_CONTACT: {
 				const updatedContacts = [...state.contactList, payload];

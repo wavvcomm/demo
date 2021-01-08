@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
 import { Table, Checkbox, Modal, Input, Button, Dropdown, Label, Popup } from 'semantic-ui-react';
-import { formatPhone, validPhone } from './utils';
+import { formatPhone, validPhone, rawPhone } from './utils';
 import { store } from './store';
 import { SET_SELECTED } from './types';
 
@@ -20,7 +20,7 @@ const MessageCount = ({ count, disabled }) => (
 );
 
 const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber, callNumber }) => {
-	const { unreadCounts, skipped, selected, dispatch, authed } = useContext(store);
+	const { unreadCounts, skipped, selected, dispatch, authed, dncList } = useContext(store);
 	const [newNumber, setNewNumber] = useState('');
 	const [newNumberError, setNewNumberError] = useState(false);
 	const [open, setOpen] = useState(false);
@@ -74,10 +74,10 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 			<Table.Cell>{city || ''}</Table.Cell>
 			<Table.Cell>
 				{numbers.map((number) => {
+					const dncNumber = !!dncList[rawPhone(number)];
 					return (
-						<Number className="leadPhoneNumber" key={number}>
+						<Number className="leadPhoneNumber" key={number} dncNumber={dncNumber}>
 							{formatPhone(number)}
-
 							<Popup
 								content="Remove Number"
 								position="bottom center"
@@ -110,7 +110,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 									<Button
 										icon="phone"
 										size="mini"
-										disabled={!authed}
+										disabled={!authed || dncNumber}
 										onClick={() => callNumber({ contact, number })}
 									/>
 								}
@@ -174,12 +174,13 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 	);
 };
 
-const Number = styled.div({
+const Number = styled.div(({ dncNumber }) => ({
 	display: 'flex',
 	justifyContent: 'space-around',
 	alignItems: 'center',
 	margin: '10px 0',
-});
+	textDecoration: dncNumber && 'line-through',
+}));
 
 const MessageButton = styled.div({
 	position: 'relative',
