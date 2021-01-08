@@ -4,11 +4,12 @@ import jwt from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import styled from '@emotion/styled';
 import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
-import { init as initWavv, addDncChangedListener, checkDncNumbers } from '@wavv/core';
+import { init as initWavv } from '@wavv/core';
 import {
 	addPhone,
 	removePhone,
 	callPhone,
+	checkDncNumbers,
 	removeContact,
 	startCampaign,
 	addCallEndedListener,
@@ -16,6 +17,7 @@ import {
 	addCallStartedListener,
 	addCampaignEndedListener,
 	addDialerIdleListener,
+	addDncChangedListener,
 } from '@wavv/dialer';
 import {
 	setMergeFields,

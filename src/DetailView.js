@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from 'react';
 import styled from '@emotion/styled';
-import { addDncNumber, removeDncNumber } from '@wavv/core';
-import { callPhone, addWaitingForContinueListener } from '@wavv/dialer';
+import { callPhone, addDncNumber, removeDncNumber, addWaitingForContinueListener } from '@wavv/dialer';
 import { openMessengerThread } from '@wavv/messenger';
 import { Image, Button, Feed, Header, Label, Grid, List, Menu, Popup } from 'semantic-ui-react';
 import { formatPhone, rawPhone, debugLogger } from './utils';
