@@ -34,6 +34,8 @@ const DetailView = ({ match, getContactById }) => {
 		};
 	}, []);
 
+	if (!contact) return <div>No contact found with that id</div>;
+
 	return (
 		<Container>
 			<HeaderContainer>
@@ -189,21 +191,21 @@ const DetailView = ({ match, getContactById }) => {
 						</Feed>
 					</FeedContainer>
 				) : (
-					<FeedContainer>
-						<Feed>
-							{outcomes[id]?.map(({ number, duration, human, outcome, date }) => (
-								<Feed.Event key={`${number} - ${duration} - ${outcome}`} style={{ marginBottom: 15 }}>
-									<Feed.Content>
-										<Feed.Summary>{new Date(date).toLocaleDateString('en-US')}</Feed.Summary>
-										<Feed.Extra>
-											{outcome} {human ? '- human answered' : ''}
-										</Feed.Extra>
-									</Feed.Content>
-								</Feed.Event>
-							))}
-						</Feed>
-					</FeedContainer>
-				)}
+						<FeedContainer>
+							<Feed>
+								{outcomes[id]?.map(({ number, duration, human, outcome, date }) => (
+									<Feed.Event key={`${number} - ${duration} - ${outcome}`} style={{ marginBottom: 15 }}>
+										<Feed.Content>
+											<Feed.Summary>{new Date(date).toLocaleDateString('en-US')}</Feed.Summary>
+											<Feed.Extra>
+												{outcome} {human ? '- human answered' : ''}
+											</Feed.Extra>
+										</Feed.Content>
+									</Feed.Event>
+								))}
+							</Feed>
+						</FeedContainer>
+					)}
 			</MainContainer>
 			<CallDispositionModal contactId={id} note={note} setNote={setNote} />
 		</Container>

@@ -5,11 +5,11 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'Victor Voicemail',
+		firstName: 'Victor',
+		lastName: 'Voicemail',
 		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1605635973/2_bt1i2a.png',
 		mergeFields: [
-			{ id: 'first_name', label: 'First Name', value: 'Victor' },
-			{ id: 'last_name', label: 'Last Name', value: 'Voicemail' },
-			{ id: 'email', label: 'Email', value: 'test@test.com' },
+			{ id: 'email', label: 'Email', value: 'victor@test.com' },
 		],
 	},
 	{
@@ -18,11 +18,11 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'Rachel Ring',
+		firstName: 'Rachel',
+		lastName: 'Ring',
 		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1605635949/3_rqjcbi.png',
 		mergeFields: [
-			{ id: 'first_name', label: 'First Name', value: 'Rachel' },
-			{ id: 'last_name', label: 'Last Name', value: 'Ring' },
-			{ id: 'email', label: 'Email', value: 'test@test.com' },
+			{ id: 'email', label: 'Email', value: 'rachel@test.com' },
 		],
 	},
 	{
@@ -31,11 +31,11 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'Alice Answer',
+		firstName: 'Alice',
+		lastName: 'Answer',
 		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1605635993/1_mfsioi.png',
 		mergeFields: [
-			{ id: 'first_name', label: 'First Name', value: 'Alice' },
-			{ id: 'last_name', label: 'Last Name', value: 'Answer' },
-			{ id: 'email', label: 'Email', value: 'test@test.com' },
+			{ id: 'email', label: 'Email', value: 'alice@test.com' },
 		],
 	},
 	{
@@ -44,11 +44,11 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'Eric Echo',
+		firstName: 'Eric',
+		lastName: 'Echo',
 		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1605636272/crop-2020-11-17_1_awpief.jpg',
 		mergeFields: [
-			{ id: 'first_name', label: 'First Name', value: 'Eric' },
-			{ id: 'last_name', label: 'Last Name', value: 'Echo' },
-			{ id: 'email', label: 'Email', value: 'test@test.com' },
+			{ id: 'email', label: 'Email', value: 'eric@test.com' },
 		],
 	},
 	{
@@ -57,11 +57,11 @@ export const contacts = [
 		address: '123 E. 456 S.',
 		city: 'Some City',
 		name: 'Hank Hangup',
+		firstName: 'Hank',
+		lastName: 'Hangup',
 		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1605636306/crop-2020-11-17_chpw7v.jpg',
 		mergeFields: [
-			{ id: 'first_name', label: 'First Name', value: 'Hank' },
-			{ id: 'last_name', label: 'Last Name', value: 'Hangup' },
-			{ id: 'email', label: 'Email', value: 'test@test.com' },
+			{ id: 'email', label: 'Email', value: 'hank@test.com' },
 		],
 	},
 ];

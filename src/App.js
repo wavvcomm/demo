@@ -67,6 +67,20 @@ const App = () => {
 			return rawNumbers.includes(rawPhone(number));
 		});
 
+	const getContactByNumbers = (numbers) => {
+		let contact;
+		if (numbers?.length) {
+			numbers.some((number) => {
+				const contactFound = getContactByPhone(number);
+				if (contactFound) {
+					contact = contactFound;
+					return true;
+				}
+			});
+		}
+		return contact;
+	};
+
 	const authWavv = async (creds) => {
 		const { vendorId, apiKey, userId, server, token: tok } = creds;
 		let token;
@@ -117,8 +131,14 @@ const App = () => {
 
 		const results = contactList.filter((contact) => {
 			const numbersString = contact.numbers.join(' ');
-			const name = contact.name.toLowerCase();
-			return name.includes(formattedSearch) || numbersString.includes(formattedSearch);
+			let name = contact.name;
+			if (!name) {
+				const { firstName, lastName } = contact;
+				if (firstName || lastName) name = `${firstName || ''} ${lastName || ''}`;
+				name = name.trim();
+			}
+			name = name?.toLowerCase();
+			return name?.includes(formattedSearch) || numbersString?.includes(formattedSearch);
 		});
 
 		return results;
@@ -141,12 +161,9 @@ const App = () => {
 	};
 
 	useEffect(() => {
-		checkNumbersOnDnc();
 
 		const params = {
 			fields: [
-				{ id: 'first_name', label: 'First Name' },
-				{ id: 'last_name', label: 'Last Name' },
 				{ id: 'email', label: 'Email' },
 			],
 		};
@@ -154,52 +171,12 @@ const App = () => {
 		setMergeFields(params);
 		debugLogger({ name: 'setMergeFields', dispatch });
 
-		const contactLinkListener = addContactLinkListener((contact) => {
-			if (contact) {
-				debugLogger({ name: 'onContactLink', dispatch });
-				const { contactId, name } = contact;
-				const id = contactId || getContactByPhone(name)?.contactId;
-				if (id) history.push(`/detail/${id}`);
-				else
-					setMessageReceivedToast({
-						message: 'No matching contact id',
-						error: true,
-					});
-			} else {
-				debugLogger({ name: 'onContactLink failed', dispatch });
-				setMessageReceivedToast({
-					message: 'No matching contact',
-					error: true,
-				});
-			}
-		});
 
-		const contactSearchListener = addContactSearchListener(({ search, contacts: returnedContacts, callback }) => {
-			debugLogger({ name: 'onContactSearch', dispatch });
-			if (search) {
-				const results = getContactsBySearchTerms(search);
-				callback(results);
-			} else {
-				const results = returnedContacts.map((contact) => {
-					const { id, number } = contact;
-					return id ? getContactById(id) : getContactByPhone(number);
-				});
-				callback(results);
-			}
-		});
 
 		const unreadCountListener = addUnreadCountListener(({ unreadCount, numberCounts }) => {
 			debugLogger({ name: 'onUnreadCount', dispatch });
 			dispatch({ type: SET_UNREAD_MESSAGES, payload: unreadCount });
 			dispatch({ type: SET_UNREAD_COUNTS, payload: numberCounts });
-		});
-
-		const messageReceivedListener = addMessageReceivedListener(({ number, body }) => {
-			debugLogger({ name: 'onMessageReceived', dispatch });
-			const contact = getContactByPhone(number);
-			const header = `New Message from ${contact?.name || number}`;
-			const toast = { header, message: body };
-			setMessageReceivedToast(toast);
 		});
 
 		const linesChangedListener = addLinesChangedListener(({ lines }) => {
@@ -237,10 +214,7 @@ const App = () => {
 		});
 
 		return () => {
-			contactLinkListener.remove();
-			contactSearchListener.remove();
 			unreadCountListener.remove();
-			messageReceivedListener.remove();
 			linesChangedListener.remove();
 			callStartedListener.remove();
 			campaignEndedListener.remove();
@@ -249,6 +223,56 @@ const App = () => {
 			dncChangedListener.remove();
 		};
 	}, []);
+
+	useEffect(() => {
+		checkNumbersOnDnc();
+
+		const contactLinkListener = addContactLinkListener(({ contact, callback }) => {
+			debugLogger({ name: 'onContactLink', dispatch });
+			const { contactId, numbers } = contact;
+			const id = contactId || getContactByNumbers(numbers).contactId;
+			const found = getContactById(id);
+			if (id && found) {
+				callback({ closeModal: true });
+				history.push(`/detail/${id}`);
+			} else {
+				callback({ displayError: true });
+				const errorMessage = 'No matching contact';
+				setMessageReceivedToast({
+					message: errorMessage,
+					error: true,
+				});
+			}
+		});
+
+		const contactSearchListener = addContactSearchListener(({ search, contacts: returnedContacts, callback }) => {
+			debugLogger({ name: 'onContactSearch', dispatch });
+			if (search) {
+				const results = getContactsBySearchTerms(search);
+				callback(results);
+			} else {
+				const results = returnedContacts.map((contact) => {
+					const { id, numbers } = contact;
+					return id ? getContactById(id) : getContactByNumbers(numbers);
+				});
+				callback(results);
+			}
+		});
+
+		const messageReceivedListener = addMessageReceivedListener(({ number, body }) => {
+			debugLogger({ name: 'onMessageReceived', dispatch });
+			const contact = getContactByPhone(number);
+			const header = `New Message from ${contact?.name || number}`;
+			const toast = { header, message: body };
+			setMessageReceivedToast(toast);
+		});
+
+		return () => {
+			contactLinkListener.remove();
+			contactSearchListener.remove();
+			messageReceivedListener.remove();
+		};
+	}, [contactList]);
 
 	const removeNumber = ({ contactId, number }) => {
 		dispatch({ type: REMOVE_NUMBER, payload: { contactId, number } });
