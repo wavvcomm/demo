@@ -67,23 +67,15 @@ const App = () => {
 			return rawNumbers.includes(rawPhone(number));
 		});
 
-	const getContactIdByNumbers = (numbers) => {
-		let id;
-		if (numbers?.length) {
-			numbers.forEach((number) => {
-				const contact = getContactByPhone(number);
-				if (contact) id = contact.contactId;
-			});
-		}
-		return id;
-	};
-
 	const getContactByNumbers = (numbers) => {
 		let contact;
 		if (numbers?.length) {
-			numbers.forEach((number) => {
+			numbers.some((number) => {
 				const contactFound = getContactByPhone(number);
-				if (contactFound) contact = contactFound;
+				if (contactFound) {
+					contact = contactFound;
+					return true;
+				}
 			});
 		}
 		return contact;
@@ -139,7 +131,7 @@ const App = () => {
 
 		const results = contactList.filter((contact) => {
 			const numbersString = contact.numbers.join(' ');
-			let name = contact.name; // eslint-disable-line
+			let name = contact.name;
 			if (!name) {
 				const { firstName, lastName } = contact;
 				if (firstName || lastName) name = `${firstName || ''} ${lastName || ''}`;
@@ -238,7 +230,7 @@ const App = () => {
 		const contactLinkListener = addContactLinkListener(({ contact, callback }) => {
 			debugLogger({ name: 'onContactLink', dispatch });
 			const { contactId, numbers } = contact;
-			const id = contactId || getContactIdByNumbers(numbers);
+			const id = contactId || getContactByNumbers(numbers).contactId;
 			const found = getContactById(id);
 			if (id && found) {
 				callback({ closeModal: true });
