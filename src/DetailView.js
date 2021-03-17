@@ -32,6 +32,8 @@ const DetailView = ({ match, getContactById }) => {
 		}
 	}, [authed, id]);
 
+	if (!contact) return <div>No contact found with that id</div>;
+
 	return (
 		<Container>
 			<HeaderContainer>
@@ -48,7 +50,7 @@ const DetailView = ({ match, getContactById }) => {
 					</Grid.Column>
 					<Grid.Column width={10}>
 						<Header as="h3" className="contactName">
-							{contact.name}
+							{contact?.name || `${contact?.firstName} ${contact?.lastName}`}
 						</Header>
 						<List>
 							{contact.address && contact.city && (
@@ -98,6 +100,18 @@ const DetailView = ({ match, getContactById }) => {
 																number,
 																contactView: true,
 															})
+																.then(() =>
+																	debugLogger({
+																		name: 'openMessengerThread',
+																		dispatch,
+																	})
+																)
+																.catch(() =>
+																	debugLogger({
+																		name: 'openMessengerThread Failed',
+																		dispatch,
+																	})
+																)
 														}
 													/>
 													{unreadCounts[number] ? (
