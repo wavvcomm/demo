@@ -55,6 +55,28 @@ const App = () => {
 			return rawNumbers.includes(rawPhone(number));
 		});
 
+	const getContactIdByNumbers = (numbers) => {
+		let id;
+		if (numbers?.length) {
+			numbers.forEach((number) => {
+				const contact = getContactByPhone(number);
+				if (contact) id = contact.contactId;
+			});
+		}
+		return id;
+	};
+
+	const getContactByNumbers = (numbers) => {
+		let contact;
+		if (numbers?.length) {
+			numbers.forEach((number) => {
+				const contactFound = getContactByPhone(number);
+				if (contactFound) contact = contactFound;
+			});
+		}
+		return contact;
+	};
+
 	const authWavv = (creds) => {
 		const { vendorId, apiKey, userId, server, token: tok } = creds;
 		let token;
@@ -118,8 +140,14 @@ const App = () => {
 
 		const results = contactList.filter((contact) => {
 			const numbersString = contact.numbers.join(' ');
-			const name = contact.name.toLowerCase();
-			return name.includes(formattedSearch) || numbersString.includes(formattedSearch);
+			let name = contact.name; // eslint-disable-line
+			if (!name) {
+				const { firstName, lastName } = contact;
+				if (firstName || lastName) name = `${firstName || ''} ${lastName || ''}`;
+				name = name.trim();
+			}
+			name = name?.toLowerCase();
+			return name?.includes(formattedSearch) || numbersString?.includes(formattedSearch);
 		});
 
 		return results;
@@ -146,31 +174,34 @@ const App = () => {
 			checkDncNumbers();
 
 			const params = {
-				fields: [
-					{ id: 'first_name', label: 'First Name' },
-					{ id: 'last_name', label: 'Last Name' },
-					{ id: 'email', label: 'Email' },
-				],
+				fields: [{ id: 'email', label: 'Email' }],
 			};
 
 			window.Storm.setMergeFields(params);
 			debugLogger({ name: 'setMergeFields', dispatch });
 
-			window.Storm.onContactLink((contact) => {
+			window.Storm.onContactLink(({ contact, callback }) => {
+				debugLogger({ name: 'onContactLink', dispatch });
 				if (contact) {
-					debugLogger({ name: 'onContactLink', dispatch });
-					const { contactId, name } = contact;
-					const id = contactId || getContactByPhone(name)?.contactId;
-					if (id) history.push(`/detail/${id}`);
-					else
+					const { contactId, numbers } = contact;
+					const id = contactId || getContactIdByNumbers(numbers);
+					const found = getContactById(id);
+					if (id && found) {
+						callback({ closeModal: true });
+						history.push(`/detail/${id}`);
+					} else {
+						callback({ displayError: true });
+						const errorMessage = 'No matching contact';
 						setMessageReceivedToast({
-							message: 'No matching contact id',
+							message: errorMessage,
 							error: true,
 						});
+					}
 				} else {
-					debugLogger({ name: 'onContactLink failed', dispatch });
+					callback({ displayError: true });
+					const errorMessage = 'No contact sent';
 					setMessageReceivedToast({
-						message: 'No matching contact',
+						message: errorMessage,
 						error: true,
 					});
 				}
@@ -183,8 +214,8 @@ const App = () => {
 					callback(results);
 				} else {
 					const results = returnedContacts.map((contact) => {
-						const { id, number } = contact;
-						return id ? getContactById(id) : getContactByPhone(number);
+						const { id, numbers, number } = contact;
+						return id ? getContactById(id) : getContactByNumbers(numbers || [number]);
 					});
 					callback(results);
 				}
@@ -263,8 +294,9 @@ const App = () => {
 	};
 
 	const textNumber = (params) => {
-		window.Storm.openMessengerThread(params);
-		debugLogger({ name: 'openMessengerThread', dispatch });
+		window.Storm.openMessengerThread(params)
+			.then(() => debugLogger({ name: 'openMessengerThread', dispatch }))
+			.catch(() => debugLogger({ name: 'openMessengerThread Failed', dispatch }));
 	};
 
 	const callNumber = (ops) => {
@@ -273,11 +305,18 @@ const App = () => {
 			.catch(() => debugLogger({ name: 'callPhone failed', dispatch }));
 	};
 
-	const handleStart = async () => {
+	const handleStart = () => {
 		const filteredContacts = contactList.filter((contact) => selected.includes(contact.contactId));
 		window.Storm.startCampaign({ contacts: filteredContacts })
 			.then(() => debugLogger({ name: 'startCampaign', dispatch }))
 			.catch(() => debugLogger({ name: 'startCampaign failed', dispatch }));
+	};
+
+	const handleBlast = () => {
+		const filteredContacts = contactList.filter((contact) => selected.includes(contact.contactId));
+		window.Storm.startBlast({ contacts: filteredContacts })
+			.then(() => debugLogger({ name: 'startBlast', dispatch }))
+			.catch(() => debugLogger({ name: 'startBlast failed', dispatch }));
 	};
 
 	const addContact = (contact) => {
@@ -286,7 +325,7 @@ const App = () => {
 
 	return (
 		<div>
-			<Nav startCampaign={handleStart} />
+			<Nav startCampaign={handleStart} startBlast={handleBlast} />
 			<div id="storm-dialer-bar" />
 			<div id="storm-dialer-mini" />
 			<Container showingDrawer={showDrawer}>

@@ -1,11 +1,12 @@
 import React, { useContext, useState } from 'react';
 import styled from '@emotion/styled';
 import { Button, Checkbox, Dropdown, Label, Menu } from 'semantic-ui-react';
+import { debugLogger } from './utils';
 import { Link } from 'react-router-dom';
 import { store } from './store';
 import { TOGGLE_DRAWER, TOGGLE_CREDENTIALS } from './types';
 
-const Nav = ({ startCampaign }) => {
+const Nav = ({ startCampaign, startBlast }) => {
 	const {
 		showDrawer: showingDrawer,
 		showCreds: showingCreds,
@@ -59,16 +60,30 @@ const Nav = ({ startCampaign }) => {
 					</Dropdown>
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Button disabled={!authed} onClick={() => window.Storm.openMessenger({ dock: true })}>
+					<Button
+						disabled={!authed}
+						onClick={() =>
+							window.Storm.openMessenger({ dock: true })
+								.then(() => debugLogger({ name: 'openMessenger', dispatch }))
+								.catch(() => debugLogger({ name: 'openMessenger Failed', dispatch }))
+						}
+					>
 						Open Messenger
 						{unreadCount > 0 ? <Label color="red" circular floating content={unreadCount} /> : null}
 					</Button>
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Button primary disabled={disableStart || !authed} onClick={startCampaign} content="Start Campaign" />
+					<Button secondary disabled={disableStart || !authed} onClick={startBlast} content="Text Blast" />
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Button color={showingDrawer ? 'grey' : null} icon="bug" onClick={() => dispatch({ type: TOGGLE_DRAWER })} />
+					<Button primary disabled={disableStart || !authed} onClick={startCampaign} content="Dial" />
+				</Menu.Item>
+				<Menu.Item fitted>
+					<Button
+						color={showingDrawer ? 'grey' : null}
+						icon="bug"
+						onClick={() => dispatch({ type: TOGGLE_DRAWER })}
+					/>
 				</Menu.Item>
 				<Menu.Item fitted>
 					<Button
