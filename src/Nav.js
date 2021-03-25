@@ -54,8 +54,12 @@ const Nav = ({ startCampaign, startBlast }) => {
 						<Dropdown.Menu>
 							{Object.keys(accents).map((name) => {
 								const primaryColor = accents[name];
+								const { LIGHT, DARK } = constants.themes;
 								return (
-									<Dropdown.Item key={name} onClick={() => setTheme({ primaryColor })}>
+									<Dropdown.Item
+										key={name}
+										onClick={() => setTheme({ primaryColor, theme: on ? LIGHT : DARK })}
+									>
 										<ColorItem color={primaryColor} />
 									</Dropdown.Item>
 								);
