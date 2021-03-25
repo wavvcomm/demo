@@ -28,7 +28,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 		setOpen(false);
 		setNewNumber('');
 	};
-	const { contactId, name, address, city, numbers } = contact;
+	const { contactId, name, address, city, numbers, firstName, lastName } = contact;
 	const isSkipped = skipped.includes(contactId);
 
 	return (
@@ -67,7 +67,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 			</Table.Cell>
 			<Table.Cell>
 				<Link className="detailsLink" to={`/detail/${contactId}`}>
-					{name}
+					{name || `${firstName || ''} ${lastName || ''}`}
 				</Link>
 			</Table.Cell>
 			<Table.Cell>{address || ''}</Table.Cell>
