@@ -12,6 +12,7 @@ const CredentialModal = ({ auth }) => {
 	const [showForm, setShowForm] = useState(!credentials.length);
 	const [formError, setFormError] = useState(false);
 	const [newCredentials, setNewCredentials] = useState({
+		title: '',
 		id: '',
 		userId: '',
 		vendorId: '',
@@ -42,7 +43,7 @@ const CredentialModal = ({ auth }) => {
 	};
 
 	const reset = () => {
-		setNewCredentials({ id: '', userId: '', vendorId: '', apiKey: '', server: '', active: false });
+		setNewCredentials({ title: '', id: '', userId: '', vendorId: '', apiKey: '', server: '', active: false });
 		setShowForm(false);
 		setFormError(false);
 		setReconnectId('');
@@ -84,8 +85,8 @@ const CredentialModal = ({ auth }) => {
 	};
 
 	const handleEdit = (cred) => {
-		const { id, userId, vendorId, apiKey, active, server } = cred;
-		setNewCredentials({ id, userId, vendorId, apiKey, server, active });
+		const { title, id, userId, vendorId, apiKey, active, server } = cred;
+		setNewCredentials({ title, id, userId, vendorId, apiKey, server, active });
 		setShowForm(true);
 	};
 
@@ -105,24 +106,32 @@ const CredentialModal = ({ auth }) => {
 					{showForm ? (
 						<Form onSubmit={handleSubmit} error={formError}>
 							<Form.Field
+								name="title"
+								value={newCredentials.title}
+								onChange={handleCreds}
+								label="Title"
+								control="input"
+								placeholder="Optional"
+							/>
+							<Form.Field
 								name="userId"
 								value={newCredentials.userId}
 								onChange={handleCreds}
-								label="UserId"
+								label="User ID"
 								control="input"
 							/>
 							<Form.Field
 								name="vendorId"
 								value={newCredentials.vendorId}
 								onChange={handleCreds}
-								label="VendorId"
+								label="Vendor ID"
 								control="input"
 							/>
 							<Form.Field
 								name="apiKey"
 								value={newCredentials.apiKey}
 								onChange={handleCreds}
-								label="ApiKey"
+								label="API Key"
 								control="input"
 							/>
 							<ServerContainer>
@@ -138,23 +147,20 @@ const CredentialModal = ({ auth }) => {
 								<Domain>.wavv.com</Domain>
 							</ServerContainer>
 							<Form.Group>
-								{!!credentials.length && (
-									<Form.Field
-										id="form-button-cancel-credentials"
-										control={Button}
-										content="Cancel"
-										size="small"
-										onClick={() => {
-											reset();
-										}}
-									/>
-								)}
-								<Form.Field
+								<Button
+									id="form-button-cancel-credentials"
+									content="Cancel"
+									size="small"
+									onClick={() => reset()}
+									style={{ marginLeft: 5 }}
+								/>
+								<Button
 									type="submit"
 									id="form-button-save-credentials"
-									control={Button}
 									content="Save"
 									size="small"
+									primary
+									style={{ marginLeft: 5 }}
 								/>
 							</Form.Group>
 							<Message error header="All fields are required" />
@@ -172,7 +178,7 @@ const CredentialModal = ({ auth }) => {
 													onClick={() => handleCheckbox(cred.id)}
 													style={{ marginRight: 8, paddingTop: 3 }}
 												/>
-												{cred.server.toUpperCase()} {isToken ? '(token)' : ''}
+												{cred.title || cred.server} {isToken ? '(token)' : ''}
 												<Popup
 													content="Edit"
 													position="bottom center"
@@ -220,12 +226,14 @@ const CredentialModal = ({ auth }) => {
 						</>
 					)}
 				</Modal.Content>
-				<Modal.Actions>
-					{authed && <Button onClick={() => dispatch({ type: TOGGLE_CREDENTIALS })}>Cancel</Button>}
-					<Button onClick={handleConnect} primary disabled={authed}>
-						{authed ? 'Connected' : 'Connect'}
-					</Button>
-				</Modal.Actions>
+				{!showForm && (
+					<Modal.Actions>
+						{authed && <Button onClick={() => dispatch({ type: TOGGLE_CREDENTIALS })}>Cancel</Button>}
+						<Button onClick={handleConnect} primary disabled={authed}>
+							{authed ? 'Connected' : 'Connect'}
+						</Button>
+					</Modal.Actions>
+				)}
 			</Modal>
 			<Modal
 				size="mini"

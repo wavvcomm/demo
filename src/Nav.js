@@ -76,12 +76,12 @@ const Nav = ({ startCampaign, startBlast }) => {
 								.catch(() => debugLogger({ name: 'openMessenger Failed', dispatch }));
 						}}
 					>
-						Open Messenger
+						Messenger
 						{unreadCount > 0 ? <Label color="red" circular floating content={unreadCount} /> : null}
 					</Button>
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Button secondary disabled={disableStart || !authed} onClick={startBlast} content="Text Blast" />
+					<Button primary disabled={disableStart || !authed} onClick={startBlast} content="Blast" />
 				</Menu.Item>
 				<Menu.Item fitted>
 					<Button primary disabled={disableStart || !authed} onClick={startCampaign} content="Dial" />
