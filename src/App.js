@@ -33,7 +33,7 @@ import DetailView from './DetailView';
 import Nav from './Nav';
 import Toast from './Toast';
 import { debugLogger, rawPhone } from './utils';
-import DebugDrawer from './DebugDrawer';
+import DebugDrawer from './DebugDrawer.tsx';
 import CredentialModal from './CredentialModal';
 import { store } from './store';
 import {
