@@ -3,8 +3,13 @@ import { Table, Checkbox, Button, Input } from 'semantic-ui-react';
 import { v4 as uuid } from 'uuid';
 import ListItem from './ListItem';
 import { store } from './store';
-import { SET_SELECTED } from './types';
+import { SET_SELECTED } from './actionTypes';
 import { validPhone } from './utils';
+import { CONTACT } from './paramTypes';
+
+type CONTACT_TO_ADD = {
+	[key: string]: string;
+};
 
 const ListView = ({
 	removeContact,
@@ -14,11 +19,11 @@ const ListView = ({
 	callNumber,
 	addContact,
 	setMessageReceivedToast,
-}) => {
+}: any) => {
 	const { contactList, dispatch, selected } = useContext(store);
-	const [contactToAdd, setContact] = useState({});
+	const [contactToAdd, setContact] = useState<CONTACT_TO_ADD>({});
 
-	const handler = (event) => {
+	const handler = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const newContact = { ...contactToAdd };
 		newContact[event.target.name] = event.target.value;
 		setContact(newContact);
@@ -44,7 +49,7 @@ const ListView = ({
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{contactList.map((contact) => (
+					{contactList.map((contact: CONTACT) => (
 						<ListItem
 							key={contact.contactId}
 							contact={contact}
@@ -64,13 +69,23 @@ const ListView = ({
 							<Input placeholder="Name" value={contactToAdd?.name || ''} onChange={handler} name="name" />
 						</Table.HeaderCell>
 						<Table.HeaderCell>
-							<Input placeholder="Address" value={contactToAdd?.address || ''} onChange={handler} name="address" />
+							<Input
+								placeholder="Address"
+								value={contactToAdd?.address || ''}
+								onChange={handler}
+								name="address"
+							/>
 						</Table.HeaderCell>
 						<Table.HeaderCell>
 							<Input placeholder="City" value={contactToAdd?.city || ''} onChange={handler} name="city" />
 						</Table.HeaderCell>
 						<Table.HeaderCell>
-							<Input placeholder="Number" value={contactToAdd?.number || ''} onChange={handler} name="number" />
+							<Input
+								placeholder="Number"
+								value={contactToAdd?.number || ''}
+								onChange={handler}
+								name="number"
+							/>
 						</Table.HeaderCell>
 						<Table.HeaderCell>
 							<Button

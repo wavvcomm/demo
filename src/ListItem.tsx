@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import { Table, Checkbox, Modal, Input, Button, Dropdown, Label, Popup } from 'semantic-ui-react';
 import { formatPhone, validPhone, rawPhone } from './utils';
 import { store } from './store';
-import { SET_SELECTED } from './types';
+import { SET_SELECTED } from './actionTypes';
 
-const MessageCount = ({ count, disabled }) => (
+const MessageCount = ({ count, disabled }: { count: number; disabled: boolean }) => (
 	<Popup
 		content="Message Number"
 		position="top center"
@@ -19,7 +19,7 @@ const MessageCount = ({ count, disabled }) => (
 	/>
 );
 
-const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber, callNumber }) => {
+const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber, callNumber }: any) => {
 	const { unreadCounts, skipped, selected, dispatch, authed, dncList } = useContext(store);
 	const [newNumber, setNewNumber] = useState('');
 	const [newNumberError, setNewNumberError] = useState(false);
@@ -73,7 +73,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 			<Table.Cell>{address || ''}</Table.Cell>
 			<Table.Cell>{city || ''}</Table.Cell>
 			<Table.Cell>
-				{numbers.map((number) => {
+				{numbers.map((number: string) => {
 					const dncNumber = !!dncList[rawPhone(number)];
 					return (
 						<Number className="leadPhoneNumber" key={number} dncNumber={dncNumber}>
@@ -174,7 +174,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 	);
 };
 
-const Number = styled.div(({ dncNumber }) => ({
+const Number = styled.div<any>(({ dncNumber }) => ({
 	display: 'flex',
 	justifyContent: 'space-around',
 	alignItems: 'center',

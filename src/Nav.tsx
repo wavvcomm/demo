@@ -2,13 +2,15 @@ import React, { useContext, useState } from 'react';
 import styled from '@emotion/styled';
 import { Button, Checkbox, Dropdown, Label, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+// @ts-ignore
 import { setTheme, constants } from '@wavv/core';
+// @ts-ignore
 import { openMessenger } from '@wavv/messenger';
 import { store } from './store';
-import { TOGGLE_DRAWER, TOGGLE_CREDENTIALS } from './types';
+import { TOGGLE_DRAWER, TOGGLE_CREDENTIALS } from './actionTypes';
 import { debugLogger } from './utils';
 
-const Nav = ({ startCampaign, startBlast }) => {
+const Nav = ({ startCampaign, startBlast }: any) => {
 	const {
 		showDrawer: showingDrawer,
 		showCreds: showingCreds,
@@ -20,7 +22,7 @@ const Nav = ({ startCampaign, startBlast }) => {
 	const [on, toggleOn] = useState(false);
 	const disableStart = !selected.length;
 
-	const accents = {
+	const accents: { [key: string]: string } = {
 		default: '#48B0D6',
 		red: '#BF6350',
 		green: '#4F945B',
@@ -88,14 +90,14 @@ const Nav = ({ startCampaign, startBlast }) => {
 				</Menu.Item>
 				<Menu.Item fitted>
 					<Button
-						color={showingDrawer ? 'grey' : null}
+						color={showingDrawer ? 'grey' : undefined}
 						icon="bug"
 						onClick={() => dispatch({ type: TOGGLE_DRAWER })}
 					/>
 				</Menu.Item>
 				<Menu.Item fitted>
 					<Button
-						color={showingCreds ? 'grey' : null}
+						color={showingCreds ? 'grey' : undefined}
 						icon={showingCreds ? 'unlock' : 'lock'}
 						onClick={() => dispatch({ type: TOGGLE_CREDENTIALS })}
 					/>

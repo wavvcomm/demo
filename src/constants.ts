@@ -6,6 +6,7 @@ export const contacts = [
 		city: 'Some City',
 		firstName: 'Victor',
 		lastName: 'Voicemail',
+		name: 'Victor Voicemail',
 		avatarUrl: 'https://res.cloudinary.com/stormapp/image/upload/v1605635973/2_bt1i2a.png',
 		mergeFields: [{ id: 'email', label: 'Email', value: 'test@test.com' }],
 	},
@@ -53,14 +54,12 @@ export const contacts = [
 
 export const exampleNotes = [
 	{
-		note:
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. *See recording',
+		note: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. *See recording',
 		date: '2019-02-19T06:00:00Z',
 		number: '2029659970',
 	},
 	{
-		note:
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+		note: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
 		date: '2019-05-14T06:00:00Z',
 		number: '2029659970',
 	},

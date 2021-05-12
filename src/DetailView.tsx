@@ -1,33 +1,26 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from 'react';
 import styled from '@emotion/styled';
+// @ts-ignore
 import { callPhone, addDncNumber, removeDncNumber, addWaitingForContinueListener } from '@wavv/dialer';
+// @ts-ignore
 import { openMessengerThread } from '@wavv/messenger';
 import { Image, Button, Feed, Header, Label, Grid, List, Menu, Popup } from 'semantic-ui-react';
 import { formatPhone, rawPhone, debugLogger } from './utils';
 import CallDispositionModal from './CallDispositionModal';
 import { store } from './store';
-import { SET_OPEN_NOTE } from './types';
+import { SET_OPEN_NOTE } from './actionTypes';
 
-const DetailView = ({ match, getContactById }) => {
-	const {
-		notes,
-		outcomes,
-		unreadCounts,
-		authed,
-		tags,
-		enableClickToCall,
-		numberDialing,
-		dispatch,
-		dncList,
-	} = useContext(store);
+const DetailView = ({ match, getContactById }: any) => {
+	const { notes, outcomes, unreadCounts, authed, tags, enableClickToCall, numberDialing, dispatch, dncList } =
+		useContext(store);
 	const [activeMain, setActiveMain] = useState('notes');
 	const [note, setNote] = useState('');
 	const { id } = match.params;
 	const contact = getContactById(id);
 
 	useEffect(() => {
-		const waitingForContinueListener = addWaitingForContinueListener(({ waiting }) => {
+		const waitingForContinueListener = addWaitingForContinueListener(({ waiting }: { waiting: boolean }) => {
 			if (waiting) dispatch({ type: SET_OPEN_NOTE, payload: true });
 		});
 		return () => {
@@ -63,13 +56,13 @@ const DetailView = ({ match, getContactById }) => {
 									content={`${contact.address} ${contact.city}`}
 								/>
 							)}
-							{contact.numbers.map((number) => {
+							{contact.numbers.map((number: string) => {
 								const dncNumber = !!dncList[rawPhone(number)];
 								const removable = dncList[rawPhone(number)]?.removable;
 								return (
 									<Number
 										key={number}
-										dialing={formatPhone(numberDialing) === formatPhone(number)}
+										dialing={formatPhone(numberDialing || '') === formatPhone(number)}
 										dncNumber={dncNumber}
 									>
 										{formatPhone(number)}
@@ -144,7 +137,7 @@ const DetailView = ({ match, getContactById }) => {
 													disabled={dncNumber && !removable}
 													icon="exclamation triangle"
 													size="mini"
-													color={dncNumber ? 'red' : null}
+													color={dncNumber ? 'red' : undefined}
 													style={{ margin: 3 }}
 												/>
 											}
@@ -193,7 +186,7 @@ const DetailView = ({ match, getContactById }) => {
 				{activeMain === 'notes' ? (
 					<FeedContainer>
 						<Feed>
-							{notes[id]?.map(({ note: nte, date }) => (
+							{notes[id]?.map(({ note: nte, date }: any) => (
 								<Feed.Event key={date} style={{ marginBottom: 20 }}>
 									<Feed.Content>
 										<Feed.Summary>{new Date(date).toLocaleDateString('en-US')}</Feed.Summary>
@@ -206,7 +199,7 @@ const DetailView = ({ match, getContactById }) => {
 				) : (
 					<FeedContainer>
 						<Feed>
-							{outcomes[id]?.map(({ number, duration, human, outcome, date }) => (
+							{outcomes[id]?.map(({ number, duration, human, outcome, date }: any) => (
 								<Feed.Event key={`${number} - ${duration} - ${outcome}`} style={{ marginBottom: 15 }}>
 									<Feed.Content>
 										<Feed.Summary>{new Date(date).toLocaleDateString('en-US')}</Feed.Summary>
@@ -242,7 +235,12 @@ const MainContainer = styled.div({
 	marginTop: 20,
 });
 
-const Number = styled.div(({ dialing, dncNumber }) => ({
+type NumberProps = {
+	dialing?: boolean;
+	dncNumber?: boolean;
+};
+
+const Number = styled.div<any>(({ dialing, dncNumber }) => ({
 	display: 'flex',
 	width: 'fit-content',
 	alignItems: 'center',

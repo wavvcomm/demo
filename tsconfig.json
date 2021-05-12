@@ -17,7 +17,8 @@
 		"declaration": true,
 		"jsx": "react",
 		"typeRoots": ["./types", "./node_modules/@types"],
-		"outDir": "dist/"
+		"outDir": "dist/",
+		"downlevelIteration": true
 	},
 	"include": ["src/**/*"]
 }

@@ -8,7 +8,7 @@ type Props = {
 	showDrawer: boolean;
 };
 
-const DebugDrawer = ({ showDrawer }: Props) => {
+const DebugDrawer = ({ showDrawer }: Props): JSX.Element => {
 	const { logs } = useContext(store);
 
 	return showDrawer ? (
@@ -27,7 +27,9 @@ const DebugDrawer = ({ showDrawer }: Props) => {
 				)}
 			</Segment>
 		</Container>
-	) : null;
+	) : (
+		<></>
+	);
 };
 
 const Container = styled.div({

@@ -4,14 +4,19 @@ import { useHistory } from 'react-router-dom';
 import { Modal, Form, Button, Item, Popup, Message, Radio, Header } from 'semantic-ui-react';
 import { v4 as uuid } from 'uuid';
 import { store } from './store';
-import { ADD_UPDATE_CREDENTIALS, REMOVE_CREDENTIALS, TOGGLE_CREDENTIALS } from './types';
+import { ADD_UPDATE_CREDENTIALS, REMOVE_CREDENTIALS, TOGGLE_CREDENTIALS } from './actionTypes';
+import { CREDS } from './paramTypes';
 
-const CredentialModal = ({ auth }) => {
+type Props = {
+	auth: (creds: CREDS) => void;
+};
+
+const CredentialModal = ({ auth }: Props) => {
 	const [open, setOpen] = useState(false);
 	const { credentials, dispatch, showCreds, authed } = useContext(store);
 	const [showForm, setShowForm] = useState(!credentials.length);
 	const [formError, setFormError] = useState(false);
-	const [newCredentials, setNewCredentials] = useState({
+	const [newCredentials, setNewCredentials] = useState<CREDS>({
 		title: '',
 		id: '',
 		userId: '',
@@ -23,11 +28,11 @@ const CredentialModal = ({ auth }) => {
 	const [reconnectId, setReconnectId] = useState('');
 	const history = useHistory();
 
-	const handleCheckbox = (id) => {
-		const activeCreds = credentials.find((cred) => cred.active);
-		const newCreds = credentials.find((cred) => cred.id === id);
+	const handleCheckbox = (id: string) => {
+		const activeCreds = credentials.find((cred: CREDS) => cred.active);
+		const newCreds = credentials.find((cred: CREDS) => cred.id === id);
 
-		if (authed || activeCreds?.server !== newCreds.server) {
+		if (authed || activeCreds?.server !== newCreds?.server) {
 			setOpen(true);
 			setReconnectId(id);
 		} else {
@@ -35,9 +40,10 @@ const CredentialModal = ({ auth }) => {
 		}
 	};
 
-	const handleCreds = (event) => {
+	const handleCreds = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = event.target;
 		const newCreds = { ...newCredentials };
+		// @ts-ignore
 		newCreds[name] = value;
 		setNewCredentials(newCreds);
 	};
@@ -67,6 +73,7 @@ const CredentialModal = ({ auth }) => {
 			if (!userId || !vendorId || !apiKey || !server) {
 				setFormError(true);
 			} else {
+				console.log({ newCredentials });
 				auth(newCredentials);
 				const payload = { ...newCredentials, active: true };
 				if (!payload.id) payload.id = uuid();
@@ -75,7 +82,7 @@ const CredentialModal = ({ auth }) => {
 				dispatch({ type: TOGGLE_CREDENTIALS });
 			}
 		} else {
-			const creds = credentials.find((cred) => cred.active);
+			const creds = credentials.find((cred: CREDS) => cred.active);
 			if (creds) {
 				auth(creds);
 				reset();
@@ -84,14 +91,14 @@ const CredentialModal = ({ auth }) => {
 		}
 	};
 
-	const handleEdit = (cred) => {
-		const { title, id, userId, vendorId, apiKey, active, server } = cred;
-		setNewCredentials({ title, id, userId, vendorId, apiKey, server, active });
+	const handleEdit = (cred: CREDS) => {
+		const { title = '', id, userId, vendorId, apiKey, active, server } = cred;
+		setNewCredentials({ title, id, userId, vendorId, apiKey, server, active, token: '' });
 		setShowForm(true);
 	};
 
 	const handleReconnect = () => {
-		const creds = credentials.find((cred) => cred.id === reconnectId);
+		const creds = credentials.find((cred: CREDS) => cred.id === reconnectId);
 		dispatch({ type: ADD_UPDATE_CREDENTIALS, payload: { ...creds, active: true } });
 		setOpen(false);
 		history.push('/');
@@ -167,7 +174,7 @@ const CredentialModal = ({ auth }) => {
 						</Form>
 					) : (
 						<>
-							{credentials.map((cred) => {
+							{credentials.map((cred: CREDS) => {
 								const isToken = !!cred.token;
 								return (
 									<Item.Group key={cred.id}>
@@ -175,7 +182,7 @@ const CredentialModal = ({ auth }) => {
 											<Item.Content verticalAlign="middle" as="h4">
 												<Radio
 													checked={cred.active}
-													onClick={() => handleCheckbox(cred.id)}
+													onClick={() => cred.id && handleCheckbox(cred.id)}
 													style={{ marginRight: 8, paddingTop: 3 }}
 												/>
 												{cred.title || cred.server} {isToken ? '(token)' : ''}
