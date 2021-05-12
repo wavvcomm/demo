@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useContext } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import styled from '@emotion/styled';
 // @ts-ignore
 import { callPhone, addDncNumber, removeDncNumber, addWaitingForContinueListener } from '@wavv/dialer';
@@ -10,8 +11,12 @@ import { formatPhone, rawPhone, debugLogger } from './utils';
 import CallDispositionModal from './CallDispositionModal';
 import { store } from './store';
 import { SET_OPEN_NOTE } from './actionTypes';
+import { Contact, Note, Outcome } from './paramTypes';
 
-const DetailView = ({ match, getContactById }: any) => {
+const DetailView = ({
+	match,
+	getContactById,
+}: RouteComponentProps<{ id: string }> & { getContactById: (id: string) => Contact | undefined }) => {
 	const { notes, outcomes, unreadCounts, authed, tags, enableClickToCall, numberDialing, dispatch, dncList } =
 		useContext(store);
 	const [activeMain, setActiveMain] = useState('notes');
@@ -186,7 +191,7 @@ const DetailView = ({ match, getContactById }: any) => {
 				{activeMain === 'notes' ? (
 					<FeedContainer>
 						<Feed>
-							{notes[id]?.map(({ note: nte, date }: any) => (
+							{notes[id]?.map(({ note: nte, date }: Note) => (
 								<Feed.Event key={date} style={{ marginBottom: 20 }}>
 									<Feed.Content>
 										<Feed.Summary>{new Date(date).toLocaleDateString('en-US')}</Feed.Summary>
@@ -199,7 +204,7 @@ const DetailView = ({ match, getContactById }: any) => {
 				) : (
 					<FeedContainer>
 						<Feed>
-							{outcomes[id]?.map(({ number, duration, human, outcome, date }: any) => (
+							{outcomes[id]?.map(({ number, duration, human, outcome, date }: Outcome) => (
 								<Feed.Event key={`${number} - ${duration} - ${outcome}`} style={{ marginBottom: 15 }}>
 									<Feed.Content>
 										<Feed.Summary>{new Date(date).toLocaleDateString('en-US')}</Feed.Summary>
@@ -240,15 +245,15 @@ type NumberProps = {
 	dncNumber?: boolean;
 };
 
-const Number = styled.div<any>(({ dialing, dncNumber }) => ({
+const Number = styled.div<NumberProps>(({ dialing, dncNumber }) => ({
 	display: 'flex',
 	width: 'fit-content',
 	alignItems: 'center',
 	marginTop: 12,
 	paddingLeft: 4,
-	border: dialing && '1px solid #2185D0',
+	border: dialing ? '1px solid #2185D0' : undefined,
 	borderRadius: 5,
-	textDecoration: dncNumber && 'line-through',
+	textDecoration: dncNumber ? 'line-through' : undefined,
 }));
 
 export default DetailView;

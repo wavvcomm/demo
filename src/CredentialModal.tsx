@@ -5,10 +5,10 @@ import { Modal, Form, Button, Item, Popup, Message, Radio, Header } from 'semant
 import { v4 as uuid } from 'uuid';
 import { store } from './store';
 import { ADD_UPDATE_CREDENTIALS, REMOVE_CREDENTIALS, TOGGLE_CREDENTIALS } from './actionTypes';
-import { CREDS } from './paramTypes';
+import { Creds } from './paramTypes';
 
 type Props = {
-	auth: (creds: CREDS) => void;
+	auth: (creds: Creds) => void;
 };
 
 const CredentialModal = ({ auth }: Props) => {
@@ -16,7 +16,7 @@ const CredentialModal = ({ auth }: Props) => {
 	const { credentials, dispatch, showCreds, authed } = useContext(store);
 	const [showForm, setShowForm] = useState(!credentials.length);
 	const [formError, setFormError] = useState(false);
-	const [newCredentials, setNewCredentials] = useState<CREDS>({
+	const [newCredentials, setNewCredentials] = useState<Creds>({
 		title: '',
 		id: '',
 		userId: '',
@@ -29,8 +29,8 @@ const CredentialModal = ({ auth }: Props) => {
 	const history = useHistory();
 
 	const handleCheckbox = (id: string) => {
-		const activeCreds = credentials.find((cred: CREDS) => cred.active);
-		const newCreds = credentials.find((cred: CREDS) => cred.id === id);
+		const activeCreds = credentials.find((cred: Creds) => cred.active);
+		const newCreds = credentials.find((cred: Creds) => cred.id === id);
 
 		if (authed || activeCreds?.server !== newCreds?.server) {
 			setOpen(true);
@@ -73,7 +73,6 @@ const CredentialModal = ({ auth }: Props) => {
 			if (!userId || !vendorId || !apiKey || !server) {
 				setFormError(true);
 			} else {
-				console.log({ newCredentials });
 				auth(newCredentials);
 				const payload = { ...newCredentials, active: true };
 				if (!payload.id) payload.id = uuid();
@@ -82,7 +81,7 @@ const CredentialModal = ({ auth }: Props) => {
 				dispatch({ type: TOGGLE_CREDENTIALS });
 			}
 		} else {
-			const creds = credentials.find((cred: CREDS) => cred.active);
+			const creds = credentials.find((cred: Creds) => cred.active);
 			if (creds) {
 				auth(creds);
 				reset();
@@ -91,14 +90,14 @@ const CredentialModal = ({ auth }: Props) => {
 		}
 	};
 
-	const handleEdit = (cred: CREDS) => {
+	const handleEdit = (cred: Creds) => {
 		const { title = '', id, userId, vendorId, apiKey, active, server } = cred;
 		setNewCredentials({ title, id, userId, vendorId, apiKey, server, active, token: '' });
 		setShowForm(true);
 	};
 
 	const handleReconnect = () => {
-		const creds = credentials.find((cred: CREDS) => cred.id === reconnectId);
+		const creds = credentials.find((cred: Creds) => cred.id === reconnectId);
 		dispatch({ type: ADD_UPDATE_CREDENTIALS, payload: { ...creds, active: true } });
 		setOpen(false);
 		history.push('/');
@@ -174,7 +173,7 @@ const CredentialModal = ({ auth }: Props) => {
 						</Form>
 					) : (
 						<>
-							{credentials.map((cred: CREDS) => {
+							{credentials.map((cred: Creds) => {
 								const isToken = !!cred.token;
 								return (
 									<Item.Group key={cred.id}>

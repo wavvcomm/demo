@@ -10,7 +10,7 @@ import { store } from './store';
 import { TOGGLE_DRAWER, TOGGLE_CREDENTIALS } from './actionTypes';
 import { debugLogger } from './utils';
 
-const Nav = ({ startCampaign, startBlast }: any) => {
+const Nav = ({ startCampaign, startBlast }: { startCampaign: () => void; startBlast: () => void }) => {
 	const {
 		showDrawer: showingDrawer,
 		showCreds: showingCreds,

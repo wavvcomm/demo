@@ -5,7 +5,7 @@ import ListItem from './ListItem';
 import { store } from './store';
 import { SET_SELECTED } from './actionTypes';
 import { validPhone } from './utils';
-import { CONTACT } from './paramTypes';
+import { Contact, RemoveContact, AddRemoveNumber, TextNumber, CallNumber, AddContact } from './paramTypes';
 
 type CONTACT_TO_ADD = {
 	[key: string]: string;
@@ -19,7 +19,15 @@ const ListView = ({
 	callNumber,
 	addContact,
 	setMessageReceivedToast,
-}: any) => {
+}: {
+	removeContact: RemoveContact;
+	removeNumber: AddRemoveNumber;
+	addNumber: AddRemoveNumber;
+	textNumber: TextNumber;
+	callNumber: CallNumber;
+	addContact: AddContact;
+	setMessageReceivedToast: (arg0: { message: string; error: boolean }) => void;
+}) => {
 	const { contactList, dispatch, selected } = useContext(store);
 	const [contactToAdd, setContact] = useState<CONTACT_TO_ADD>({});
 
@@ -49,7 +57,7 @@ const ListView = ({
 					</Table.Row>
 				</Table.Header>
 				<Table.Body>
-					{contactList.map((contact: CONTACT) => (
+					{contactList.map((contact: Contact) => (
 						<ListItem
 							key={contact.contactId}
 							contact={contact}

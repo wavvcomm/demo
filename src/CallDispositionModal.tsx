@@ -8,7 +8,7 @@ import { SET_NOTES, SET_OPEN_NOTE, SET_TAGS } from './actionTypes';
 type Props = {
 	contactId: string;
 	note: string;
-	setNote: (arg0: any) => void;
+	setNote: (arg0: string) => void;
 };
 
 const CallDispositonModal = ({ contactId: id, note, setNote }: Props) => {

@@ -53,7 +53,7 @@ import {
 	ADD_UPDATE_CREDENTIALS,
 	UPDATE_DNC,
 } from './actionTypes';
-import { CONTACT, CREDS } from './paramTypes';
+import { Contact, Creds } from './paramTypes';
 
 const useQuery = () => {
 	return new URLSearchParams(useLocation().search);
@@ -66,7 +66,7 @@ const App = () => {
 	const query = useQuery();
 
 	const getContactByPhone = (number: string) =>
-		contactList.find((contact: CONTACT) => {
+		contactList.find((contact: Contact) => {
 			const rawNumbers = contact.numbers.map((num) => rawPhone(num));
 			return rawNumbers.includes(rawPhone(number));
 		});
@@ -93,7 +93,7 @@ const App = () => {
 		return contact;
 	};
 
-	const authWavv = async (creds: CREDS) => {
+	const authWavv = async (creds: Creds) => {
 		const { vendorId, apiKey, userId, server, token: tok } = creds;
 		let token;
 		if (tok) token = tok;
@@ -127,7 +127,7 @@ const App = () => {
 			const id = uuid();
 			dispatch({ type: ADD_UPDATE_CREDENTIALS, payload: { id, token, server, active: true } });
 		} else {
-			const creds = credentials.find((cred: CREDS) => cred.active);
+			const creds = credentials.find((cred: Creds) => cred.active);
 			if (creds) {
 				authWavv(creds);
 			} else if (!showCreds) {
@@ -136,12 +136,12 @@ const App = () => {
 		}
 	}, []);
 
-	const getContactById = (id: string) => contactList.find((contact: CONTACT) => contact.contactId === id);
+	const getContactById = (id: string) => contactList.find((contact: Contact) => contact.contactId === id);
 
 	const getContactsBySearchTerms = (search: string) => {
 		const formattedSearch = search.toLowerCase();
 
-		const results = contactList.filter((contact: CONTACT) => {
+		const results = contactList.filter((contact: Contact) => {
 			const numbersString = contact.numbers.join(' ');
 			let name = contact.name; // eslint-disable-line
 			if (!name) {
@@ -287,20 +287,20 @@ const App = () => {
 			.catch(() => debugLogger({ name: 'addPhone failed', dispatch }));
 	};
 
-	const deleteContact = ({ contactId, skip = false }: { contactId: string; skip: boolean }) => {
+	const deleteContact = ({ contactId, skip = false }: { contactId: string; skip?: boolean }) => {
 		dispatch({ type: REMOVE_CONTACT, payload: { contactId, skip } });
 		removeContact({ contactId, hangup: skip, resume: skip })
 			.then(() => debugLogger({ name: 'removeContact', dispatch }))
 			.catch(() => debugLogger({ name: 'removeContact failed', dispatch }));
 	};
 
-	const textNumber = (params: { contact?: CONTACT; number: string; dock?: boolean }) => {
+	const textNumber = (params: { contact?: Contact; number: string; dock?: boolean }) => {
 		openMessengerThread(params)
 			.then(() => debugLogger({ name: 'openMessengerThread', dispatch }))
 			.catch(() => debugLogger({ name: 'openMessengerThread failed', dispatch }));
 	};
 
-	const callNumber = ({ contact, number }: { contact: CONTACT; number: string }) => {
+	const callNumber = ({ contact, number }: { contact: Contact; number: string }) => {
 		const { contactId, name, address, city } = contact;
 		const ops = { contactId, name, address, city, number };
 		callPhone(ops)
@@ -309,20 +309,20 @@ const App = () => {
 	};
 
 	const handleStart = () => {
-		const filteredContacts = contactList.filter((contact: CONTACT) => selected.includes(contact.contactId));
+		const filteredContacts = contactList.filter((contact: Contact) => selected.includes(contact.contactId));
 		startCampaign({ contacts: filteredContacts })
 			.then(() => debugLogger({ name: 'startCampaign', dispatch }))
 			.catch(() => debugLogger({ name: 'startCampaign failed', dispatch }));
 	};
 
 	const handleBlast = () => {
-		const filteredContacts = contactList.filter((contact: CONTACT) => selected.includes(contact.contactId));
+		const filteredContacts = contactList.filter((contact: Contact) => selected.includes(contact.contactId));
 		startBlast({ contacts: filteredContacts })
 			.then(() => debugLogger({ name: 'startBlast', dispatch }))
 			.catch(() => debugLogger({ name: 'startBlast failed', dispatch }));
 	};
 
-	const addContact = (contact: CONTACT) => {
+	const addContact = (contact: Contact) => {
 		dispatch({ type: ADD_CONTACT, payload: contact });
 	};
 
@@ -345,6 +345,7 @@ const App = () => {
 								addNumber={addNumber}
 								textNumber={textNumber}
 								callNumber={callNumber}
+								setMessageReceivedToast={setMessageReceivedToast}
 							/>
 						)}
 					/>

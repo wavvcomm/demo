@@ -1,4 +1,4 @@
-export type CREDS =
+export type Creds =
 	| {
 			id: string;
 			title?: string;
@@ -20,7 +20,7 @@ export type CREDS =
 			active?: boolean;
 	  };
 
-export type CONTACT = {
+export type Contact = {
 	contactId: string;
 	numbers: string[];
 	address?: string;
@@ -32,19 +32,19 @@ export type CONTACT = {
 	name?: string;
 };
 
-export type ACTION = {
+export type Action = {
 	type: string;
 	payload?: any;
 };
 
-type TAG = {
+type Tag = {
 	[key: string]: boolean;
 };
 
-export type STORE = {
+export type Store = {
 	authed: boolean;
 	openNote: boolean;
-	contactList: CONTACT[];
+	contactList: Contact[];
 	selected: any[];
 	skipped: any[];
 	unreadMessages: number;
@@ -53,11 +53,31 @@ export type STORE = {
 	enableClickToCall: boolean;
 	showDrawer: boolean;
 	showCreds: boolean;
-	tags: { [key: string]: TAG };
+	tags: { [key: string]: Tag };
 	notes: any;
 	outcomes: any;
 	logs: any[];
-	credentials: CREDS[];
+	credentials: Creds[];
 	dncList: any;
-	dispatch: (arg0: ACTION) => void;
+	dispatch: (arg0: Action) => void;
 };
+
+export type Note = {
+	note: string;
+	date: string;
+	number: string;
+};
+
+export type Outcome = {
+	date: string;
+	number: string;
+	duration: number;
+	outcome: string;
+	human: boolean;
+};
+
+export type AddContact = (contact: Contact) => void;
+export type RemoveContact = (arg0: { contactId: string; skip?: boolean }) => void;
+export type AddRemoveNumber = (arg0: { contactId: string; number: string }) => void;
+export type TextNumber = (arg0: { contact?: Contact; number: string; dock?: boolean }) => void;
+export type CallNumber = (arg0: { contact: Contact; number: string }) => void;
