@@ -4,9 +4,8 @@ import jwt from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import styled from '@emotion/styled';
 import { Route, Switch, useHistory, useLocation, RouteComponentProps } from 'react-router-dom';
-// @ts-ignore
-import { init as initWavv } from '@wavv/core';
 import {
+	init as initWavv,
 	addPhone,
 	removePhone,
 	callPhone,
@@ -18,7 +17,6 @@ import {
 	addCampaignEndedListener,
 	addDialerIdleListener,
 	addDncChangedListener,
-	// @ts-ignore
 } from '@wavv/dialer';
 import {
 	setMergeFields,
@@ -28,7 +26,6 @@ import {
 	addMessageReceivedListener,
 	addUnreadCountListener,
 	startBlast,
-	// @ts-ignore
 } from '@wavv/messenger';
 import ListView from './ListView';
 import DetailView from './DetailView';
@@ -275,7 +272,7 @@ const App = () => {
 
 	const removeNumber = ({ contactId, number }: { contactId: string; number: string }) => {
 		dispatch({ type: REMOVE_NUMBER, payload: { contactId, number } });
-		removePhone({ contactId, number })
+		removePhone({ number })
 			.then(() => debugLogger({ name: 'removePhone', dispatch }))
 			.catch(() => debugLogger({ name: 'removePhone failed', dispatch }));
 	};
