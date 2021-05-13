@@ -1,5 +1,7 @@
+import { Dispatch } from 'react';
 import _ from 'lodash';
 import { ADD_DEBUG_LOG } from './actionTypes';
+import { Action } from './paramTypes';
 
 export const rawPhone = (phone: string, long = false) => {
 	phone = _.trim(phone).replace(/[^0-9]/g, '');
@@ -17,6 +19,6 @@ export const validPhone = (phone: string) => {
 	return phone.length === 10 || phone.length === 11;
 };
 
-export const debugLogger = ({ name, dispatch }: { name: string; dispatch: any }) => {
+export const debugLogger = ({ name, dispatch }: { name: string; dispatch: Dispatch<Action> }) => {
 	dispatch({ type: ADD_DEBUG_LOG, payload: name });
 };

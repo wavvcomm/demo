@@ -3,7 +3,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import jwt from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import styled from '@emotion/styled';
-import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
+import { Route, Switch, useHistory, useLocation, RouteComponentProps } from 'react-router-dom';
 // @ts-ignore
 import { init as initWavv } from '@wavv/core';
 import {
@@ -352,7 +352,11 @@ const App = () => {
 					<Route
 						exact
 						path="/detail/:id"
-						component={(props: any) => <DetailView {...props} getContactById={getContactById} />}
+						component={(
+							props: RouteComponentProps<{ id: string }> & {
+								getContactById: (id: string) => Contact | undefined;
+							}
+						) => <DetailView {...props} getContactById={getContactById} />}
 					/>
 				</Switch>
 				<DebugDrawer showDrawer={showDrawer} />
@@ -363,12 +367,16 @@ const App = () => {
 	);
 };
 
-const Container = styled.div<any>(({ showingDrawer }) => ({
+type ContainerProps = {
+	showingDrawer?: boolean;
+};
+
+const Container = styled.div<ContainerProps>(({ showingDrawer }) => ({
 	display: 'grid',
 	padding: '0 20px',
 	margin: '20px auto 0',
 	gridTemplateColumns: '1fr auto',
-	columnGap: showingDrawer && 20,
+	columnGap: showingDrawer ? 20 : undefined,
 	alignItems: 'start',
 	maxWidth: 1500,
 }));

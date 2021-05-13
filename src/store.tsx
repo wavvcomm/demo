@@ -26,7 +26,7 @@ import {
 } from './actionTypes';
 import { Contact, Store, Action, Creds } from './paramTypes';
 
-const getItems = (item: string): any => {
+const getItems = (item: string): any[] | null => {
 	const items = localStorage.getItem(item);
 	if (items) return JSON.parse(items);
 	return null;
@@ -66,7 +66,7 @@ const initialState: Store = {
 const store = createContext(initialState);
 const { Provider } = store;
 
-const StateProvider = ({ children }: any) => {
+const StateProvider: React.FC = ({ children }) => {
 	const [storeState, dispatch] = useReducer<Reducer<Store, Action>>((state, action): Store => {
 		const { type, payload } = action;
 		switch (type) {
