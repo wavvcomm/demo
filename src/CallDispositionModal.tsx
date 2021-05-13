@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { Modal, Form, TextArea, Button } from 'semantic-ui-react';
-// @ts-ignore
 import { continueCampaign } from '@wavv/dialer';
 import { store } from './store';
 import { SET_NOTES, SET_OPEN_NOTE, SET_TAGS } from './actionTypes';

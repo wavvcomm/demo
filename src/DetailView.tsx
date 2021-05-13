@@ -2,9 +2,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from '@emotion/styled';
-// @ts-ignore
 import { callPhone, addDncNumber, removeDncNumber, addWaitingForContinueListener } from '@wavv/dialer';
-// @ts-ignore
 import { openMessengerThread } from '@wavv/messenger';
 import { Image, Button, Feed, Header, Label, Grid, List, Menu, Popup } from 'semantic-ui-react';
 import { formatPhone, rawPhone, debugLogger } from './utils';

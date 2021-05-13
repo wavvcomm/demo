@@ -2,10 +2,7 @@ import React, { useContext, useState } from 'react';
 import styled from '@emotion/styled';
 import { Button, Checkbox, Dropdown, Label, Menu } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-// @ts-ignore
-import { setTheme, constants } from '@wavv/core';
-// @ts-ignore
-import { openMessenger } from '@wavv/messenger';
+import { openMessenger, setTheme } from '@wavv/messenger';
 import { store } from './store';
 import { TOGGLE_DRAWER, TOGGLE_CREDENTIALS } from './actionTypes';
 import { debugLogger } from './utils';
@@ -32,9 +29,8 @@ const Nav = ({ startCampaign, startBlast }: { startCampaign: () => void; startBl
 	};
 
 	const handleTheme = () => {
-		const { LIGHT, DARK } = constants.themes;
 		const lightTheme = !on; // state hasn't changed yet, so we want the inverse
-		setTheme({ theme: lightTheme ? LIGHT : DARK });
+		setTheme({ theme: lightTheme ? 'LIGHT' : 'DARK' });
 		debugLogger({ name: 'setTheme', dispatch });
 		toggleOn(!on);
 	};
@@ -56,11 +52,10 @@ const Nav = ({ startCampaign, startBlast }: { startCampaign: () => void; startBl
 						<Dropdown.Menu>
 							{Object.keys(accents).map((name) => {
 								const primaryColor = accents[name];
-								const { LIGHT, DARK } = constants.themes;
 								return (
 									<Dropdown.Item
 										key={name}
-										onClick={() => setTheme({ primaryColor, theme: on ? LIGHT : DARK })}
+										onClick={() => setTheme({ primaryColor, theme: on ? 'LIGHT' : 'DARK' })}
 									>
 										<ColorItem color={primaryColor} />
 									</Dropdown.Item>
