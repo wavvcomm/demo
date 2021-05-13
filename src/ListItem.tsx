@@ -5,8 +5,7 @@ import { Table, Checkbox, Modal, Input, Button, Dropdown, Label, Popup } from 's
 import { formatPhone, validPhone, rawPhone } from './utils';
 import { store } from './store';
 import { SET_SELECTED } from './actionTypes';
-import { Contact } from '@wavv/internal';
-import { AddRemoveNumber, RemoveContact, TextNumber, CallNumber } from './paramTypes';
+import { Contact, AddRemoveNumber, RemoveContact, TextNumber, CallNumber } from './paramTypes';
 
 const MessageCount = ({ count, disabled }: { count: number; disabled: boolean }) => (
 	<Popup

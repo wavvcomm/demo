@@ -50,8 +50,7 @@ import {
 	ADD_UPDATE_CREDENTIALS,
 	UPDATE_DNC,
 } from './actionTypes';
-import { Contact } from '@wavv/internal';
-import { Creds } from './paramTypes';
+import { Creds, Contact } from './paramTypes';
 
 const useQuery = () => {
 	return new URLSearchParams(useLocation().search);
