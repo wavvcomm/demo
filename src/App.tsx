@@ -50,7 +50,8 @@ import {
 	ADD_UPDATE_CREDENTIALS,
 	UPDATE_DNC,
 } from './actionTypes';
-import { Contact, Creds } from './paramTypes';
+import { Contact } from '@wavv/internal';
+import { Creds } from './paramTypes';
 
 const useQuery = () => {
 	return new URLSearchParams(useLocation().search);
@@ -205,13 +206,13 @@ const App = () => {
 				}
 			);
 
-			const unreadCountListener = addUnreadCountListener(({ unreadCount, numberCounts }: any) => {
+			const unreadCountListener = addUnreadCountListener(({ unreadCount, numberCounts }) => {
 				debugLogger({ name: 'onUnreadCount', dispatch });
 				dispatch({ type: SET_UNREAD_MESSAGES, payload: unreadCount });
 				dispatch({ type: SET_UNREAD_COUNTS, payload: numberCounts });
 			});
 
-			const messageReceivedListener = addMessageReceivedListener(({ number, body }: any) => {
+			const messageReceivedListener = addMessageReceivedListener(({ number, body }) => {
 				debugLogger({ name: 'onMessageReceived', dispatch });
 				const contact = getContactByPhone(number);
 				const header = `New Message from ${contact?.name || number}`;
@@ -219,16 +220,16 @@ const App = () => {
 				setMessageReceivedToast(toast);
 			});
 
-			const linesChangedListener = addLinesChangedListener(({ lines }: any) => {
+			const linesChangedListener = addLinesChangedListener(({ lines }) => {
 				debugLogger({ name: 'onLinesChanged', dispatch });
-				lines.forEach((call: any) => {
+				lines.forEach((call) => {
 					if (call.focused) {
 						if (call.contactId) history.push(`/detail/${call.contactId}`);
 					}
 				});
 			});
 
-			const callStartedListener = addCallStartedListener(({ number }: any) => {
+			const callStartedListener = addCallStartedListener(({ number }) => {
 				debugLogger({ name: 'onCallStarted', dispatch });
 				dispatch({ type: SET_NUMBER_DIALING, payload: number });
 			});
@@ -238,17 +239,17 @@ const App = () => {
 				dispatch({ type: SET_NUMBER_DIALING, payload: null });
 			});
 
-			const dialerIdleListener = addDialerIdleListener(({ idle }: any) => {
+			const dialerIdleListener = addDialerIdleListener(({ idle }) => {
 				debugLogger({ name: 'onDialerIdle', dispatch });
 				dispatch({ type: SET_ENABLE_CLICK_TO_CALL, payload: idle });
 			});
 
-			const callEndedListener = addCallEndedListener((outcome: any) => {
+			const callEndedListener = addCallEndedListener((outcome) => {
 				debugLogger({ name: 'onCallEnded', dispatch });
 				const { contactId } = outcome;
 				dispatch({ type: ADD_OUTCOME, payload: { contactId, outcome } });
 			});
-			const dncChangedListener = addDncChangedListener((dnc: any) => {
+			const dncChangedListener = addDncChangedListener((dnc) => {
 				debugLogger({ name: 'onDncChanged', dispatch });
 				dispatch({ type: UPDATE_DNC, payload: dnc });
 			});

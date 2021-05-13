@@ -1,3 +1,5 @@
+import { Contact } from '@wavv/internal';
+
 export type Creds =
 	| {
 			id: string;
@@ -19,18 +21,6 @@ export type Creds =
 			server: string;
 			active?: boolean;
 	  };
-
-export type Contact = {
-	contactId: string;
-	numbers: string[];
-	address?: string;
-	city?: string;
-	firstName?: string;
-	lastName?: string;
-	avatarUrl?: string;
-	mergeFields?: any[];
-	name?: string;
-};
 
 export type Action = {
 	type: string;

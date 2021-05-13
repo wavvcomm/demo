@@ -9,7 +9,8 @@ import { formatPhone, rawPhone, debugLogger } from './utils';
 import CallDispositionModal from './CallDispositionModal';
 import { store } from './store';
 import { SET_OPEN_NOTE } from './actionTypes';
-import { Contact, Note, Outcome } from './paramTypes';
+import { Contact } from '@wavv/internal';
+import { Note, Outcome } from './paramTypes';
 
 const DetailView = ({
 	match,

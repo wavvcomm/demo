@@ -24,7 +24,8 @@ import {
 	REMOVE_CREDENTIALS,
 	TOGGLE_CREDENTIALS,
 } from './actionTypes';
-import { Contact, Store, Action, Creds } from './paramTypes';
+import { Contact } from '@wavv/internal';
+import { Store, Action, Creds } from './paramTypes';
 
 const getItems = (item: string): any[] | null => {
 	const items = localStorage.getItem(item);

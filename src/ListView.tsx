@@ -5,7 +5,8 @@ import ListItem from './ListItem';
 import { store } from './store';
 import { SET_SELECTED } from './actionTypes';
 import { validPhone } from './utils';
-import { Contact, RemoveContact, AddRemoveNumber, TextNumber, CallNumber, AddContact } from './paramTypes';
+import { Contact } from '@wavv/internal';
+import { RemoveContact, AddRemoveNumber, TextNumber, CallNumber, AddContact } from './paramTypes';
 
 type CONTACT_TO_ADD = {
 	[key: string]: string;
