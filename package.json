@@ -10,6 +10,7 @@
 		"@testing-library/user-event": "^12.1.10",
 		"@wavv/dialer": "^2.0.0",
 		"@wavv/messenger": "^2.0.0",
+		"@wavv/internal": "^2.0.0",
 		"ag-grid-community": "^24.1.0",
 		"ag-grid-react": "^24.1.1",
 		"axios": "^0.21.0",
