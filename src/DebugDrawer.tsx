@@ -4,7 +4,11 @@ import { Segment, Header } from 'semantic-ui-react';
 import { v4 as uuid } from 'uuid';
 import { store } from './store';
 
-const DebugDrawer = ({ showDrawer }) => {
+type Props = {
+	showDrawer: boolean;
+};
+
+const DebugDrawer = ({ showDrawer }: Props): JSX.Element => {
 	const { logs } = useContext(store);
 
 	return showDrawer ? (
@@ -13,7 +17,7 @@ const DebugDrawer = ({ showDrawer }) => {
 				<Header as="h5">WAVV Log</Header>
 				{logs.length ? (
 					<>
-						{logs.map((log) => {
+						{logs.map((log: string) => {
 							const key = uuid();
 							return <div key={key}>{log}</div>;
 						})}
@@ -23,7 +27,9 @@ const DebugDrawer = ({ showDrawer }) => {
 				)}
 			</Segment>
 		</Container>
-	) : null;
+	) : (
+		<></>
+	);
 };
 
 const Container = styled.div({

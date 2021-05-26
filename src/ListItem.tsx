@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom';
 import { Table, Checkbox, Modal, Input, Button, Dropdown, Label, Popup } from 'semantic-ui-react';
 import { formatPhone, validPhone, rawPhone } from './utils';
 import { store } from './store';
-import { SET_SELECTED } from './types';
+import { SET_SELECTED } from './actionTypes';
+import { Contact, AddRemoveNumber, RemoveContact, TextNumber, CallNumber } from './paramTypes';
 
-const MessageCount = ({ count, disabled }) => (
+const MessageCount = ({ count, disabled }: { count: number; disabled: boolean }) => (
 	<Popup
 		content="Message Number"
 		position="top center"
@@ -19,7 +20,21 @@ const MessageCount = ({ count, disabled }) => (
 	/>
 );
 
-const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber, callNumber }) => {
+const ListItem = ({
+	contact,
+	removeContact,
+	removeNumber,
+	addNumber,
+	textNumber,
+	callNumber,
+}: {
+	contact: Contact;
+	removeContact: RemoveContact;
+	removeNumber: AddRemoveNumber;
+	addNumber: AddRemoveNumber;
+	textNumber: TextNumber;
+	callNumber: CallNumber;
+}) => {
 	const { unreadCounts, skipped, selected, dispatch, authed, dncList } = useContext(store);
 	const [newNumber, setNewNumber] = useState('');
 	const [newNumberError, setNewNumberError] = useState(false);
@@ -73,7 +88,7 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 			<Table.Cell>{address || ''}</Table.Cell>
 			<Table.Cell>{city || ''}</Table.Cell>
 			<Table.Cell>
-				{numbers.map((number) => {
+				{numbers.map((number: string) => {
 					const dncNumber = !!dncList[rawPhone(number)];
 					return (
 						<Number className="leadPhoneNumber" key={number} dncNumber={dncNumber}>
@@ -174,12 +189,16 @@ const ListItem = ({ contact, removeContact, removeNumber, addNumber, textNumber,
 	);
 };
 
-const Number = styled.div(({ dncNumber }) => ({
+type NumberProps = {
+	dncNumber: boolean;
+};
+
+const Number = styled.div<NumberProps>(({ dncNumber }) => ({
 	display: 'flex',
 	justifyContent: 'space-around',
 	alignItems: 'center',
 	margin: '10px 0',
-	textDecoration: dncNumber && 'line-through',
+	textDecoration: dncNumber ? 'line-through' : undefined,
 }));
 
 const MessageButton = styled.div({

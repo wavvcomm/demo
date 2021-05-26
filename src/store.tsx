@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useReducer, Reducer } from 'react';
 import _ from 'lodash';
 import { contacts, exampleNotes, exampleOutcomes } from './constants';
 import {
@@ -23,12 +23,19 @@ import {
 	ADD_UPDATE_CREDENTIALS,
 	REMOVE_CREDENTIALS,
 	TOGGLE_CREDENTIALS,
-} from './types';
+} from './actionTypes';
+import { Contact, Store, Action, Creds } from './paramTypes';
 
-const initialState = {
+const getItems = (item: string): any[] | null => {
+	const items = localStorage.getItem(item);
+	if (items) return JSON.parse(items);
+	return null;
+};
+
+const initialState: Store = {
 	authed: false,
 	openNote: false,
-	contactList: JSON.parse(localStorage.getItem('contacts')) || contacts,
+	contactList: getItems('contacts') || contacts,
 	selected: [],
 	skipped: [],
 	unreadMessages: 0,
@@ -49,14 +56,18 @@ const initialState = {
 		1: exampleOutcomes,
 	},
 	logs: [],
-	credentials: JSON.parse(localStorage.getItem('creds')) || [],
+	credentials: getItems('creds') || [],
 	dncList: {},
+	dispatch: (arg: Action) => {
+		return arg;
+	},
 };
+
 const store = createContext(initialState);
 const { Provider } = store;
 
-const StateProvider = ({ children }) => {
-	const [storeState, dispatch] = useReducer((state, action) => {
+const StateProvider: React.FC = ({ children }) => {
+	const [storeState, dispatch] = useReducer<Reducer<Store, Action>>((state, action): Store => {
 		const { type, payload } = action;
 		switch (type) {
 			case SET_AUTHED: {
@@ -70,9 +81,9 @@ const StateProvider = ({ children }) => {
 				let newSelected = [...selected];
 				if (payload === 'all') {
 					if (selected.length === contactList.length) newSelected = [];
-					else newSelected = contactList.map((contact) => contact.contactId);
+					else newSelected = contactList.map((contact: Contact) => contact.contactId);
 				} else if (selected.includes(payload)) {
-					newSelected = selected.filter((item) => item !== payload);
+					newSelected = selected.filter((item: string) => item !== payload);
 				} else {
 					newSelected.push(payload);
 				}
@@ -124,7 +135,9 @@ const StateProvider = ({ children }) => {
 			case REMOVE_CONTACT: {
 				const { contactId, skip } = payload;
 				if (!skip) {
-					const updatedContacts = state.contactList.filter((contact) => contact.contactId !== contactId);
+					const updatedContacts = state.contactList.filter(
+						(contact: Contact) => contact.contactId !== contactId
+					);
 					localStorage.setItem('contacts', JSON.stringify(updatedContacts));
 					return { ...state, contactList: updatedContacts };
 				}
@@ -133,7 +146,7 @@ const StateProvider = ({ children }) => {
 			}
 			case ADD_NUMBER: {
 				const { contactId, number } = payload;
-				const updatedContacts = state.contactList.map((contact) => {
+				const updatedContacts = state.contactList.map((contact: Contact) => {
 					if (contact.contactId === contactId) {
 						const newNumbers = [...contact.numbers, number];
 						return { ...contact, numbers: newNumbers };
@@ -145,7 +158,7 @@ const StateProvider = ({ children }) => {
 			}
 			case REMOVE_NUMBER: {
 				const { contactId, number } = payload;
-				const updatedContacts = state.contactList.map((contact) => {
+				const updatedContacts = state.contactList.map((contact: Contact) => {
 					if (contact.contactId === contactId) {
 						const filteredNumbers = contact.numbers.filter((num) => num !== number);
 						return { ...contact, numbers: filteredNumbers };
@@ -170,9 +183,9 @@ const StateProvider = ({ children }) => {
 			}
 			case ADD_UPDATE_CREDENTIALS: {
 				const newState = { ...state };
-				if (payload.token) newState.credentials = newState.credentials.filter((cred) => !cred.token);
+				if (payload.token) newState.credentials = newState.credentials.filter((cred: Creds) => !cred.token);
 				if (payload.active)
-					newState.credentials.map((cred) => {
+					newState.credentials.map((cred: Creds) => {
 						if (cred.id !== payload.id) {
 							cred.active = false;
 						}
@@ -188,7 +201,7 @@ const StateProvider = ({ children }) => {
 				return newState;
 			}
 			case REMOVE_CREDENTIALS: {
-				const credentials = state.credentials.filter((cred) => cred.id !== payload);
+				const credentials = state.credentials.filter((cred: Creds) => cred.id !== payload);
 				localStorage.setItem('creds', JSON.stringify(credentials));
 				return { ...state, credentials };
 			}

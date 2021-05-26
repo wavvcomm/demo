@@ -3,13 +3,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import jwt from 'jsonwebtoken';
 import { v4 as uuid } from 'uuid';
 import styled from '@emotion/styled';
-import { Route, Switch, useHistory, useLocation } from 'react-router-dom';
-import { init as initWavv } from '@wavv/core';
+import { Route, Switch, useHistory, useLocation, RouteComponentProps } from 'react-router-dom';
 import {
+	init as initWavv,
 	addPhone,
 	removePhone,
 	callPhone,
-	checkDncNumbers,
 	removeContact,
 	startCampaign,
 	addCallEndedListener,
@@ -49,9 +48,9 @@ import {
 	SET_UNREAD_MESSAGES,
 	TOGGLE_CREDENTIALS,
 	ADD_UPDATE_CREDENTIALS,
-	SET_DNC_LIST,
 	UPDATE_DNC,
-} from './types';
+} from './actionTypes';
+import { Creds, Contact } from './paramTypes';
 
 const useQuery = () => {
 	return new URLSearchParams(useLocation().search);
@@ -63,13 +62,13 @@ const App = () => {
 	const history = useHistory();
 	const query = useQuery();
 
-	const getContactByPhone = (number) =>
-		contactList.find((contact) => {
+	const getContactByPhone = (number: string) =>
+		contactList.find((contact: Contact) => {
 			const rawNumbers = contact.numbers.map((num) => rawPhone(num));
 			return rawNumbers.includes(rawPhone(number));
 		});
 
-	const getContactIdByNumbers = (numbers) => {
+	const getContactIdByNumbers = (numbers: string[]) => {
 		let id;
 		if (numbers?.length) {
 			numbers.forEach((number) => {
@@ -80,7 +79,7 @@ const App = () => {
 		return id;
 	};
 
-	const getContactByNumbers = (numbers) => {
+	const getContactByNumbers = (numbers: string[]) => {
 		let contact;
 		if (numbers?.length) {
 			numbers.forEach((number) => {
@@ -91,13 +90,13 @@ const App = () => {
 		return contact;
 	};
 
-	const authWavv = async (creds) => {
+	const authWavv = async (creds: Creds) => {
 		const { vendorId, apiKey, userId, server, token: tok } = creds;
 		let token;
 		if (tok) token = tok;
 		else {
 			const issuer = vendorId;
-			const signature = apiKey;
+			const signature = apiKey || '';
 			const payload = { userId };
 			token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
 		}
@@ -125,7 +124,7 @@ const App = () => {
 			const id = uuid();
 			dispatch({ type: ADD_UPDATE_CREDENTIALS, payload: { id, token, server, active: true } });
 		} else {
-			const creds = credentials.find((cred) => cred.active);
+			const creds = credentials.find((cred: Creds) => cred.active);
 			if (creds) {
 				authWavv(creds);
 			} else if (!showCreds) {
@@ -134,18 +133,18 @@ const App = () => {
 		}
 	}, []);
 
-	const getContactById = (id) => contactList.find((contact) => contact.contactId === id);
+	const getContactById = (id: string) => contactList.find((contact: Contact) => contact.contactId === id);
 
-	const getContactsBySearchTerms = (search) => {
+	const getContactsBySearchTerms = (search: string) => {
 		const formattedSearch = search.toLowerCase();
 
-		const results = contactList.filter((contact) => {
+		const results = contactList.filter((contact: Contact) => {
 			const numbersString = contact.numbers.join(' ');
 			let name = contact.name; // eslint-disable-line
 			if (!name) {
 				const { firstName, lastName } = contact;
 				if (firstName || lastName) name = `${firstName || ''} ${lastName || ''}`;
-				name = name.trim();
+				name = name?.trim();
 			}
 			name = name?.toLowerCase();
 			return name?.includes(formattedSearch) || numbersString?.includes(formattedSearch);
@@ -154,26 +153,8 @@ const App = () => {
 		return results;
 	};
 
-	const checkNumbersOnDnc = () => {
-		const numbers = contactList.map((contact) => contact.numbers).flat();
-		checkDncNumbers({ numbers })
-			.then((dncNumbers) => {
-				debugLogger({ name: 'checkDncNumbers', dispatch });
-				dispatch({ type: SET_DNC_LIST, payload: dncNumbers });
-			})
-			.catch((err) => {
-				debugLogger({ name: 'checkDncNumbers failed', dispatch });
-				setMessageReceivedToast({
-					message: err,
-					error: true,
-				});
-			});
-	};
-
 	useEffect(() => {
 		if (authed) {
-			checkNumbersOnDnc();
-
 			const params = {
 				fields: [{ id: 'email', label: 'Email' }],
 			};
@@ -181,7 +162,7 @@ const App = () => {
 			setMergeFields(params);
 			debugLogger({ name: 'setMergeFields', dispatch });
 
-			const contactLinkListener = addContactLinkListener(({ contact, callback }) => {
+			const contactLinkListener = addContactLinkListener(({ contact, callback }: any) => {
 				debugLogger({ name: 'onContactLink', dispatch });
 				if (contact) {
 					const { contactId, numbers } = contact;
@@ -209,13 +190,13 @@ const App = () => {
 			});
 
 			const contactSearchListener = addContactSearchListener(
-				({ search, contacts: returnedContacts, callback }) => {
+				({ search, contacts: returnedContacts, callback }: any) => {
 					debugLogger({ name: 'onContactSearch', dispatch });
 					if (search) {
 						const results = getContactsBySearchTerms(search);
 						callback(results);
 					} else {
-						const results = returnedContacts.map((contact) => {
+						const results = returnedContacts.map((contact: any) => {
 							const { id, number, numbers } = contact;
 							return id ? getContactById(id) : getContactByNumbers(numbers || [number]);
 						});
@@ -285,37 +266,38 @@ const App = () => {
 				dncChangedListener.remove();
 			};
 		}
-		return () => {};
+
+		return undefined;
 	}, [authed]);
 
-	const removeNumber = ({ contactId, number }) => {
+	const removeNumber = ({ contactId, number }: { contactId: string; number: string }) => {
 		dispatch({ type: REMOVE_NUMBER, payload: { contactId, number } });
-		removePhone({ contactId, number })
+		removePhone({ number })
 			.then(() => debugLogger({ name: 'removePhone', dispatch }))
 			.catch(() => debugLogger({ name: 'removePhone failed', dispatch }));
 	};
 
-	const addNumber = ({ contactId, number }) => {
+	const addNumber = ({ contactId, number }: { contactId: string; number: string }) => {
 		dispatch({ type: ADD_NUMBER, payload: { contactId, number } });
 		addPhone({ contactId, number })
 			.then(() => debugLogger({ name: 'addPhone', dispatch }))
 			.catch(() => debugLogger({ name: 'addPhone failed', dispatch }));
 	};
 
-	const deleteContact = ({ contactId, skip = false }) => {
+	const deleteContact = ({ contactId, skip = false }: { contactId: string; skip?: boolean }) => {
 		dispatch({ type: REMOVE_CONTACT, payload: { contactId, skip } });
 		removeContact({ contactId, hangup: skip, resume: skip })
 			.then(() => debugLogger({ name: 'removeContact', dispatch }))
 			.catch(() => debugLogger({ name: 'removeContact failed', dispatch }));
 	};
 
-	const textNumber = (params) => {
+	const textNumber = (params: { contact?: Contact; number: string; dock?: boolean }) => {
 		openMessengerThread(params)
 			.then(() => debugLogger({ name: 'openMessengerThread', dispatch }))
 			.catch(() => debugLogger({ name: 'openMessengerThread failed', dispatch }));
 	};
 
-	const callNumber = ({ contact, number }) => {
+	const callNumber = ({ contact, number }: { contact: Contact; number: string }) => {
 		const { contactId, name, address, city } = contact;
 		const ops = { contactId, name, address, city, number };
 		callPhone(ops)
@@ -324,20 +306,20 @@ const App = () => {
 	};
 
 	const handleStart = () => {
-		const filteredContacts = contactList.filter((contact) => selected.includes(contact.contactId));
+		const filteredContacts = contactList.filter((contact: Contact) => selected.includes(contact.contactId));
 		startCampaign({ contacts: filteredContacts })
 			.then(() => debugLogger({ name: 'startCampaign', dispatch }))
 			.catch(() => debugLogger({ name: 'startCampaign failed', dispatch }));
 	};
 
 	const handleBlast = () => {
-		const filteredContacts = contactList.filter((contact) => selected.includes(contact.contactId));
+		const filteredContacts = contactList.filter((contact: Contact) => selected.includes(contact.contactId));
 		startBlast({ contacts: filteredContacts })
 			.then(() => debugLogger({ name: 'startBlast', dispatch }))
 			.catch(() => debugLogger({ name: 'startBlast failed', dispatch }));
 	};
 
-	const addContact = (contact) => {
+	const addContact = (contact: Contact) => {
 		dispatch({ type: ADD_CONTACT, payload: contact });
 	};
 
@@ -360,13 +342,18 @@ const App = () => {
 								addNumber={addNumber}
 								textNumber={textNumber}
 								callNumber={callNumber}
+								setMessageReceivedToast={setMessageReceivedToast}
 							/>
 						)}
 					/>
 					<Route
 						exact
 						path="/detail/:id"
-						component={(props) => <DetailView {...props} getContactById={getContactById} />}
+						component={(
+							props: RouteComponentProps<{ id: string }> & {
+								getContactById: (id: string) => Contact | undefined;
+							}
+						) => <DetailView {...props} getContactById={getContactById} />}
 					/>
 				</Switch>
 				<DebugDrawer showDrawer={showDrawer} />
@@ -377,12 +364,16 @@ const App = () => {
 	);
 };
 
-const Container = styled.div(({ showingDrawer }) => ({
+type ContainerProps = {
+	showingDrawer?: boolean;
+};
+
+const Container = styled.div<ContainerProps>(({ showingDrawer }) => ({
 	display: 'grid',
 	padding: '0 20px',
 	margin: '20px auto 0',
 	gridTemplateColumns: '1fr auto',
-	columnGap: showingDrawer ? 20 : null,
+	columnGap: showingDrawer ? 20 : undefined,
 	alignItems: 'start',
 	maxWidth: 1500,
 }));

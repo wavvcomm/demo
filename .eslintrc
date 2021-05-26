@@ -3,8 +3,8 @@
 		"es6": true,
 		"browser": true
 	},
-	"parser": "babel-eslint",
-	"plugins": ["react-hooks", "jest", "cypress"],
+	"parser": "@typescript-eslint/parser",
+	"plugins": ["react-hooks", "jest", "cypress", "@typescript-eslint"],
 	"extends": [
 		"plugin:import/errors",
 		"plugin:cypress/recommended",
@@ -14,7 +14,8 @@
 		"airbnb",
 		"storm",
 		"prettier",
-		"prettier/react"
+		"prettier/react",
+		"plugin:@typescript-eslint/recommended"
 	],
 	"parserOptions": {
 		"sourceType": "module"
@@ -37,6 +38,32 @@
 		"react/jsx-filename-extension": ["off"],
 		"react-hooks/rules-of-hooks": "error",
 		"class-methods-use-this": "off",
-		"jest/valid-expect-in-promise": "off"
+		"jest/valid-expect-in-promise": "off",
+		"@typescript-eslint/no-var-requires": ["off"],
+		"@typescript-eslint/explicit-module-boundary-types": ["off"],
+		"@typescript-eslint/ban-ts-comment": "off",
+		"no-use-before-define": "off",
+		"@typescript-eslint/no-use-before-define": ["error"],
+		"import/extensions": [
+			"error",
+			"ignorePackages",
+			{
+				"js": "never",
+				"jsx": "never",
+				"ts": "never",
+				"tsx": "never"
+			}
+		]
+	},
+	"settings": {
+		"import/extensions": [".js", ".jsx", ".ts", ".tsx"],
+		"import/parsers": {
+			"@typescript-eslint/parser": [".ts", ".tsx"]
+		},
+		"import/resolver": {
+			"node": {
+				"extensions": [".js", ".jsx", ".ts", ".tsx"]
+			}
+		}
 	}
 }

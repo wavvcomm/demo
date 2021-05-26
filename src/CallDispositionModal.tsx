@@ -2,11 +2,17 @@ import React, { useContext } from 'react';
 import { Modal, Form, TextArea, Button } from 'semantic-ui-react';
 import { continueCampaign } from '@wavv/dialer';
 import { store } from './store';
-import { SET_NOTES, SET_OPEN_NOTE, SET_TAGS } from './types';
+import { SET_NOTES, SET_OPEN_NOTE, SET_TAGS } from './actionTypes';
 
-const CallDispositonModal = ({ contactId: id, note, setNote }) => {
+type Props = {
+	contactId: string;
+	note: string;
+	setNote: (arg0: string) => void;
+};
+
+const CallDispositonModal = ({ contactId: id, note, setNote }: Props) => {
 	const { openNote, tags, notes, dispatch } = useContext(store);
-	const handleTags = ({ target }) => {
+	const handleTags = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
 		const newTags = { ...tags };
 		if (!newTags[id]) newTags[id] = {};
 		newTags[id][target.name] = target.checked;
@@ -55,7 +61,7 @@ const CallDispositonModal = ({ contactId: id, note, setNote }) => {
 							label="Notes"
 							placeholder="How did the call go?"
 							value={note}
-							onChange={({ target }) => setNote(target.value)}
+							onChange={({ target }: React.ChangeEvent<HTMLTextAreaElement>) => setNote(target.value)}
 						/>
 					</Form.Group>
 				</Form>
