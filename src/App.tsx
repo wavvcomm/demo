@@ -52,9 +52,7 @@ import {
 } from './actionTypes';
 import { Creds, Contact } from './paramTypes';
 
-const useQuery = () => {
-	return new URLSearchParams(useLocation().search);
-};
+const useQuery = () => new URLSearchParams(useLocation().search);
 
 const App = () => {
 	const { authed, contactList, selected, showDrawer, showCreds, dispatch, credentials } = useContext(store);

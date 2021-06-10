@@ -14,7 +14,6 @@
 		"airbnb",
 		"storm",
 		"prettier",
-		"prettier/react",
 		"plugin:@typescript-eslint/recommended"
 	],
 	"parserOptions": {

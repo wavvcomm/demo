@@ -9,9 +9,7 @@ export const rawPhone = (phone: string, long = false) => {
 	return phone.substr(long ? 0 : 1, long ? 11 : 10);
 };
 
-export const formatPhone = (phone: string) => {
-	return rawPhone(phone).replace(/^(.{3})(.{3})(.{4})/, '($1) $2-$3');
-};
+export const formatPhone = (phone: string) => rawPhone(phone).replace(/^(.{3})(.{3})(.{4})/, '($1) $2-$3');
 
 export const validPhone = (phone: string) => {
 	if (!_.isString(phone)) return false;
