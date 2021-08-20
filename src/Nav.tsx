@@ -7,7 +7,7 @@ import { store } from './store';
 import { TOGGLE_DRAWER, TOGGLE_CREDENTIALS } from './actionTypes';
 import { debugLogger } from './utils';
 
-const Nav = ({ startCampaign, startBlast }: { startCampaign: () => void; startBlast: () => void }) => {
+const Nav = ({ startCampaign, startBlast, closeWavv }: { startCampaign: () => void; startBlast: () => void, closeWavv: () => void }) => {
 	const {
 		showDrawer: showingDrawer,
 		showCreds: showingCreds,
@@ -95,6 +95,13 @@ const Nav = ({ startCampaign, startBlast }: { startCampaign: () => void; startBl
 						color={showingCreds ? 'grey' : undefined}
 						icon={showingCreds ? 'unlock' : 'lock'}
 						onClick={() => dispatch({ type: TOGGLE_CREDENTIALS })}
+					/>
+				</Menu.Item>
+				<Menu.Item fitted>
+					<Button
+						disabled={!authed}
+						icon='sign-out'
+						onClick={closeWavv}
 					/>
 				</Menu.Item>
 			</Menu>
