@@ -1,9 +1,9 @@
 #---------- BASE ----------#
-FROM keymetrics/pm2:10-stretch as base
+FROM keymetrics/pm2:16-stretch as base
 WORKDIR /usr/local/storm/demo
 COPY ./package.json ./
+RUN npm install --unsafe-perm --no-audit
 COPY ./.env ./.eslint* ./tsconfig.json ./
-RUN npm install --quiet --unsafe-perm --no-progress --no-audit
 
 # Update package.json to point to local directory instead of version for @wavv modules
 RUN sed -i 's/"@wavv\/internal": ".*"/"\@wavv\/internal": "..\/module\/internal"/' ./package.json

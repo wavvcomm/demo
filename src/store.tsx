@@ -58,9 +58,7 @@ const initialState: Store = {
 	logs: [],
 	credentials: getItems('creds') || [],
 	dncList: {},
-	dispatch: (arg: Action) => {
-		return arg;
-	},
+	dispatch: (arg: Action) => arg,
 };
 
 const store = createContext(initialState);

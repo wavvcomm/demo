@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
-import { keyframes } from '@emotion/core';
+import { keyframes } from '@emotion/react';
 import styled from '@emotion/styled';
 import { Message } from 'semantic-ui-react';
 
