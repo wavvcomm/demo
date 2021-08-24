@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { contacts, exampleNotes, exampleOutcomes } from './constants';
 import {
 	SET_AUTHED,
+	SET_DEAUTHED,
 	SET_OPEN_NOTE,
 	SET_SELECTED,
 	SET_UNREAD_MESSAGES,
@@ -70,6 +71,9 @@ const StateProvider: React.FC = ({ children }) => {
 		switch (type) {
 			case SET_AUTHED: {
 				return { ...state, authed: payload };
+			}
+			case SET_DEAUTHED: {
+				return initialState;
 			}
 			case SET_OPEN_NOTE: {
 				return { ...state, openNote: payload };

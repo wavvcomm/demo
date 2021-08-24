@@ -6,6 +6,7 @@ import styled from '@emotion/styled';
 import { Route, Switch, useHistory, useLocation, RouteComponentProps } from 'react-router-dom';
 import {
 	init as initWavv,
+	close,
 	addPhone,
 	removePhone,
 	callPhone,
@@ -44,6 +45,7 @@ import {
 	SET_ENABLE_CLICK_TO_CALL,
 	SET_NUMBER_DIALING,
 	SET_AUTHED,
+	SET_DEAUTHED,
 	SET_UNREAD_COUNTS,
 	SET_UNREAD_MESSAGES,
 	TOGGLE_CREDENTIALS,
@@ -109,6 +111,24 @@ const App = () => {
 			debugLogger({ name: 'auth failed', dispatch });
 			setMessageReceivedToast({
 				message: 'Error authenticating WAVV',
+				error: true,
+			});
+		}
+	};
+
+	const closeWavv = async () => {
+		try {
+			await close();
+			setMessageReceivedToast({
+				message: 'WAVV session closed',
+			});
+			dispatch({ type: SET_DEAUTHED, payload: true });
+			debugLogger({ name: 'session close success', dispatch });
+		} catch (err) {
+			console.log(err);
+			debugLogger({ name: 'session close failure', dispatch });
+			setMessageReceivedToast({
+				message: 'Error closing WAVV session',
 				error: true,
 			});
 		}
@@ -323,7 +343,7 @@ const App = () => {
 
 	return (
 		<div>
-			<Nav startCampaign={handleStart} startBlast={handleBlast} />
+			<Nav startCampaign={handleStart} startBlast={handleBlast} closeWavv={closeWavv} />
 			<div id="storm-dialer-bar" />
 			<div id="storm-dialer-mini" />
 			<Container showingDrawer={showDrawer}>
