@@ -27,8 +27,14 @@ RUN npm install --quiet --unsafe-perm --no-progress --no-audit
 # so that we can mount the actual @wavv repos at runtime
 WORKDIR /usr/local/storm/module
 RUN rm -rf ./internal/*
-RUN rm -rf ./messenger/*
-RUN rm -rf ./dialer/*
+RUN rm -rf ./messenger/dist/*
+RUN rm -rf ./dialer/dist/*
+
+WORKDIR /usr/local/storm/module/dialer
+RUN npm install
+
+WORKDIR /usr/local/storm/module/messenger
+RUN npm install
 
 #---------- DEVELOPMENT TARGET ----------#
 FROM base as development
