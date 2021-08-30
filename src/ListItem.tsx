@@ -5,7 +5,7 @@ import { Table, Checkbox, Modal, Input, Button, Dropdown, Label, Popup } from 's
 import { formatPhone, validPhone, rawPhone } from './utils';
 import { store } from './store';
 import { SET_SELECTED } from './actionTypes';
-import { Contact, AddRemoveNumber, RemoveContact, TextNumber, CallNumber } from './paramTypes';
+import { Contact, AddRemoveNumber, RemoveContact, TextNumber, CallNumber, StartRingless } from './paramTypes';
 
 const MessageCount = ({ count, disabled }: { count: number; disabled: boolean }) => (
 	<Popup
@@ -27,6 +27,7 @@ const ListItem = ({
 	addNumber,
 	textNumber,
 	callNumber,
+	startRingless,
 }: {
 	contact: Contact;
 	removeContact: RemoveContact;
@@ -34,6 +35,7 @@ const ListItem = ({
 	addNumber: AddRemoveNumber;
 	textNumber: TextNumber;
 	callNumber: CallNumber;
+	startRingless: StartRingless;
 }) => {
 	const { unreadCounts, skipped, selected, dispatch, authed, dncList } = useContext(store);
 	const [newNumber, setNewNumber] = useState('');
@@ -127,6 +129,18 @@ const ListItem = ({
 										size="mini"
 										disabled={!authed || dncNumber}
 										onClick={() => callNumber({ contact, number })}
+									/>
+								}
+							/>
+							<Popup
+								content="Ringless Voicemail"
+								position="bottom center"
+								trigger={
+									<Button
+										icon="phone"
+										size="mini"
+										disabled={!authed || dncNumber}
+										onClick={() => startRingless({ contacts: [contact] })}
 									/>
 								}
 							/>

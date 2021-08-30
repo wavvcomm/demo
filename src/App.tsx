@@ -28,6 +28,7 @@ import {
 	addUnreadCountListener,
 	startBlast,
 } from '@wavv/messenger';
+import { startRingless } from '@wavv/ringless';
 import ListView from './ListView';
 import DetailView from './DetailView';
 import Nav from './Nav';
@@ -323,6 +324,12 @@ const App = () => {
 			.catch(() => debugLogger({ name: 'callPhone failed', dispatch }));
 	};
 
+	const startRinglessCallback = ({ contacts }: { contacts: Contact[] }) => {
+		startRingless({ contacts })
+			.then(() => debugLogger({ name: 'callPhone', dispatch }))
+			.catch(() => debugLogger({ name: 'callPhone failed', dispatch }));
+	};
+
 	const handleStart = () => {
 		const filteredContacts = contactList.filter((contact: Contact) => selected.includes(contact.contactId));
 		startCampaign({ contacts: filteredContacts })
@@ -360,6 +367,7 @@ const App = () => {
 								addNumber={addNumber}
 								textNumber={textNumber}
 								callNumber={callNumber}
+								startRingless={startRinglessCallback}
 								setMessageReceivedToast={setMessageReceivedToast}
 							/>
 						)}

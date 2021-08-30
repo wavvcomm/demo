@@ -7,11 +7,13 @@ COPY ./.env ./.eslint* ./tsconfig.json ./
 
 # Update package.json to point to local directory instead of version for @wavv modules
 RUN sed -i 's/"@wavv\/messenger": ".*"/"\@wavv\/messenger": "..\/module\/messenger"/' ./package.json
+RUN sed -i 's/"@wavv\/ringless": ".*"/"\@wavv\/ringless": "..\/module\/ringless"/' ./package.json
 RUN sed -i 's/"@wavv\/dialer": ".*"/"\@wavv\/dialer": "..\/module\/dialer"/' ./package.json
 
 # Copy installed versions of @wavv modules as placeholders (Required for second npm install to watch right directories)
 WORKDIR /usr/local/storm/module
 RUN mv ../demo/node_modules/\@wavv/messenger ./messenger
+RUN mv ../demo/node_modules/\@wavv/ringless ./ringless
 RUN mv ../demo/node_modules/\@wavv/dialer ./dialer
 
 # Delete any remnants of @wavv from node modules and package-lock.json
@@ -25,12 +27,16 @@ RUN npm install --quiet --unsafe-perm --no-progress --no-audit
 # so that we can mount the actual @wavv repos at runtime
 WORKDIR /usr/local/storm/module
 RUN rm -rf ./messenger/dist/*
+RUN rm -rf ./ringless/dist/*
 RUN rm -rf ./dialer/dist/*
 
 WORKDIR /usr/local/storm/module/dialer
 RUN npm install
 
 WORKDIR /usr/local/storm/module/messenger
+RUN npm install
+
+WORKDIR /usr/local/storm/module/ringless
 RUN npm install
 
 #---------- DEVELOPMENT TARGET ----------#
