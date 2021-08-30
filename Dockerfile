@@ -6,13 +6,11 @@ RUN npm install --unsafe-perm --no-audit
 COPY ./.env ./.eslint* ./tsconfig.json ./
 
 # Update package.json to point to local directory instead of version for @wavv modules
-RUN sed -i 's/"@wavv\/internal": ".*"/"\@wavv\/internal": "..\/module\/internal"/' ./package.json
 RUN sed -i 's/"@wavv\/messenger": ".*"/"\@wavv\/messenger": "..\/module\/messenger"/' ./package.json
 RUN sed -i 's/"@wavv\/dialer": ".*"/"\@wavv\/dialer": "..\/module\/dialer"/' ./package.json
 
 # Copy installed versions of @wavv modules as placeholders (Required for second npm install to watch right directories)
 WORKDIR /usr/local/storm/module
-RUN mv ../demo/node_modules/\@wavv/internal ./internal
 RUN mv ../demo/node_modules/\@wavv/messenger ./messenger
 RUN mv ../demo/node_modules/\@wavv/dialer ./dialer
 
@@ -26,7 +24,6 @@ RUN npm install --quiet --unsafe-perm --no-progress --no-audit
 # Clear out those @wavv placeholder directories now that we have the correct package-lock.json setup,
 # so that we can mount the actual @wavv repos at runtime
 WORKDIR /usr/local/storm/module
-RUN rm -rf ./internal/*
 RUN rm -rf ./messenger/dist/*
 RUN rm -rf ./dialer/dist/*
 
