@@ -53,7 +53,7 @@ import {
 	ADD_UPDATE_CREDENTIALS,
 	UPDATE_DNC,
 } from './actionTypes';
-import { Creds, Contact } from './paramTypes';
+import { Creds, Contact, StartRingless } from './paramTypes';
 
 const useQuery = () => new URLSearchParams(useLocation().search);
 
@@ -324,10 +324,19 @@ const App = () => {
 			.catch(() => debugLogger({ name: 'callPhone failed', dispatch }));
 	};
 
-	const startRinglessCallback = ({ contacts }: { contacts: Contact[] }) => {
+	const startRinglessCallback: StartRingless = ({ contacts, number = '' }) => {
+		if (contacts.length === 1 && number) {
+			contacts[0].numbers = [number];
+		}
 		startRingless({ contacts })
-			.then(() => debugLogger({ name: 'callPhone', dispatch }))
-			.catch(() => debugLogger({ name: 'callPhone failed', dispatch }));
+			.then(() => debugLogger({ name: 'startRingless', dispatch }))
+			.catch(() => debugLogger({ name: 'startRingless failed', dispatch }));
+	};
+	const startRinglessBlastCallback = () => {
+		const filteredContacts = contactList.filter((contact: Contact) => selected.includes(contact.contactId));
+		startRingless({ contacts: filteredContacts })
+			.then(() => debugLogger({ name: 'startRingless', dispatch }))
+			.catch(() => debugLogger({ name: 'startRingless failed', dispatch }));
 	};
 
 	const handleStart = () => {
@@ -350,7 +359,12 @@ const App = () => {
 
 	return (
 		<div>
-			<Nav startCampaign={handleStart} startBlast={handleBlast} closeWavv={closeWavv} />
+			<Nav
+				startCampaign={handleStart}
+				startBlast={handleBlast}
+				closeWavv={closeWavv}
+				ringlessBlast={startRinglessBlastCallback}
+			/>
 			<div id="storm-dialer-bar" />
 			<div id="storm-dialer-mini" />
 			<Container showingDrawer={showDrawer}>

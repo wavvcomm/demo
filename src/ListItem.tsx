@@ -137,10 +137,10 @@ const ListItem = ({
 								position="bottom center"
 								trigger={
 									<Button
-										icon="phone"
+										icon="mic"
 										size="mini"
 										disabled={!authed || dncNumber}
-										onClick={() => startRingless({ contacts: [contact] })}
+										onClick={() => startRingless({ contacts: [contact], number })}
 									/>
 								}
 							/>

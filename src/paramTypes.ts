@@ -81,4 +81,4 @@ export type RemoveContact = (arg0: { contactId: string; skip?: boolean }) => voi
 export type AddRemoveNumber = (arg0: { contactId: string; number: string }) => void;
 export type TextNumber = (arg0: { contact?: Contact; number: string; dock?: boolean }) => void;
 export type CallNumber = (arg0: { contact: Contact; number: string }) => void;
-export type StartRingless = (arg0: { contacts: Contact[] }) => void;
+export type StartRingless = (arg0: { contacts: Contact[]; number?: string }) => void;
