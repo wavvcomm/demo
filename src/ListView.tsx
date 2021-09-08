@@ -5,7 +5,15 @@ import ListItem from './ListItem';
 import { store } from './store';
 import { SET_SELECTED } from './actionTypes';
 import { validPhone } from './utils';
-import { Contact, RemoveContact, AddRemoveNumber, TextNumber, CallNumber, AddContact } from './paramTypes';
+import {
+	Contact,
+	RemoveContact,
+	AddRemoveNumber,
+	TextNumber,
+	CallNumber,
+	AddContact,
+	StartRingless,
+} from './paramTypes';
 
 type CONTACT_TO_ADD = {
 	[key: string]: string;
@@ -17,6 +25,7 @@ const ListView = ({
 	addNumber,
 	textNumber,
 	callNumber,
+	startRingless,
 	addContact,
 	setMessageReceivedToast,
 }: {
@@ -25,6 +34,7 @@ const ListView = ({
 	addNumber: AddRemoveNumber;
 	textNumber: TextNumber;
 	callNumber: CallNumber;
+	startRingless: StartRingless;
 	addContact: AddContact;
 	setMessageReceivedToast: (arg0: { message: string; error: boolean }) => void;
 }) => {
@@ -66,6 +76,7 @@ const ListView = ({
 							addNumber={addNumber}
 							textNumber={textNumber}
 							callNumber={callNumber}
+							startRingless={startRingless}
 						/>
 					))}
 				</Table.Body>

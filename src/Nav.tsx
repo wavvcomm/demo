@@ -7,7 +7,17 @@ import { store } from './store';
 import { TOGGLE_DRAWER, TOGGLE_CREDENTIALS } from './actionTypes';
 import { debugLogger } from './utils';
 
-const Nav = ({ startCampaign, startBlast, closeWavv }: { startCampaign: () => void; startBlast: () => void, closeWavv: () => void }) => {
+const Nav = ({
+	startCampaign,
+	startBlast,
+	closeWavv,
+	ringlessBlast,
+}: {
+	startCampaign: () => void;
+	startBlast: () => void;
+	closeWavv: () => void;
+	ringlessBlast: () => void;
+}) => {
 	const {
 		showDrawer: showingDrawer,
 		showCreds: showingCreds,
@@ -84,6 +94,9 @@ const Nav = ({ startCampaign, startBlast, closeWavv }: { startCampaign: () => vo
 					<Button primary disabled={disableStart || !authed} onClick={startCampaign} content="Dial" />
 				</Menu.Item>
 				<Menu.Item fitted>
+					<Button primary disabled={disableStart || !authed} onClick={ringlessBlast} content="Ringless" />
+				</Menu.Item>
+				<Menu.Item fitted>
 					<Button
 						color={showingDrawer ? 'grey' : undefined}
 						icon="bug"
@@ -98,11 +111,7 @@ const Nav = ({ startCampaign, startBlast, closeWavv }: { startCampaign: () => vo
 					/>
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Button
-						disabled={!authed}
-						icon='sign-out'
-						onClick={closeWavv}
-					/>
+					<Button disabled={!authed} icon="sign-out" onClick={closeWavv} />
 				</Menu.Item>
 			</Menu>
 		</NavBar>
