@@ -137,7 +137,7 @@ const ListItem = ({
 								position="bottom center"
 								trigger={
 									<Button
-										icon="mic"
+										icon="bell slash"
 										size="mini"
 										disabled={!authed || dncNumber}
 										onClick={() =>
