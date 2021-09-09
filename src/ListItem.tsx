@@ -140,7 +140,19 @@ const ListItem = ({
 										icon="mic"
 										size="mini"
 										disabled={!authed || dncNumber}
-										onClick={() => startRingless({ contacts: [contact], number })}
+										onClick={() =>
+											startRingless({
+												contacts: [
+													{
+														contactId,
+														name,
+														firstName,
+														lastName,
+														numbers: [number],
+													},
+												],
+											})
+										}
 									/>
 								}
 							/>

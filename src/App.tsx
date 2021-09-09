@@ -208,21 +208,19 @@ const App = () => {
 				}
 			});
 
-			const contactSearchListener = addContactSearchListener(
-				({ search, contacts: returnedContacts, callback }: any) => {
-					debugLogger({ name: 'onContactSearch', dispatch });
-					if (search) {
-						const results = getContactsBySearchTerms(search);
-						callback(results);
-					} else {
-						const results = returnedContacts.map((contact: any) => {
-							const { id, number, numbers } = contact;
-							return id ? getContactById(id) : getContactByNumbers(numbers || [number]);
-						});
-						callback(results);
-					}
+			const contactSearchListener = addContactSearchListener(({ search, contacts, callback }) => {
+				debugLogger({ name: 'onContactSearch', dispatch });
+				if (search) {
+					const results = getContactsBySearchTerms(search);
+					callback({ contacts: results });
+				} else if (contacts) {
+					const results = contacts.map((contact: any) => {
+						const { id, number, numbers } = contact;
+						return id ? getContactById(id) : getContactByNumbers(numbers || [number]);
+					});
+					callback({ contacts: results });
 				}
-			);
+			});
 
 			const unreadCountListener = addUnreadCountListener(({ unreadCount, numberCounts }) => {
 				debugLogger({ name: 'onUnreadCount', dispatch });
@@ -324,10 +322,7 @@ const App = () => {
 			.catch(() => debugLogger({ name: 'callPhone failed', dispatch }));
 	};
 
-	const startRinglessCallback: StartRingless = ({ contacts, number = '' }) => {
-		if (contacts.length === 1 && number) {
-			contacts[0].numbers = [number];
-		}
+	const startRinglessCallback: StartRingless = ({ contacts }) => {
 		startRingless({ contacts })
 			.then(() => debugLogger({ name: 'startRingless', dispatch }))
 			.catch(() => debugLogger({ name: 'startRingless failed', dispatch }));

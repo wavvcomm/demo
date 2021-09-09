@@ -15,7 +15,7 @@
 		"isolatedModules": true,
 		"noEmit": true,
 		"declaration": true,
-		"jsx": "react",
+		"jsx": "react-jsx",
 		"typeRoots": ["./types", "./node_modules/@types"],
 		"outDir": "dist/",
 		"downlevelIteration": true
