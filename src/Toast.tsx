@@ -54,7 +54,7 @@ type ToastProps = {
 const ToastContainer = styled.div<ToastProps>(({ duration }) => ({
 	position: 'absolute',
 	top: 70,
-	right: 0,
+	right: 10,
 	animation: `${fadeInOut} ${duration}s linear`,
 }));
 
