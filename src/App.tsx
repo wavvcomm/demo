@@ -92,13 +92,16 @@ const App = () => {
 	};
 
 	const authWavv = async (creds: Creds) => {
-		const { vendorId, apiKey, userId, server, token: tok } = creds;
+		const { vendorId, apiKey, userId, server, token: tok, groupId: grp } = creds;
 		let token;
+		let groupId;
+		if (grp) groupId = grp;
+		console.log(groupId);
 		if (tok) token = tok;
 		else {
 			const issuer = vendorId;
 			const signature = apiKey || '';
-			const payload = { userId };
+			const payload = { userId, groupId };
 			token = jwt.sign(payload, signature, { issuer, expiresIn: 3600 });
 		}
 		try {

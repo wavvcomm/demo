@@ -20,6 +20,7 @@ const CredentialModal = ({ auth }: Props) => {
 		title: '',
 		id: '',
 		userId: '',
+		groupId: '',
 		vendorId: '',
 		apiKey: '',
 		server: '',
@@ -49,7 +50,16 @@ const CredentialModal = ({ auth }: Props) => {
 	};
 
 	const reset = () => {
-		setNewCredentials({ title: '', id: '', userId: '', vendorId: '', apiKey: '', server: '', active: false });
+		setNewCredentials({
+			title: '',
+			id: '',
+			userId: '',
+			vendorId: '',
+			apiKey: '',
+			server: '',
+			groupId: '',
+			active: false,
+		});
 		setShowForm(false);
 		setFormError(false);
 		setReconnectId('');
@@ -91,8 +101,8 @@ const CredentialModal = ({ auth }: Props) => {
 	};
 
 	const handleEdit = (cred: Creds) => {
-		const { title = '', id, userId, vendorId, apiKey, active, server } = cred;
-		setNewCredentials({ title, id, userId, vendorId, apiKey, server, active, token: '' });
+		const { title = '', id, userId, vendorId, apiKey, active, server, groupId } = cred;
+		setNewCredentials({ title, id, userId, vendorId, apiKey, server, active, token: '', groupId });
 		setShowForm(true);
 	};
 
@@ -138,6 +148,14 @@ const CredentialModal = ({ auth }: Props) => {
 								value={newCredentials.apiKey}
 								onChange={handleCreds}
 								label="API Key"
+								control="input"
+							/>
+							<Form.Field
+								name="groupId"
+								styles
+								value={newCredentials.groupId}
+								onChange={handleCreds}
+								label="Group ID (Optional)"
 								control="input"
 							/>
 							<ServerContainer>
