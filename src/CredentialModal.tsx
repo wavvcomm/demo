@@ -152,7 +152,6 @@ const CredentialModal = ({ auth }: Props) => {
 							/>
 							<Form.Field
 								name="groupId"
-								styles
 								value={newCredentials.groupId}
 								onChange={handleCreds}
 								label="Group ID (Optional)"
