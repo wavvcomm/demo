@@ -5,6 +5,7 @@ export type Creds =
 			vendorId: string;
 			apiKey: string;
 			groupId?: string;
+			email?: string;
 			token?: string;
 			userId: string;
 			server: string;
@@ -16,6 +17,7 @@ export type Creds =
 			vendorId?: string;
 			apiKey?: string;
 			groupId?: string;
+			email?: string;
 			token: string;
 			userId?: string;
 			server: string;
@@ -27,8 +29,9 @@ export type Creds =
 			vendorId: string;
 			apiKey: string;
 			groupId: string;
+			email: string;
 			token?: string;
-			userId: string;
+			userId?: string;
 			server: string;
 			active: boolean;
 	  };
