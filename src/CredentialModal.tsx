@@ -20,9 +20,11 @@ const CredentialModal = ({ auth }: Props) => {
 		title: '',
 		id: '',
 		userId: '',
+		groupId: '',
 		vendorId: '',
 		apiKey: '',
 		server: '',
+		email: '',
 		active: false,
 	});
 	const [reconnectId, setReconnectId] = useState('');
@@ -49,15 +51,25 @@ const CredentialModal = ({ auth }: Props) => {
 	};
 
 	const reset = () => {
-		setNewCredentials({ title: '', id: '', userId: '', vendorId: '', apiKey: '', server: '', active: false });
+		setNewCredentials({
+			title: '',
+			id: '',
+			userId: '',
+			vendorId: '',
+			apiKey: '',
+			server: '',
+			groupId: '',
+			email: '',
+			active: false,
+		});
 		setShowForm(false);
 		setFormError(false);
 		setReconnectId('');
 	};
 
 	const handleSubmit = () => {
-		const { userId, vendorId, apiKey, server } = newCredentials;
-		if (!userId || !vendorId || !apiKey || !server) {
+		const { userId, vendorId, apiKey, server, email, groupId } = newCredentials;
+		if ((!userId || !vendorId || !apiKey || !server) && (!vendorId || !apiKey || !server || !email || !groupId)) {
 			setFormError(true);
 		} else {
 			const payload = { ...newCredentials };
@@ -91,8 +103,8 @@ const CredentialModal = ({ auth }: Props) => {
 	};
 
 	const handleEdit = (cred: Creds) => {
-		const { title = '', id, userId, vendorId, apiKey, active, server } = cred;
-		setNewCredentials({ title, id, userId, vendorId, apiKey, server, active, token: '' });
+		const { title = '', id, userId, vendorId, apiKey, active, server, groupId, email } = cred;
+		setNewCredentials({ title, id, userId, vendorId, apiKey, server, active, token: '', groupId, email });
 		setShowForm(true);
 	};
 
@@ -140,6 +152,22 @@ const CredentialModal = ({ auth }: Props) => {
 								label="API Key"
 								control="input"
 							/>
+							<Form.Field
+								name="groupId"
+								value={newCredentials.groupId}
+								onChange={handleCreds}
+								label="Group ID (Optional)"
+								control="input"
+							/>
+							{newCredentials.groupId && (
+								<Form.Field
+									name="email"
+									value={newCredentials.email}
+									onChange={handleCreds}
+									label="Email Address"
+									control="input"
+								/>
+							)}
 							<ServerContainer>
 								<Form.Field
 									name="server"
