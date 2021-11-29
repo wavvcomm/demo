@@ -4,6 +4,8 @@ export type Creds =
 			title?: string;
 			vendorId: string;
 			apiKey: string;
+			groupId?: string;
+			email?: string;
 			token?: string;
 			userId: string;
 			server: string;
@@ -14,10 +16,24 @@ export type Creds =
 			title?: string;
 			vendorId?: string;
 			apiKey?: string;
+			groupId?: string;
+			email?: string;
 			token: string;
 			userId?: string;
 			server: string;
 			active?: boolean;
+	  }
+	| {
+			id: string;
+			title?: string;
+			vendorId: string;
+			apiKey: string;
+			groupId: string;
+			email: string;
+			token?: string;
+			userId?: string;
+			server: string;
+			active: boolean;
 	  };
 
 export type Contact = {
