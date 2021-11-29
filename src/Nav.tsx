@@ -97,6 +97,9 @@ const Nav = ({
 					<Button primary disabled={disableStart || !authed} onClick={ringlessBlast} content="Ringless" />
 				</Menu.Item>
 				<Menu.Item fitted>
+					<Button primary disabled={disableStart || !authed} onClick={() => alert('start video')} content="Video" />
+				</Menu.Item>
+				<Menu.Item fitted>
 					<Button
 						color={showingDrawer ? 'grey' : undefined}
 						icon="bug"
