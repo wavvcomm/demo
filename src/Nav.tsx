@@ -12,11 +12,13 @@ const Nav = ({
 	startBlast,
 	closeWavv,
 	ringlessBlast,
+	startVideo,
 }: {
 	startCampaign: () => void;
 	startBlast: () => void;
 	closeWavv: () => void;
 	ringlessBlast: () => void;
+	startVideo: () => void;
 }) => {
 	const {
 		showDrawer: showingDrawer,
@@ -97,7 +99,7 @@ const Nav = ({
 					<Button primary disabled={disableStart || !authed} onClick={ringlessBlast} content="Ringless" />
 				</Menu.Item>
 				<Menu.Item fitted>
-					<Button primary disabled={disableStart || !authed} onClick={() => alert('start video')} content="Video" />
+					<Button primary disabled={!authed} onClick={startVideo} content="Video" />
 				</Menu.Item>
 				<Menu.Item fitted>
 					<Button

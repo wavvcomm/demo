@@ -29,6 +29,7 @@ import {
 	startBlast,
 } from '@wavv/messenger';
 import { startRingless } from '@wavv/ringless';
+import { startVideo } from '@wavv/video';
 import ListView from './ListView';
 import DetailView from './DetailView';
 import Nav from './Nav';
@@ -345,6 +346,12 @@ const App = () => {
 			.then(() => debugLogger({ name: 'startCampaign', dispatch }))
 			.catch(() => debugLogger({ name: 'startCampaign failed', dispatch }));
 	};
+	const handleVideo = () => {
+		const filteredContacts = contactList.filter((contact: Contact) => selected.includes(contact.contactId));
+		startVideo({ contacts: filteredContacts })
+			.then(() => debugLogger({ name: 'startVideo', dispatch }))
+			.catch(() => debugLogger({ name: 'startVideo failed', dispatch }));
+	};
 
 	const handleBlast = () => {
 		const filteredContacts = contactList.filter((contact: Contact) => selected.includes(contact.contactId));
@@ -364,6 +371,7 @@ const App = () => {
 				startBlast={handleBlast}
 				closeWavv={closeWavv}
 				ringlessBlast={startRinglessBlastCallback}
+				startVideo={handleVideo}
 			/>
 			<div id="storm-dialer-bar" />
 			<div id="storm-dialer-mini" />
