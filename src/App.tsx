@@ -28,8 +28,9 @@ import {
 	addUnreadCountListener,
 	startBlast,
 } from '@wavv/messenger';
+
 import { startRingless } from '@wavv/ringless';
-import { startVideo } from '@wavv/video';
+import { startVideo, videosSelected } from '@wavv/video';
 import ListView from './ListView';
 import DetailView from './DetailView';
 import Nav from './Nav';
@@ -276,6 +277,11 @@ const App = () => {
 				dispatch({ type: UPDATE_DNC, payload: dnc });
 			});
 
+			// Video
+			const videoSelected = videosSelected((outcome) => {
+				debugLogger({ name: 'videosSelected', dispatch });
+				console.log(outcome);
+			});
 			return () => {
 				contactLinkListener.remove();
 				contactSearchListener.remove();
@@ -287,6 +293,7 @@ const App = () => {
 				dialerIdleListener.remove();
 				callEndedListener.remove();
 				dncChangedListener.remove();
+				videoSelected.remove();
 			};
 		}
 
@@ -347,8 +354,7 @@ const App = () => {
 			.catch(() => debugLogger({ name: 'startCampaign failed', dispatch }));
 	};
 	const handleVideo = () => {
-		const filteredContacts = contactList.filter((contact: Contact) => selected.includes(contact.contactId));
-		startVideo({ contacts: filteredContacts })
+		startVideo()
 			.then(() => debugLogger({ name: 'startVideo', dispatch }))
 			.catch(() => debugLogger({ name: 'startVideo failed', dispatch }));
 	};

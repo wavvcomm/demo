@@ -6,6 +6,7 @@ import { formatPhone, validPhone, rawPhone } from './utils';
 import { store } from './store';
 import { SET_SELECTED } from './actionTypes';
 import { Contact, AddRemoveNumber, RemoveContact, TextNumber, CallNumber, StartRingless } from './paramTypes';
+import { selectVideo } from '@wavv/video';
 
 const MessageCount = ({ count, disabled }: { count: number; disabled: boolean }) => (
 	<Popup
@@ -153,6 +154,18 @@ const ListItem = ({
 												],
 											})
 										}
+									/>
+								}
+							/>
+							<Popup
+								content="Send Video"
+								position="bottom center"
+								trigger={
+									<Button
+										icon="video"
+										size="mini"
+										disabled={!authed || dncNumber}
+										onClick={() => selectVideo({ trackingId: contactId })}
 									/>
 								}
 							/>
