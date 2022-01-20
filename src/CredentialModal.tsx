@@ -102,9 +102,20 @@ const CredentialModal = ({ auth }: Props) => {
 		}
 	};
 
-	const handleEdit = (cred: Creds) => {
+	const handleEdit = (cred: Creds, duplicate = false) => {
 		const { title = '', id, userId, vendorId, apiKey, active, server, groupId, email } = cred;
-		setNewCredentials({ title, id, userId, vendorId, apiKey, server, active, token: '', groupId, email });
+		setNewCredentials({
+			title: duplicate ? `Copy of ${title}` : title,
+			id: duplicate ? '' : id,
+			active: duplicate ? false : active,
+			token: '',
+			userId,
+			vendorId,
+			apiKey,
+			server,
+			groupId,
+			email,
+		});
 		setShowForm(true);
 	};
 
@@ -223,6 +234,19 @@ const CredentialModal = ({ auth }: Props) => {
 															disabled={isToken}
 															style={{ marginLeft: 8 }}
 															onClick={() => handleEdit(cred)}
+														/>
+													}
+												/>
+												<Popup
+													content="Duplicate"
+													position="bottom center"
+													trigger={
+														<Button
+															icon="copy"
+															size="mini"
+															disabled={isToken}
+															style={{ marginLeft: 8 }}
+															onClick={() => handleEdit(cred, true)}
 														/>
 													}
 												/>
