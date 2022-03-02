@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { callPhone, addDncNumber, removeDncNumber, addWaitingForContinueListener } from '@wavv/dialer';
 import { openMessengerThread } from '@wavv/messenger';
-import { Image, Button, Feed, Header, Label, Grid, List, Menu, Popup } from 'semantic-ui-react';
+import { Image, Button, Dropdown, Feed, Header, Label, Grid, List, Menu, Popup } from 'semantic-ui-react';
 import { formatPhone, rawPhone, debugLogger } from './utils';
 import CallDispositionModal from './CallDispositionModal';
 import { store } from './store';
@@ -30,6 +30,21 @@ const DetailView = ({
 			waitingForContinueListener.remove();
 		};
 	}, []);
+
+	const textNumber = ({ number, dock }: { number: string; dock?: boolean }) =>
+		openMessengerThread({ contact, number, contactView: true, dock })
+			.then(() =>
+				debugLogger({
+					name: 'openMessengerThread',
+					dispatch,
+				})
+			)
+			.catch(() =>
+				debugLogger({
+					name: 'openMessengerThread Failed',
+					dispatch,
+				})
+			);
 
 	if (!contact) return <div>No contact found with that id</div>;
 
@@ -71,7 +86,7 @@ const DetailView = ({
 										{formatPhone(number)}
 										<Popup
 											content="Call Number"
-											position="bottom center"
+											position="top center"
 											trigger={
 												<Button
 													icon="phone"
@@ -85,30 +100,33 @@ const DetailView = ({
 
 										<Popup
 											content="Message Number"
-											position="bottom center"
+											position="top center"
 											trigger={
 												<div style={{ position: 'relative' }}>
-													<Button
-														icon="comment alternate"
-														size="mini"
-														style={{ margin: 3 }}
-														disabled={!authed}
-														onClick={() =>
-															openMessengerThread({ contact, number, contactView: true })
-																.then(() =>
-																	debugLogger({
-																		name: 'openMessengerThread',
-																		dispatch,
-																	})
-																)
-																.catch(() =>
-																	debugLogger({
-																		name: 'openMessengerThread Failed',
-																		dispatch,
-																	})
-																)
+													<Dropdown
+														trigger={
+															<Button
+																icon="comment alternate"
+																size="mini"
+																style={{ margin: 3 }}
+																disabled={!authed}
+															/>
 														}
-													/>
+														icon={null}
+													>
+														<Dropdown.Menu>
+															<Dropdown.Item
+																onClick={() => textNumber({ number, dock: false })}
+															>
+																Modal
+															</Dropdown.Item>
+															<Dropdown.Item
+																onClick={() => textNumber({ number, dock: true })}
+															>
+																Dock
+															</Dropdown.Item>
+														</Dropdown.Menu>
+													</Dropdown>
 													{unreadCounts[number] ? (
 														<Label
 															color="red"
@@ -123,7 +141,7 @@ const DetailView = ({
 										/>
 										<Popup
 											content={dncNumber ? 'Remove from Do Not Call' : 'Do Not Call'}
-											position="bottom center"
+											position="top center"
 											trigger={
 												<Button
 													onClick={() => {
