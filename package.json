@@ -29,7 +29,7 @@
 		"web-vitals": "^2.0.1"
 	},
 	"scripts": {
-		"start": "PORT=3001 react-scripts start",
+		"start": "HTTPS=true PORT=3001 react-scripts start",
 		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject",
@@ -71,7 +71,7 @@
 		"eslint-plugin-import": "^2.23.4",
 		"husky": "^4.3.0",
 		"lint-staged": "^11.0.0",
-		"prettier": "^2.3.1",
+		"prettier": "^2.6.0",
 		"pretty-quick": "^3.1.0"
 	},
 	"lint-staged": {
