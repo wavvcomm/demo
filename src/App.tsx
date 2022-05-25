@@ -30,7 +30,7 @@ import {
 } from '@wavv/messenger';
 
 import { startRingless } from '@wavv/ringless';
-import { startVideo, videosSelected } from '@wavv/video';
+import { startVideo, addVideosSelectedListener } from '@wavv/video';
 import ListView from './ListView';
 import DetailView from './DetailView';
 import Nav from './Nav';
@@ -278,9 +278,8 @@ const App = () => {
 			});
 
 			// Video
-			const videoSelected = videosSelected((outcome) => {
+			const videoSelected = addVideosSelectedListener((videos) => {
 				debugLogger({ name: 'videosSelected', dispatch });
-				console.log(outcome);
 			});
 			return () => {
 				contactLinkListener.remove();

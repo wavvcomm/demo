@@ -108,17 +108,10 @@ const ListItem = ({
 									/>
 								}
 							/>
-							<Dropdown
-								trigger={<MessageCount disabled={!authed} count={unreadCounts[number]} />}
-								icon={null}
-							>
+							<Dropdown trigger={<MessageCount disabled={!authed} count={unreadCounts[number]} />} icon={null}>
 								<Dropdown.Menu>
-									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: false })}>
-										Modal
-									</Dropdown.Item>
-									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: true })}>
-										Dock
-									</Dropdown.Item>
+									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: false })}>Modal</Dropdown.Item>
+									<Dropdown.Item onClick={() => textNumber({ contact, number, dock: true })}>Dock</Dropdown.Item>
 								</Dropdown.Menu>
 							</Dropdown>
 							<Popup
@@ -161,12 +154,7 @@ const ListItem = ({
 								content="Send Video"
 								position="bottom center"
 								trigger={
-									<Button
-										icon="video"
-										size="mini"
-										disabled={!authed || dncNumber}
-										onClick={() => selectVideo({ trackingId: contactId })}
-									/>
+									<Button icon="video" size="mini" disabled={!authed || dncNumber} onClick={() => selectVideo()} />
 								}
 							/>
 						</Number>

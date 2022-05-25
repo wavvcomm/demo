@@ -9,7 +9,7 @@
 		"@wavv/dialer": "^2.3.0",
 		"@wavv/messenger": "^2.3.1",
 		"@wavv/ringless": "^1.1.0",
-		"@wavv/video": "^1.0.2",
+		"@wavv/video": "^1.1.1",
 		"ag-grid-community": "^25.3.0",
 		"ag-grid-react": "^25.3.0",
 		"axios": "^0.21.1",

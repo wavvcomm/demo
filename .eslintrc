@@ -4,10 +4,9 @@
 		"browser": true
 	},
 	"parser": "@typescript-eslint/parser",
-	"plugins": ["react-hooks", "jest", "cypress", "@typescript-eslint"],
+	"plugins": ["react-hooks", "@typescript-eslint"],
 	"extends": [
 		"plugin:import/errors",
-		"plugin:cypress/recommended",
 		"plugin:import/warnings",
 		"react-app",
 		"react-app/jest",
