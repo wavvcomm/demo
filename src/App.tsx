@@ -100,7 +100,6 @@ const App = () => {
 		let email;
 		if (grp) groupId = grp;
 		if (eml) email = eml;
-		console.log(groupId);
 		if (tok) token = tok;
 		else {
 			const issuer = vendorId;
@@ -133,7 +132,6 @@ const App = () => {
 			dispatch({ type: SET_DEAUTHED, payload: true });
 			debugLogger({ name: 'session close success', dispatch });
 		} catch (err) {
-			console.log(err);
 			debugLogger({ name: 'session close failure', dispatch });
 			setMessageReceivedToast({
 				message: 'Error closing WAVV session',
